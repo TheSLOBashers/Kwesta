@@ -8,7 +8,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "npm -w react-frontend run dev"
+    "dev": "npm -w react-frontend run dev",
+    "format": "npx prettier . --write",
+    "lint": "npx eslint ."
   },
   "workspaces": [
     "packages/*"
