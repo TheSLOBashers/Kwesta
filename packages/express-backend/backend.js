@@ -6,7 +6,8 @@ import cors from "cors";
 import mongoose from "mongoose";
 
 // Routes
-const users = require('./routes/users.js');
+import { default as users } from './routes/users.js';
+import { default as auth } from './routes/auth.js';
 
 // App setup
 const app = express();
@@ -17,7 +18,7 @@ app.use(express.json());
 // Mongo setup
 mongoose.set("debug", true);
 mongoose
-  .connect("mongodb://localhost:27017/users")
+  .connect("mongodb://localhost:27017/KWESTA")
   .then(() => console.log("MongoDB connected!")) 
   .catch((error) => console.log(error));
 
@@ -36,6 +37,7 @@ app.get("/", (req, res) => {
 
 // Backend routing
 app.use('/users', users);
+app.use('/auth', auth);
 
 // Run app
 app.listen(port, () => {

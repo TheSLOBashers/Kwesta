@@ -1,3 +1,38 @@
+import express from "express";
+const router = express.Router();
+import user_services from '../models/user-services.js';
+
+const { authenticateUser, createNewUser } = user_services;
+
+// routes
+
+// Create a new user
+router.post('/', async (req, res) => {
+  
+  const username = req.body.username;
+  const password = req.body.password;
+  const email = req.body.email;
+
+  try {
+    const user = await createNewUser(username, email, password);
+    res.status(201).json(user);
+  } catch (error) {
+    if (error.message === "Username already exists") {
+      return res.status(409).json({ message: error.message });
+    }
+    else if (error.message === "Email already exists") {
+      return res.status(409).json({ message: error.message });
+    }
+    else {
+        return res.status(500).send("Internal Server Error");
+    }
+  }
+
+});
+
+export default router;
+
+/*
 const express = require('express')
 const router = express.Router()
 import userServices from "./models/user-services.js";
@@ -69,3 +104,4 @@ router.delete("/:id", (req, res) => {
 });
 
 module.exports = router
+*/
