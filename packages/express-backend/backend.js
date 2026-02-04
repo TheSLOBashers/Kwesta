@@ -1,7 +1,7 @@
 // backend.js
 import express from "express";
 import cors from "cors";
-import userServices from "../models/user-services.js";
+import userServices from "./models/user-services.js";
 
 const {
   getUsers,
