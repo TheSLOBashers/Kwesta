@@ -1,17 +1,4 @@
-import mongoose from "mongoose";
 import userModel from "./user.js";
-
-mongoose.set("debug", true);
-
-mongoose
-  .connect("mongodb://localhost:27017/users")
-  .then(() => console.log("MongoDB connected!")) 
-  .catch((error) => console.log(error));
-
-  // {
-  //   useNewUrlParser: true,
-  //   useUnifiedTopology: true,
-  // })
 
 function getUsers(name, job) {
   let promise;
