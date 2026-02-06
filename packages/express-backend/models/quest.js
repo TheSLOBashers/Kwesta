@@ -5,7 +5,6 @@ const QuestSchema = new Mongoose.Schema({
     Description: { type: String, required: true },
     UserID: { type: Mongoose.Schema.Types.ObjectId, required: true },
     Created: { type: Date, default: Date.now() },
-    Start: { type: Date, required: true },
     End: { type: Date, required: true },
     Coordinate: { type: [Number, Number] } // long + lat location
 });
