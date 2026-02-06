@@ -5,6 +5,7 @@ import NavBar from "./components/Navbar";
 import Login from "./components/Login";
 import Signup from "./components/Signup";
 import loginCall from "./APICalls/loginCall";
+import signupCall from "./APICalls/signupCall";
 import Protected from "./components/Protected"
 import ProtectedRoute from "./components/PrivateRoute";
 import AuthenticationRoute from "./components/AuthenticationRoute";
@@ -32,7 +33,7 @@ function MyApp() {
         <Route path="/" element={<h3>Welcome Home!</h3>} />
         <Route element={<AuthenticationRoute />}>
           <Route path="/Login" element={<Login handleSubmit={loginCall}/>} />
-          <Route path="/Signup" element={<Signup/>} />
+          <Route path="/Signup" element={<Signup handleSubmit={signupCall}/>} />
         </Route>
         <Route element={<ProtectedRoute />}>
           <Route path="/Protected" element={<Protected />} />
