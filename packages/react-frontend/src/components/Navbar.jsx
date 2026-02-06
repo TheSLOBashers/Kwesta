@@ -13,7 +13,7 @@ function NavBar(){
                 <Link to="/">Quests</Link>
                 </li>
                 <li>
-                <Link to="/">About</Link>
+                <Link to="/About">About</Link>
                 </li>
                 <li>
                 <Link to="/Login">Login</Link>

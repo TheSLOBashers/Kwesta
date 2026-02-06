@@ -4,6 +4,7 @@ import { Route, Routes } from "react-router-dom";
 import NavBar from "./components/Navbar";
 import Login from "./components/Login";
 import Signup from "./components/Signup";
+import About from "./components/About";
 
 function MyApp() {
   //const [characters, setCharacters] = useState([]);
@@ -29,6 +30,7 @@ function MyApp() {
         <Route path="/" element={<h3>Welcome Home!</h3>} />
         <Route path="/Login" element={<Login/>} />
         <Route path="/Signup" element={<Signup/>} />
+        <Route path="/About" element={<About/>} />
         {/*<Route
           path="/users-table"
           element={
