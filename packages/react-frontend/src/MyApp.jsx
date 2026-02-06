@@ -6,6 +6,7 @@ import Login from "./components/Login";
 import Signup from "./components/Signup";
 import loginCall from "./APICalls/loginCall";
 import Protected from "./components/Protected"
+import ProtectedRoute from "./components/PrivateRoute";
 
 function MyApp() {
 
@@ -30,20 +31,14 @@ function MyApp() {
         <Route path="/" element={<h3>Welcome Home!</h3>} />
         <Route path="/Login" element={<Login handleSubmit={loginCall}/>} />
         <Route path="/Signup" element={<Signup/>} />
-        <Route path="/Protected" element={<Protected/>}/>
-        {/*<Route
-          path="/users-table"
-          element={
-            <Table
-              characterData={characters}
-              removeCharacter={removeOneCharacter}
-            />
-          }
-        />
-        <Route path="/form" element={<Form handleSubmit={updateList} />} />
-        */}
+        <Route element={<ProtectedRoute />}>
+          <Route path="/Protected" element={<Protected />} />
+        </Route>
       </Routes>
     </div>
   );
 }
+
+//        <PrivateRoute component={Protected} path="/Protected" exact/>
+
 export default MyApp;
