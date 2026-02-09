@@ -1,20 +1,35 @@
 // components/Login.jsx
 import { Link } from "react-router-dom";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function Signup(props) {
+  const navigate = useNavigate();
+  const [accountCreated, setAccountCreated] = useState(false);
   const [userDetails, setUserDetails] = useState({
     username: "",
     email: "",
     password: ""
   });
-  function submitForm() {
-    props.handleSubmit(
-      userDetails["username"],
-      userDetails["email"],
-      userDetails["password"]
-    );
+  const delay = async (ms) => {
+        return new Promise((resolve) => 
+            setTimeout(resolve, ms));
+  };
+  async function submitForm() {
     setUserDetails({ username: "", email: "", password: "" });
+    try {
+        await props.handleSubmit(
+            userDetails["username"],
+            userDetails["email"],
+            userDetails["password"]
+        );
+        setAccountCreated(true);
+        await delay(2000);
+        navigate("/login", { replace: true });
+    }
+    catch (error) {
+        console.log(error.msg);
+    }
   }
   function handleChange(event) {
     const { name, value } = event.target;
@@ -74,6 +89,7 @@ function Signup(props) {
             onClick={submitForm}
           />
         </form>
+        <p>{accountCreated ? "Account created" : ""}</p>
       </div>
       <p>
         Already have an account? <Link to="/Login">Login</Link>

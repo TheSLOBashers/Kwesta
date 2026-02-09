@@ -1,18 +1,26 @@
 // components/Login.jsx
 import { Link } from "react-router-dom";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 function Login(props) {
+  const navigate = useNavigate();
   const [userDetails, setUserDetails] = useState({
     username: "",
     password: ""
   });
-  function submitForm() {
-    props.handleSubmit(
-      userDetails["username"],
-      userDetails["password"]
-    );
+  async function submitForm() {
     setUserDetails({ username: "", password: "" });
+    try {
+        await props.handleSubmit(
+            userDetails["username"],
+            userDetails["password"]
+        );
+        navigate("/", { replace: true });
+    }
+    catch (error) {
+        console.log(error.msg);
+    }
   }
   function handleChange(event) {
     const { name, value } = event.target;
