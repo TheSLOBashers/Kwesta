@@ -1,5 +1,8 @@
-const signupCall = async (username, email, password, setError) => {
+const signupCall = async (username, email, password, setError, setIsLoading) => {
   try {
+
+    setIsLoading(true);
+
     const response = await fetch(
       "http://localhost:8000/users/",
       {
@@ -23,11 +26,10 @@ const signupCall = async (username, email, password, setError) => {
   } catch (error) {
     throw new Error(`${error.message}`);
   } 
-  /* LATER
   finally {
     setIsLoading(false);
   }
-    */
+
 };
 
 export default signupCall;

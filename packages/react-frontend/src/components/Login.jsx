@@ -2,10 +2,12 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { ThreeDots } from "react-loader-spinner";
 
 function Login(props) {
   const navigate = useNavigate();
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const [userDetails, setUserDetails] = useState({
     username: "",
     password: ""
@@ -16,7 +18,8 @@ function Login(props) {
         await props.handleSubmit(
             userDetails["username"],
             userDetails["password"],
-            setError
+            setError,
+            setIsLoading
         );
         navigate("/", { replace: true });
     }
@@ -67,6 +70,12 @@ function Login(props) {
           />
         </form>
       </div>
+      <ThreeDots
+        height="40"
+        width="40"
+        color="#000000"
+        visible={isLoading}
+      />
       <p style={{ color: "red", fontWeight: "bold" }} >{error === "" ? "" : error}</p>
       <p>
         Don't have an account? <Link to="/Signup">Signup</Link>

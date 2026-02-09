@@ -2,10 +2,12 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { ThreeDots } from "react-loader-spinner";
 
 function Signup(props) {
   const navigate = useNavigate();
   const [accountCreated, setAccountCreated] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
   const [userDetails, setUserDetails] = useState({
     username: "",
@@ -13,24 +15,23 @@ function Signup(props) {
     password: ""
   });
   const delay = async (ms) => {
-        return new Promise((resolve) => 
-            setTimeout(resolve, ms));
+    return new Promise((resolve) => setTimeout(resolve, ms));
   };
   async function submitForm() {
     setUserDetails({ username: "", email: "", password: "" });
     try {
-        await props.handleSubmit(
-            userDetails["username"],
-            userDetails["email"],
-            userDetails["password"],
-            setError
-        );
-        setAccountCreated(true);
-        await delay(2000);
-        navigate("/login", { replace: true });
-    }
-    catch (error) {
-        console.log(error.msg);
+      await props.handleSubmit(
+        userDetails["username"],
+        userDetails["email"],
+        userDetails["password"],
+        setError,
+        setIsLoading
+      );
+      setAccountCreated(true);
+      await delay(2000);
+      navigate("/login", { replace: true });
+    } catch (error) {
+      console.log(error.msg);
     }
   }
   function handleChange(event) {
@@ -93,7 +94,15 @@ function Signup(props) {
         </form>
         <p>{accountCreated ? "Account created" : ""}</p>
       </div>
-      <p style={{ color: "red", fontWeight: "bold" }} >{error === "" ? "" : error}</p>
+      <ThreeDots
+        height="40"
+        width="40"
+        color="#000000"
+        visible={isLoading}
+      />
+      <p style={{ color: "red", fontWeight: "bold" }}>
+        {error === "" ? "" : error}
+      </p>
       <p>
         Already have an account? <Link to="/Login">Login</Link>
       </p>
