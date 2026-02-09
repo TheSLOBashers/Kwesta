@@ -1,4 +1,4 @@
-const signupCall = async (username, email, password) => {
+const signupCall = async (username, email, password, setError) => {
   try {
     const response = await fetch(
       "http://localhost:8000/users/",
@@ -11,13 +11,17 @@ const signupCall = async (username, email, password) => {
       }
     );
 
+    const json = await response.json();
     if (!response.ok) {
+      if(json.message === "Username already exists" || json.message === "Email already exists") {
+        setError(json.message);
+        throw new Error(`${json.message}`);
+      }
       throw new Error(`Error: ${response.status}`);
     }
-    const json = await response.json();
-    localStorage.setItem('authToken', json.token);
+    setError("");
   } catch (error) {
-    throw new Error(`Error: ${error.message}`);
+    throw new Error(`${error.message}`);
   } 
   /* LATER
   finally {

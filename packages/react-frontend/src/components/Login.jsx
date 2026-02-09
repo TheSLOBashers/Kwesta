@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 
 function Login(props) {
   const navigate = useNavigate();
+  const [error, setError] = useState("");
   const [userDetails, setUserDetails] = useState({
     username: "",
     password: ""
@@ -14,7 +15,8 @@ function Login(props) {
     try {
         await props.handleSubmit(
             userDetails["username"],
-            userDetails["password"]
+            userDetails["password"],
+            setError
         );
         navigate("/", { replace: true });
     }
@@ -65,6 +67,7 @@ function Login(props) {
           />
         </form>
       </div>
+      <p style={{ color: "red", fontWeight: "bold" }} >{error === "" ? "" : error}</p>
       <p>
         Don't have an account? <Link to="/Signup">Signup</Link>
       </p>

@@ -10,6 +10,7 @@ import dotenv from "dotenv";
 import { default as users } from "./routes/users.js";
 import { default as comments } from "./routes/comments.js";
 import { default as quests } from "./routes/quests.js";
+import { default as auth } from "./routes/auth.js";
 
 // App setup
 dotenv.config();
@@ -45,6 +46,7 @@ app.get("/", (req, res) => {
 app.use("/users", users);
 app.use("/comments", comments);
 app.use("/quests", quests);
+app.use("/auth", auth);
 
 // Run app
 app.listen(port, () => {

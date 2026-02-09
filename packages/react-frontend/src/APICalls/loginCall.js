@@ -1,4 +1,4 @@
-const loginCall = async (username, password) => {
+const loginCall = async (username, password, setError) => {
   try {
     const response = await fetch(
       "http://localhost:8000/auth/login",
@@ -11,11 +11,16 @@ const loginCall = async (username, password) => {
       }
     );
 
+    const json = await response.json();
     if (!response.ok) {
+      if(json.message === "Invalid username or password") {
+        setError(json.message);
+        throw new Error(`${json.message}`);
+      }
       throw new Error(`Error: ${response.status}`);
     }
-    const json = await response.json();
     localStorage.setItem('authToken', json.token);
+    setError("");
   } catch (error) {
     throw new Error(`Error: ${error.message}`);
   } 

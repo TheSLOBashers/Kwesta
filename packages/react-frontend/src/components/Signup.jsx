@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 function Signup(props) {
   const navigate = useNavigate();
   const [accountCreated, setAccountCreated] = useState(false);
+  const [error, setError] = useState("");
   const [userDetails, setUserDetails] = useState({
     username: "",
     email: "",
@@ -21,7 +22,8 @@ function Signup(props) {
         await props.handleSubmit(
             userDetails["username"],
             userDetails["email"],
-            userDetails["password"]
+            userDetails["password"],
+            setError
         );
         setAccountCreated(true);
         await delay(2000);
@@ -91,6 +93,7 @@ function Signup(props) {
         </form>
         <p>{accountCreated ? "Account created" : ""}</p>
       </div>
+      <p style={{ color: "red", fontWeight: "bold" }} >{error === "" ? "" : error}</p>
       <p>
         Already have an account? <Link to="/Login">Login</Link>
       </p>
