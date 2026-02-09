@@ -4,12 +4,15 @@
 import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
+import dotenv from "dotenv";
 
 // Routes
-import { default as users } from './routes/users.js';
-import { default as auth } from './routes/auth.js';
+import { default as users } from "./routes/users.js";
+import { default as comments } from "./routes/comments.js";
+import { default as quests } from "./routes/quests.js";
 
 // App setup
+dotenv.config();
 const app = express();
 const port = 8000;
 app.use(cors());
@@ -17,10 +20,13 @@ app.use(express.json());
 
 // Mongo setup
 mongoose.set("debug", true);
+const mongoUri =
+  process.env.MONGODB_URI || "mongodb://localhost:27017/KWESTA";
+
 mongoose
-  .connect("mongodb://localhost:27017/KWESTA")
-  .then(() => console.log("MongoDB connected!")) 
-  .catch((error) => console.log(error));
+  .connect(mongoUri)
+  .then(() => console.log("MongoDB connected!"))
+  .catch(error => console.log(error));
 
 // Error handling middleware for JSON parsing errors
 app.use((err, req, res, next) => {
@@ -36,8 +42,9 @@ app.get("/", (req, res) => {
 });
 
 // Backend routing
-app.use('/users', users);
-app.use('/auth', auth);
+app.use("/users", users);
+app.use("/comments", comments);
+app.use("/quests", quests);
 
 // Run app
 app.listen(port, () => {
