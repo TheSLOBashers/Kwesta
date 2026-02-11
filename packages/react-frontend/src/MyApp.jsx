@@ -1,7 +1,9 @@
 // src/MyApp.jsx
 //import React, { useState } from "react";
 import { Route, Routes } from "react-router-dom";
+import TopBar from "./components/TopBar";
 import NavBar from "./components/Navbar";
+import OverlayNavbar from "./components/OverlayNavbar";
 import Login from "./components/Login";
 import Signup from "./components/Signup";
 import loginCall from "./APICalls/loginCall";
@@ -27,18 +29,23 @@ function MyApp() {
 
   return (
     <div className="container">
-      <NavBar />
+      <TopBar />
 
-      <Routes>
-        <Route path="/" element={<h3>Welcome Home!</h3>} />
-        <Route element={<AuthenticationRoute />}>
-          <Route path="/Login" element={<Login handleSubmit={loginCall}/>} />
-          <Route path="/Signup" element={<Signup handleSubmit={signupCall}/>} />
-        </Route>
-        <Route element={<ProtectedRoute />}>
-          <Route path="/Protected" element={<Protected />} />
-        </Route>
-      </Routes>
+      <main style={{ paddingTop: "70px" }}>
+        <Routes>
+          <Route path="/" element={<h1>Home</h1>} />
+          <Route element={<AuthenticationRoute />}>
+            <Route path="/Login" element={<Login handleSubmit={loginCall}/>} />
+            <Route path="/Signup" element={<Signup handleSubmit={signupCall}/>} />
+          </Route>
+          <Route element={<ProtectedRoute />}>
+            <Route path="/Protected" element={<Protected />} />
+          </Route>
+        </Routes>
+
+        <NavBar />
+
+      </main>
 
     </div>
   );

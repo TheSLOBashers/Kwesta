@@ -47,7 +47,7 @@ function Login(props) {
       <p>Here is where you would login</p>
       <div>
         <form>
-          <label htmlFor="username">username</label>
+          <label htmlFor="username">Username</label>
           <input
             type="text"
             name="username"
