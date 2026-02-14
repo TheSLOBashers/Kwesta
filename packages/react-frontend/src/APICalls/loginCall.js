@@ -20,7 +20,15 @@ const loginCall = async (username, password, setError, setIsLoading) => {
         setError(json.message);
         throw new Error(`${json.message}`);
       }
+      else if (json.message === "Account banned") {
+        setError(json.message);
+        throw new Error(`${json.message}`);
+      }
       throw new Error(`Error: ${response.status}`);
+    }
+
+    if (json.permissions && json.permissions === "moderator") {
+      localStorage.setItem('moderator', true);
     }
     localStorage.setItem('authToken', json.token);
     setError("");

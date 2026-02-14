@@ -21,7 +21,13 @@ function Login(props) {
             setError,
             setIsLoading
         );
-        navigate("/", { replace: true });
+        const isModerator = Boolean(localStorage.getItem("moderator")) && localStorage.getItem("moderator");
+        if (isModerator) {
+          navigate("/moderation/Portal", { replace: true });
+        }
+        else {
+          navigate("/", { replace: true });
+        }
     }
     catch (error) {
         console.log(error.msg);

@@ -3,7 +3,7 @@
 import { Route, Routes } from "react-router-dom";
 import TopBar from "./components/TopBar";
 import NavBar from "./components/Navbar";
-import OverlayNavbar from "./components/OverlayNavbar";
+//import OverlayNavbar from "./components/OverlayNavbar";
 import Login from "./components/Login";
 import Signup from "./components/Signup";
 import loginCall from "./APICalls/loginCall";
@@ -11,6 +11,8 @@ import signupCall from "./APICalls/signupCall";
 import Protected from "./components/Protected"
 import ProtectedRoute from "./components/PrivateRoute";
 import AuthenticationRoute from "./components/AuthenticationRoute";
+import ModerationRoute from "./components/ModerationRoute";
+import ModerationPortal from "./components/ModerationPortal";
 
 function MyApp() {
 
@@ -40,6 +42,9 @@ function MyApp() {
           </Route>
           <Route element={<ProtectedRoute />}>
             <Route path="/Protected" element={<Protected />} />
+          </Route>
+          <Route element={<ModerationRoute />}>
+            <Route path="/moderation/Portal" element={<ModerationPortal />} />
           </Route>
         </Routes>
 

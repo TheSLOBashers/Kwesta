@@ -51,6 +51,9 @@ async function authenticateUser(username, password) {
       if (!match) {
         throw new Error("Invalid password");
       }
+      else if (user.permissions === "banned") {
+        throw new Error("Banned");
+      }
       return user;
     });
   });

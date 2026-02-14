@@ -26,7 +26,7 @@ const mongoUri =
 
 mongoose
   .connect(mongoUri)
-  .then(() => console.log("MongoDB connected!"))
+  .then(() => console.log(`MongoDB connected at ${mongoUri}!`))
   .catch(error => console.log(error));
 
 // Error handling middleware for JSON parsing errors
