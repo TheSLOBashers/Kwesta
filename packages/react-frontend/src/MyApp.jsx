@@ -1,5 +1,5 @@
 // src/MyApp.jsx
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Route, Routes } from "react-router-dom";
 import TopBar from "./components/TopBar";
 import NavBar from "./components/Navbar";
@@ -14,30 +14,24 @@ import AuthenticationRoute from "./components/AuthenticationRoute";
 
 import CommentOverlay from "./components/CommentOverlay";
 import CommentOpenButton from "./components/CommentOpenButton";
+import getCommentsCall from "./APICalls/getCommentsCall";
 
 function MyApp() {
-
-  /*function fetchUsers() {
-    const promise = fetch("http://localhost:8000/users");
-    return promise;
-  }*/
-
-  /*useEffect(() => {
-    fetchUsers()
-      .then((res) => res.json())
-      .then((json) => setCharacters(json["users_list"]))
-      .catch((error) => { console.log(error); });
-  }, []);
-  */
 
   const [comments, setComments] = useState([]);
   const [commentIsOpen, setCommentIsOpen] = useState(false);
 
+  const [loading, setLoading] = useState(true);
+
   useEffect(() => {
-    fetchUsers()
-      .then((res) => res.json())
-      .then((json) => setComments(json["comments"]))
-      .catch((error) => { console.log(error); });
+    const fetchComments = async () => {
+      setLoading(true);
+      const data = await getCommentsCall();
+      setComments(data);
+      setLoading(false);
+    };
+
+    fetchComments();
   }, []);
 
   const sampleComments = [
@@ -81,8 +75,11 @@ function MyApp() {
 
         <NavBar />
 
-        <CommentOpenButton onClick={() => setCommentIsOpen(!commentIsOpen)} />
-        {commentIsOpen && <CommentOverlay style={{ paddingTop: "70px" }} comments={sampleComments} close={() => setCommentIsOpen(false)} />}
+        <>
+          {loading && <div>Loading comments...</div>}
+          <CommentOpenButton onClick={() => setCommentIsOpen(!commentIsOpen)} />
+          {commentIsOpen && <CommentOverlay comments={sampleComments} close={() => setCommentIsOpen(false)} />}
+        </>
 
       </main>
 
