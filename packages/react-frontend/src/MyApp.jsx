@@ -1,5 +1,5 @@
 // src/MyApp.jsx
-//import React, { useState } from "react";
+import { useState } from "react";
 import { Route, Routes } from "react-router-dom";
 import TopBar from "./components/TopBar";
 import NavBar from "./components/Navbar";
@@ -11,6 +11,9 @@ import signupCall from "./APICalls/signupCall";
 import Protected from "./components/Protected"
 import ProtectedRoute from "./components/PrivateRoute";
 import AuthenticationRoute from "./components/AuthenticationRoute";
+
+import CommentOverlay from "./components/CommentOverlay";
+import CommentOpenButton from "./components/CommentOpenButton";
 
 function MyApp() {
 
@@ -26,6 +29,39 @@ function MyApp() {
       .catch((error) => { console.log(error); });
   }, []);
   */
+
+  const [comments, setComments] = useState([]);
+  const [commentIsOpen, setCommentIsOpen] = useState(false);
+
+  useEffect(() => {
+    fetchUsers()
+      .then((res) => res.json())
+      .then((json) => setComments(json["comments"]))
+      .catch((error) => { console.log(error); });
+  }, []);
+
+  const sampleComments = [
+    {
+      id: 1,
+      user: "Jimmy",
+      text: "Awesome sauce",
+    },
+    {
+      id: 2,
+      user: "Timmy",
+      text: "Swag sauce",
+    },
+    {
+      id: 3,
+      user: "Paul",
+      text: "Wassup",
+    },
+    {
+      id: 4,
+      user: "Alex",
+      text: "Cool",
+    },
+  ]
 
   return (
     <div className="container">
@@ -44,6 +80,9 @@ function MyApp() {
         </Routes>
 
         <NavBar />
+
+        <CommentOpenButton onClick={() => setCommentIsOpen(!commentIsOpen)} />
+        {commentIsOpen && <CommentOverlay style={{ paddingTop: "70px" }} comments={sampleComments} close={() => setCommentIsOpen(false)} />}
 
       </main>
 
