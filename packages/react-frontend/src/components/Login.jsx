@@ -21,6 +21,8 @@ function Login(props) {
             setError,
             setIsLoading
         );
+
+        setUser(userDetails["username"]);
         navigate("/", { replace: true });
     }
     catch (error) {

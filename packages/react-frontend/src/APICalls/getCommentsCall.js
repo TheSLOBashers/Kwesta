@@ -9,8 +9,10 @@ const getCommentsCall = async () => {
 
         return data.map(c => ({
             id: c.id,
-            user: c.user,
-            text: c.text,
+            author: c.author,
+            date: c.date,
+            time: c.time,
+            comment: c.comment,
         }));
     } catch (err) {
         console.error("Error fetching comments:", err);

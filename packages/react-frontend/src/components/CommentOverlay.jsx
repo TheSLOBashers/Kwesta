@@ -43,8 +43,8 @@ function CommentOverlay({ close, comments = [] }){
                             }}
                             key={c.id}
                         >
-                            <h3 style={styles.user}>{c.user}</h3>
-                            <p style={styles.text}>{c.text}</p>
+                            <h3 style={styles.author}>{c.author} - {c.date} - {c.time} - {`{${c.location.lng}, ${c.location.lat}}`}</h3>
+                            <p style={styles.comment}>{c.comment}</p>
                         </div>
                     ))}
                 </div>
@@ -100,13 +100,13 @@ const styles = {
         userSelect: "none",
         textAlign: "center",
     },
-    user: {
+    author: {
         color: "#000000",
         margin: "0 0 8px 0",
         fontSize: "1.1rem",
         fontWeight: "600",
     },
-    text: {
+    comment: {
         color: "#000000",
         margin: 0,
         fontSize: "0.95rem",

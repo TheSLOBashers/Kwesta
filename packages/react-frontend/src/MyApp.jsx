@@ -16,12 +16,16 @@ import CommentOverlay from "./components/CommentOverlay";
 import CommentOpenButton from "./components/CommentOpenButton";
 import getCommentsCall from "./APICalls/getCommentsCall";
 
+import AddButtonOverlay from "./components/AddButtonOverlay";
+
 function MyApp() {
 
   const [comments, setComments] = useState([]);
   const [commentIsOpen, setCommentIsOpen] = useState(false);
-
+  const [addIsOpen, setAddIsOpen] = useState(false);
   const [loading, setLoading] = useState(true);
+
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
     const fetchComments = async () => {
@@ -37,23 +41,35 @@ function MyApp() {
   const sampleComments = [
     {
       id: 1,
-      user: "Jimmy",
-      text: "Awesome sauce",
+      author: "Jimmy",
+      date: "2/13/26",
+      time: "2:00PM",
+      comment: "Awesome sauce",
+      location: {lat:500, lng:500},
     },
     {
       id: 2,
-      user: "Timmy",
-      text: "Swag sauce",
+      author: "Timmy",
+      date: "2/12/26",
+      time: "4:14PM",
+      comment: "Swag sauce",
+      location: {lat:200, lng:90},
     },
     {
       id: 3,
-      user: "Paul",
-      text: "Wassup",
+      author: "Paul",
+      date: "2/14/26",
+      time: "1:02AM",
+      comment: "Wassup",
+      location: {lat:100, lng:700},
     },
     {
       id: 4,
-      user: "Alex",
-      text: "Cool",
+      author: "Alex",
+      date: "2/13/26",
+      time: "6:41PM",
+      comment: "Cool",
+      location: {lat:2, lng:3},
     },
   ]
 
@@ -65,7 +81,7 @@ function MyApp() {
         <Routes>
           <Route path="/" element={<h1>Home</h1>} />
           <Route element={<AuthenticationRoute />}>
-            <Route path="/Login" element={<Login handleSubmit={loginCall}/>} />
+            <Route path="/Login" element={<Login handleSubmit={loginCall} setUser={setUser}/>} />
             <Route path="/Signup" element={<Signup handleSubmit={signupCall}/>} />
           </Route>
           <Route element={<ProtectedRoute />}>
@@ -78,8 +94,12 @@ function MyApp() {
         <>
           {loading && <div>Loading comments...</div>}
           <CommentOpenButton onClick={() => setCommentIsOpen(!commentIsOpen)} />
+
+          {/* Replace 'sampleComments' with 'comments' when backend is finished */}
           {commentIsOpen && <CommentOverlay comments={sampleComments} close={() => setCommentIsOpen(false)} />}
         </>
+
+        <AddButtonOverlay username={user}/>
 
       </main>
 
