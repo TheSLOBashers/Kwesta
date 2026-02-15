@@ -28,6 +28,9 @@ function Login(props) {
         else {
           navigate("/", { replace: true });
         }
+
+        setUser(userDetails["username"]);
+        navigate("/", { replace: true });
     }
     catch (error) {
         console.log(error.msg);
