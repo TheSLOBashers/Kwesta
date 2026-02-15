@@ -59,9 +59,25 @@ async function authenticateUser(username, password) {
   });
 }
 
+async function getAllNonModeratorUsers() {
+  return await User.find({ permissions: { $ne: "moderator" } }).select('-password');
+}
+
+async function banUser(userId) {
+  return User.findByIdAndUpdate(userId, {permissions: "Banned"}, { new: true });
+}
+
+async function unbanUser(userId) {
+  return User.findByIdAndUpdate(userId, {permissions: "regular"}, { new: true });
+}
+
 export default {
   authenticateUser,
-  createNewUser
+  createNewUser,
+  getAllNonModeratorUsers,
+  getUserByUsername,
+  banUser,
+  unbanUser
 };
 
 /*

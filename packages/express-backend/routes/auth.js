@@ -1,9 +1,15 @@
 import express from 'express';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
-import userServices from '../models/user-services.js';
-
-const { authenticateUser, getUserByUsername } = userServices;
+import user_services from "../models/user-services.js";
+const {
+  authenticateUser,
+  createNewUser,
+  getAllNonModeratorUsers,
+  getUserByUsername,
+  banUser,
+  unbanUser
+} = user_services;
 dotenv.config();
 const router = express.Router();
 

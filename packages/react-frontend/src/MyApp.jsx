@@ -13,6 +13,7 @@ import ProtectedRoute from "./components/PrivateRoute";
 import AuthenticationRoute from "./components/AuthenticationRoute";
 import ModerationRoute from "./components/ModerationRoute";
 import ModerationPortal from "./components/ModerationPortal";
+import ModerateUsers from "./components/ModerateUsers";
 
 function MyApp() {
 
@@ -45,6 +46,7 @@ function MyApp() {
           </Route>
           <Route element={<ModerationRoute />}>
             <Route path="/moderation/Portal" element={<ModerationPortal />} />
+            <Route path="/moderation/users" element={<ModerateUsers />} />
           </Route>
         </Routes>
 

@@ -1,14 +1,20 @@
 import express from "express";
 const router = express.Router();
-import user_services from '../models/user-services.js';
-
-const { authenticateUser, createNewUser } = user_services;
+import user_services from "../models/user-services.js";
+import { authenticateToken, authenticateModerator } from "./auth.js";
+const {
+  authenticateUser,
+  createNewUser,
+  getAllNonModeratorUsers,
+  getUserByUsername,
+  banUser,
+  unbanUser
+} = user_services;
 
 // routes
 
 // Create a new user
-router.post('/', async (req, res) => {
-  
+router.post("/", async (req, res) => {
   const username = req.body.username;
   const password = req.body.password;
   const email = req.body.email;
@@ -19,15 +25,48 @@ router.post('/', async (req, res) => {
   } catch (error) {
     if (error.message === "Username already exists") {
       return res.status(409).json({ message: error.message });
-    }
-    else if (error.message === "Email already exists") {
+    } else if (error.message === "Email already exists") {
       return res.status(409).json({ message: error.message });
-    }
-    else {
-        return res.status(500).send("Internal Server Error");
+    } else {
+      return res.status(500).send("Internal Server Error");
     }
   }
+});
 
+// Fetch users as moderator
+router.get("/", authenticateModerator, async (req, res) => {
+  try {
+    const users_list = await getAllNonModeratorUsers();
+    return res.status(200).json({ users_list });
+  } catch (error) {
+    return res.status(500).send("Internal Server Error");
+  }
+});
+
+// Ban a user
+router.put("/ban/:id", authenticateModerator, async (req, res) => {
+  const id = req.params["id"]; // or req.params.id
+  banUser(id)
+    .then((user) => {
+      delete user.password;
+      res.status(200).json({user});
+    })
+    .catch((error) => {
+      return res.status(500).send("Internal Server Error");
+    })
+});
+
+// unban a user
+router.put("/unban/:id", authenticateModerator, async (req, res) => {
+  const id = req.params["id"]; // or req.params.id
+  unbanUser(id)
+    .then((user) => {
+      delete user.password;
+      res.status(200).json({user});
+    })
+    .catch((error) => {
+      return res.status(500).send("Internal Server Error");
+    })
 });
 
 export default router;
