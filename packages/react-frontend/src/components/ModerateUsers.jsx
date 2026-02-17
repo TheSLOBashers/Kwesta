@@ -5,11 +5,26 @@ import moderationFetchUsers from "../APICalls/moderationFetchUsers";
 import banUser from "../APICalls/banUser";
 import unbanUser from "../APICalls/unbanUser";
 import { ThreeDots } from "react-loader-spinner";
+import SearchBar from "./searchBar";
 
 function ModerateUsers() {
+  const options = [
+    { value: "email", label: "email" },
+    { value: "username", label: "username" },
+    { value: "permissions", label: "permission" }
+  ];
+
   const [users, setUsers] = useState([]);
+  const [searchResults, setSearchResults] = useState([]);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [searchColumn, setSearchColumn] = useState(
+    options[0].value
+  );
+
+  const handleChange = (event) => {
+    setSearchColumn(event.target.value);
+  };
 
   useEffect(() => {
     moderationFetchUsers(setError, setIsLoading)
@@ -34,12 +49,35 @@ function ModerateUsers() {
           visible={isLoading}
         />
       ) : (
-        <ModerateUsersTable
-          userData={users}
-          banUser={banUser}
-          unbanUser={unbanUser}
-          setUsers={setUsers}
-        />
+        <div>
+          <div>
+            <label htmlFor="search-select">
+              Choose a search column:
+            </label>
+            <select
+              id="search-select"
+              value={searchColumn}
+              onChange={handleChange}
+            >
+              {options.map((option) => (
+                <option key={option.value} value={option.value}>
+                  {option.label}
+                </option>
+              ))}
+            </select>
+          </div>
+          <SearchBar
+            setSearchResults={setSearchResults}
+            searchColumn={searchColumn}
+            items={users}
+          />
+          <ModerateUsersTable
+            userData={searchResults}
+            banUser={banUser}
+            unbanUser={unbanUser}
+            setUsers={setUsers}
+          />
+        </div>
       )}
       <p style={{ color: "red", fontWeight: "bold" }}>
         {error === "" ? "" : error}
