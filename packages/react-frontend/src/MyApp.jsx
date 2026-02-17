@@ -1,5 +1,5 @@
 // src/MyApp.jsx
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Route, Routes } from "react-router-dom";
 import TopBar from "./components/TopBar";
 import NavBar from "./components/Navbar";
@@ -14,67 +14,11 @@ import AuthenticationRoute from "./components/AuthenticationRoute";
 import ModerationRoute from "./components/ModerationRoute";
 import ModerationPortal from "./components/ModerationPortal";
 import ModerateUsers from "./components/ModerateUsers";
-
-import CommentOverlay from "./components/CommentOverlay";
-import CommentOpenButton from "./components/CommentOpenButton";
-import getCommentsCall from "./APICalls/getCommentsCall";
-
-import AddButtonOverlay from "./components/AddButtonOverlay";
+import Comments from "./components/Comments"
 
 function MyApp() {
 
-  const [comments, setComments] = useState([]);
-  const [commentIsOpen, setCommentIsOpen] = useState(false);
-  const [addIsOpen, setAddIsOpen] = useState(false);
-  const [loading, setLoading] = useState(true);
-
   const [user, setUser] = useState(null);
-
-  useEffect(() => {
-    const fetchComments = async () => {
-      setLoading(true);
-      const data = await getCommentsCall();
-      setComments(data);
-      setLoading(false);
-    };
-
-    fetchComments();
-  }, []);
-
-  const sampleComments = [
-    {
-      id: 1,
-      author: "Jimmy",
-      date: "2/13/26",
-      time: "2:00PM",
-      comment: "Awesome sauce",
-      location: {lat:500, lng:500},
-    },
-    {
-      id: 2,
-      author: "Timmy",
-      date: "2/12/26",
-      time: "4:14PM",
-      comment: "Swag sauce",
-      location: {lat:200, lng:90},
-    },
-    {
-      id: 3,
-      author: "Paul",
-      date: "2/14/26",
-      time: "1:02AM",
-      comment: "Wassup",
-      location: {lat:100, lng:700},
-    },
-    {
-      id: 4,
-      author: "Alex",
-      date: "2/13/26",
-      time: "6:41PM",
-      comment: "Cool",
-      location: {lat:2, lng:3},
-    },
-  ]
 
   return (
     <div className="container">
@@ -89,6 +33,7 @@ function MyApp() {
           </Route>
           <Route element={<ProtectedRoute />}>
             <Route path="/Protected" element={<Protected />} />
+            <Route path="/Comments" element = {<Comments user={user} />} />
           </Route>
           <Route element={<ModerationRoute />}>
             <Route path="/moderation/Portal" element={<ModerationPortal />} />
@@ -96,19 +41,9 @@ function MyApp() {
           </Route>
         </Routes>
 
-        <NavBar />
-
-        <>
-          {loading && <div>Loading comments...</div>}
-          <CommentOpenButton onClick={() => setCommentIsOpen(!commentIsOpen)} />
-
-          {/* Replace 'sampleComments' with 'comments' when backend is finished */}
-          {commentIsOpen && <CommentOverlay comments={sampleComments} close={() => setCommentIsOpen(false)} />}
-        </>
-
-        <AddButtonOverlay username={user}/>
-
       </main>
+
+      <NavBar />
 
     </div>
   );
