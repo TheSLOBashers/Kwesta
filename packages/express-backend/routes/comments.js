@@ -1,15 +1,16 @@
 import express from "express";
 import commentServices from "../models/comment-services.js";
+import { authenticateToken, authenticateModerator } from "./auth.js";
 
 const router = express.Router();
 const { createComment, getComments } = commentServices;
 
-router.post("/", async (req, res) => {
+router.post("/", authenticateToken, async (req, res) => {
   try {
-    const comment = await createComment(req.body);
+    const comment = await createComment({author: req.user._id, comment: req.body.comment, location: req.body.location});
     res.status(201).json(comment);
   } catch (error) {
-    return res.status(500).send("Error");
+    return res.status(500).send("Error: " + error.message);
   }
 });
 

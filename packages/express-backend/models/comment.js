@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+const { Schema } = mongoose;
 
 const LocationSchema = new mongoose.Schema(
   {
@@ -10,9 +11,8 @@ const LocationSchema = new mongoose.Schema(
 
 const CommentSchema = new mongoose.Schema(
   {
-    author: { type: String, required: true },
-    date: { type: String, required: true },
-    time: { type: String, required: true },
+    author: { type: Schema.Types.ObjectId, ref: 'users_list', required: true },
+    date: { type: Date, required: true, default: Date.now },
     comment: { type: String, required: true },
     location: { type: LocationSchema, required: true }
   },
