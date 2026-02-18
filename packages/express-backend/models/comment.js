@@ -14,7 +14,9 @@ const CommentSchema = new mongoose.Schema(
     author: { type: Schema.Types.ObjectId, ref: 'users_list', required: true },
     date: { type: Date, required: true, default: Date.now },
     comment: { type: String, required: true },
-    location: { type: LocationSchema, required: true }
+    location: { type: LocationSchema, required: true },
+    flag: { type: Boolean, default: false},
+    removed: { type: Boolean, default: false}
   },
   { timestamps: true }
 );
