@@ -1,5 +1,5 @@
-// components/ModerateUsers.jsx
-import ModerateUsersTable from "./ModerateUsersTable";
+// ./Components/ModerateComments.js
+import ModerateCommentsTable from "./ModerateCommentsTable";
 import { useState, useEffect } from "react";
 import moderationFetchUsers from "../APICalls/moderationFetchUsers";
 import banUser from "../APICalls/banUser";
@@ -7,21 +7,21 @@ import unbanUser from "../APICalls/unbanUser";
 import { ThreeDots } from "react-loader-spinner";
 import Search from "./Search";
 
-function ModerateUsers() {
+function ModerateComments() {
   const options = [
     { value: "email", label: "email" },
     { value: "username", label: "username" },
     { value: "permissions", label: "permission" }
   ];
 
-  const [users, setUsers] = useState([]);
+  const [comments, setComments] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     moderationFetchUsers(setError, setIsLoading)
-      .then((json) => setUsers(json["users_list"]))
+      .then((json) => setComments(json["users_list"]))
       .catch((error) => {
         console.log(error);
       });
@@ -29,10 +29,9 @@ function ModerateUsers() {
 
   return (
     <div>
-      <h1>Moderate Users</h1>
+      <h1>Moderate comments</h1>
       <p>
-        Here is where you would manage user details, ban users,
-        etc
+        Here is where you would manage comments
       </p>
       {isLoading ? (
         <ThreeDots
@@ -43,12 +42,12 @@ function ModerateUsers() {
         />
       ) : (
         <div>
-          <Search options = {options} setSearchResults={setSearchResults} items = {users} />
-          <ModerateUsersTable
+          <Search options = {options} setSearchResults={setSearchResults} items = {comments} />
+          <ModerateCommentsTable
             userData={searchResults}
             banUser={banUser}
             unbanUser={unbanUser}
-            setUsers={setUsers}
+            setUsers={setComments}
           />
         </div>
       )}
@@ -59,4 +58,4 @@ function ModerateUsers() {
   );
 }
 
-export default ModerateUsers;
+export default ModerateComments;

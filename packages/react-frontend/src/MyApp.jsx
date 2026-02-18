@@ -14,6 +14,7 @@ import AuthenticationRoute from "./components/AuthenticationRoute";
 import ModerationRoute from "./components/ModerationRoute";
 import ModerationPortal from "./components/ModerationPortal";
 import ModerateUsers from "./components/ModerateUsers";
+import ModerateComments from "./components/ModerateComments"
 import Comments from "./components/Comments"
 
 function MyApp() {
@@ -38,6 +39,7 @@ function MyApp() {
           <Route element={<ModerationRoute />}>
             <Route path="/moderation/Portal" element={<ModerationPortal />} />
             <Route path="/moderation/users" element={<ModerateUsers />} />
+            <Route path="/moderation/comments" element={<ModerateComments />} />
           </Route>
         </Routes>
 

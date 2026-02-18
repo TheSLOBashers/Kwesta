@@ -8,6 +8,7 @@ function ModerationPortal() {
       <p>Here is where you would be directed as a moderator</p>
       <div>
         <PortalButton link="/moderation/users" text="Moderate users" />
+        <PortalButton link="/moderation/comments" text="Moderate comments" />
       </div>
     </div>
   );
