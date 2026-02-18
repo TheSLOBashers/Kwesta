@@ -15,7 +15,7 @@ const CommentSchema = new mongoose.Schema(
     date: { type: Date, required: true, default: Date.now },
     comment: { type: String, required: true },
     location: { type: LocationSchema, required: true },
-    flag: { type: Boolean, default: false},
+    flag: { type: Number, default: 0, required: true},
     removed: { type: Boolean, default: false}
   },
   { timestamps: true }
