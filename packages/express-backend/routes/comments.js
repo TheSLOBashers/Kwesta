@@ -12,6 +12,7 @@ const {
   getUserFlags,
   addUserFlag,
   removeUserFlag,
+  upgradeToModerator
 } = user_services;
 
 const router = express.Router();

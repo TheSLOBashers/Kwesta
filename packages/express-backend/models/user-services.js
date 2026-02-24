@@ -84,6 +84,10 @@ async function removeUserFlag(userId, commentId) {
   return User.findByIdAndUpdate(userId, { $pull: { flagList: { comment: commentId } } }, { new: true });
 }
 
+async function upgradeToModerator(userId) {
+  return User.findByIdAndUpdate(userId, {permissions: "moderator"}, { new: true });
+}
+
 export default {
   authenticateUser,
   createNewUser,
@@ -93,7 +97,8 @@ export default {
   unbanUser,
   getUserFlags,
   addUserFlag,
-  removeUserFlag
+  removeUserFlag,
+  upgradeToModerator
 };
 
 /*

@@ -11,7 +11,8 @@ const {
   unbanUser,
   getUserFlags,
   addUserFlag,
-  removeUserFlag
+  removeUserFlag,
+  upgradeToModerator
 } = user_services;
 
 // routes
@@ -70,6 +71,22 @@ router.put("/unban/:id", authenticateModerator, async (req, res) => {
     .catch((error) => {
       return res.status(500).send("Internal Server Error");
     })
+});
+
+// add moderator permissions to a user, given username
+router.put("/moderators", authenticateModerator, async (req, res) => {
+  const username = req.body.username;
+  try {
+    const user = await getUserByUsername(username);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+    await upgradeToModerator(user._id);
+    delete user.password;
+    res.status(200).json({user});
+  } catch (error) {
+    return res.status(500).send("Internal Server Error");
+  }
 });
 
 export default router;

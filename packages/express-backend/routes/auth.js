@@ -11,7 +11,8 @@ const {
   unbanUser,
   getUserFlags,
   addUserFlag,
-  removeUserFlag
+  removeUserFlag,
+  upgradeToModerator
 } = user_services;
 dotenv.config();
 const router = express.Router();

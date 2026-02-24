@@ -9,6 +9,7 @@ function ModerationPortal() {
       <div>
         <PortalButton link="/moderation/users" text="Moderate users" />
         <PortalButton link="/moderation/comments" text="Moderate comments" />
+        <PortalButton link="/moderation/add-moderator" text="Add Moderator" />
       </div>
     </div>
   );
