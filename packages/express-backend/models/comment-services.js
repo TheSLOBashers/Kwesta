@@ -17,9 +17,19 @@ async function unremoveComment(commentId) {
   return Comment.findByIdAndUpdate(commentId, {removed: false}, { new: true });
 }
 
+async function addFlag(commentId) {
+  return Comment.findByIdAndUpdate(commentId, { $inc: { flag: 1 } }, { new: true });
+}
+
+async function removeFlag(commentId) {
+  return Comment.findByIdAndUpdate(commentId, { $inc: { flag: -1 } }, { new: true });
+}
+
 export default {
   createComment,
   getComments,
   removeComment,
-  unremoveComment
+  unremoveComment,
+  addFlag,
+  removeFlag
 };

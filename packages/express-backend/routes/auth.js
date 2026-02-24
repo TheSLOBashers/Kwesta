@@ -8,7 +8,10 @@ const {
   getAllNonModeratorUsers,
   getUserByUsername,
   banUser,
-  unbanUser
+  unbanUser,
+  getUserFlags,
+  addUserFlag,
+  removeUserFlag
 } = user_services;
 dotenv.config();
 const router = express.Router();

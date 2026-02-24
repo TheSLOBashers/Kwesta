@@ -71,13 +71,29 @@ async function unbanUser(userId) {
   return User.findByIdAndUpdate(userId, {permissions: "regular"}, { new: true });
 }
 
+async function getUserFlags(userId) {
+  const user = await User.findById(userId).populate('flagList.comment');
+  return user.flagList.map(flag => flag.comment);
+}
+
+async function addUserFlag(userId, commentId) {
+  return User.findByIdAndUpdate(userId, { $addToSet: { flagList: { comment: commentId } } }, { new: true });
+}
+
+async function removeUserFlag(userId, commentId) {
+  return User.findByIdAndUpdate(userId, { $pull: { flagList: { comment: commentId } } }, { new: true });
+}
+
 export default {
   authenticateUser,
   createNewUser,
   getAllNonModeratorUsers,
   getUserByUsername,
   banUser,
-  unbanUser
+  unbanUser,
+  getUserFlags,
+  addUserFlag,
+  removeUserFlag
 };
 
 /*

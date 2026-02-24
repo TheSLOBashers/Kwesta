@@ -9,6 +9,9 @@ const UserSchema = new mongoose.Schema(
     permissions: { type: String, required: true, default: "regular" },
     blockList: [{
         user: { type: Schema.Types.ObjectId, ref: 'users_list' }
+    }],
+    flagList: [{
+        comment: { type: Schema.Types.ObjectId, ref: 'Comment' }
     }]
 }, { 
     timestamps: true 
