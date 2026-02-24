@@ -1,42 +1,75 @@
 import { useState, useEffect } from "react";
 
-// Takes props.items, props.searchColumn, props.setSearchResults
+// Props:
+// items
+// searchColumn
+// sortColumn
+// sortType ("string" | "number" | "date")
+// sortDirection ("asc" | "desc")
+// setSearchResults
+
 function SearchBar(props) {
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
     const timeout = setTimeout(() => {
-      if (searchTerm.trim() === "") {
-        props.setSearchResults(props.items);
-      } else {
-        const results = props.items.filter((item) =>
-          item[props.searchColumn]
+      let results = [...props.items]; // avoid mutating props
+
+      // 🔎 FILTER
+      if (searchTerm.trim() !== "") {
+        results = results.filter((item) => {
+          const value = item[props.searchColumn];
+
+          if (value === null || value === undefined) return false;
+
+          return String(value)
             .toLowerCase()
-            .includes(searchTerm.toLowerCase())
-        );
-        props.setSearchResults(results);
+            .includes(searchTerm.toLowerCase());
+        });
       }
+
+      if (props.sortColumn) {
+        results.sort((a, b) => {
+          let valA = a[props.sortColumn];
+          let valB = b[props.sortColumn];
+
+          if (props.sortType === "number") {
+            valA = Number(valA);
+            valB = Number(valB);
+          }
+
+          if (props.sortType === "date") {
+            valA = new Date(valA).getTime();
+            valB = new Date(valB).getTime();
+          }
+
+          if (props.sortType === "string") {
+            valA = String(valA).toLowerCase();
+            valB = String(valB).toLowerCase();
+          }
+
+          if (valA < valB) return props.sortDirection === "asc" ? -1 : 1;
+          if (valA > valB) return props.sortDirection === "asc" ? 1 : -1;
+          return 0;
+        });
+      }
+
+      props.setSearchResults(results);
     }, 300);
 
     return () => clearTimeout(timeout);
-  }, [searchTerm, props]);
-
-  const handleInputChange = (e) => {
-    setSearchTerm(e.target.value);
-  };
+  }, [
+    props, searchTerm
+  ]);
 
   return (
     <div>
-      <form>
-        <div>
-          <input
-            type="text"
-            value={searchTerm}
-            onChange={handleInputChange}
-            placeholder="Search"
-          />
-        </div>
-      </form>
+      <input
+        type="text"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        placeholder="Search"
+      />
     </div>
   );
 }

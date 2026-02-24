@@ -1,26 +1,28 @@
-import SearchBar from "./searchBar";
 import { useState } from "react";
+import SearchBar from "./SearchBar";
 
-// props.options, props.setSearchResults, props.items
+// Props:
+// options
+// items
+// setSearchResults
+
 function Search(props) {
-  const [searchColumn, setSearchColumn] = useState(
-    props.options[0].value
-  );
+  const [searchColumn, setSearchColumn] = useState(props.options[0].value);
+  const [sortColumn, setSortColumn] = useState(props.options[0].value);
+  const [sortDirection, setSortDirection] = useState("asc");
 
-  const handleChange = (event) => {
-    setSearchColumn(event.target.value);
-  };
+  const selectedSortOption = props.options.find(
+    (opt) => opt.value === sortColumn
+  );
 
   return (
     <div>
+      {/* Search Column Selector */}
       <div>
-        <label htmlFor="search-select">
-          Choose a search column:
-        </label>
+        <label>Search by:</label>
         <select
-          id="search-select"
           value={searchColumn}
-          onChange={handleChange}
+          onChange={(e) => setSearchColumn(e.target.value)}
         >
           {props.options.map((option) => (
             <option key={option.value} value={option.value}>
@@ -29,11 +31,39 @@ function Search(props) {
           ))}
         </select>
       </div>
+
       <SearchBar
-        setSearchResults={props.setSearchResults}
-        searchColumn={searchColumn}
         items={props.items}
+        searchColumn={searchColumn}
+        sortColumn={sortColumn}
+        sortType={selectedSortOption?.type}
+        sortDirection={sortDirection}
+        setSearchResults={props.setSearchResults}
       />
+
+      {/* Sort Column Selector */}
+      <div>
+        <label>Sort by:</label>
+        <select
+          value={sortColumn}
+          onChange={(e) => setSortColumn(e.target.value)}
+        >
+          {props.options.map((option) => (
+            <option key={option.value} value={option.value}>
+              {option.label}
+            </option>
+          ))}
+        </select>
+
+        <select
+          value={sortDirection}
+          onChange={(e) => setSortDirection(e.target.value)}
+        >
+          <option value="asc">Ascending</option>
+          <option value="desc">Descending</option>
+        </select>
+      </div>
+
     </div>
   );
 }

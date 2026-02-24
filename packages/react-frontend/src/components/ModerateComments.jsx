@@ -1,17 +1,19 @@
 // ./Components/ModerateComments.js
 import ModerateCommentsTable from "./ModerateCommentsTable";
 import { useState, useEffect } from "react";
-import moderationFetchUsers from "../APICalls/moderationFetchUsers";
-import banUser from "../APICalls/banUser";
-import unbanUser from "../APICalls/unbanUser";
+import moderationFetchComments from "../APICalls/moderationFetchComments";
 import { ThreeDots } from "react-loader-spinner";
 import Search from "./Search";
+import removeComment from "../APICalls/removeComment";
+import unremoveComment from "../APICalls/unremoveComment";
 
 function ModerateComments() {
   const options = [
-    { value: "email", label: "email" },
-    { value: "username", label: "username" },
-    { value: "permissions", label: "permission" }
+    { value: "_id", label: "ID", type: "string" },
+    { value: "author", label: "Author", type: "string" },
+    { value: "comment", label: "Comment", type: "string" },
+    { value: "flag", label: "Flag", type: "number" },
+    { value: "date", label: "Date", type: "date" }
   ];
 
   const [comments, setComments] = useState([]);
@@ -20,8 +22,8 @@ function ModerateComments() {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    moderationFetchUsers(setError, setIsLoading)
-      .then((json) => setComments(json["users_list"]))
+    moderationFetchComments(setError, setIsLoading)
+      .then((json) => setComments(json["comments"]))
       .catch((error) => {
         console.log(error);
       });
@@ -44,10 +46,10 @@ function ModerateComments() {
         <div>
           <Search options = {options} setSearchResults={setSearchResults} items = {comments} />
           <ModerateCommentsTable
-            userData={searchResults}
-            banUser={banUser}
-            unbanUser={unbanUser}
-            setUsers={setComments}
+            commentsData={searchResults}
+            setComments={setComments}
+            removeComment={removeComment}
+            unremoveComment={unremoveComment}
           />
         </div>
       )}
