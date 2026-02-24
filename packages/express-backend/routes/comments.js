@@ -22,6 +22,7 @@ const router = express.Router();
 const {
   createComment,
   getComments,
+  getCommentsByArea,
   getCommentById,
   deleteComment,
   removeComment,
@@ -51,6 +52,30 @@ router.get("/", async (req, res) => {
     res.json({ comments: comments });
   } catch (error) {
     res.status(500).send("Error");
+  }
+});
+
+// Get comments by area (for users to see comments about a location)
+router.get("/area", async (req, res) => {
+  try {
+    const { lat, lng, radius } = req.query;
+
+    if (!lat || !lng) {
+      return res
+        .status(400)
+        .json({
+          message: "lat and lng query parameters are required"
+        });
+    }
+
+    const comments = await getCommentsByArea(
+      parseFloat(lat),
+      parseFloat(lng),
+      radius ? parseFloat(radius) : 5
+    );
+    res.json({ comments });
+  } catch (error) {
+    res.status(500).send("Error: " + error.message);
   }
 });
 
@@ -131,12 +156,10 @@ router.delete(
           .status(404)
           .json({ message: "Comment not found" });
       }
-      res
-        .status(200)
-        .json({
-          message: "Comment deleted successfully",
-          comment
-        });
+      res.status(200).json({
+        message: "Comment deleted successfully",
+        comment
+      });
     } catch (error) {
       res.status(500).send("Error: " + error.message);
     }

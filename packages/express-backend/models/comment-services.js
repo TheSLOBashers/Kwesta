@@ -6,11 +6,39 @@ function createComment(commentData) {
 }
 
 function getComments() {
-  return Comment.find().sort({ createdAt: -1 });
+  return Comment.find({ removed: false })
+    .populate("author", "username")
+    .sort({ createdAt: -1 });
+}
+
+/**
+ * @param {number} lat - Center latitude
+ * @param {number} lng - Center longitude
+ * @param {number} radius - Radius in kilometers (default 5km)
+ */
+function getCommentsByArea(lat, lng, radius = 5) {
+  const radiusInDegrees = radius / 111;
+
+  return Comment.find({
+    removed: false,
+    "location.lat": {
+      $gte: lat - radiusInDegrees,
+      $lte: lat + radiusInDegrees
+    },
+    "location.lng": {
+      $gte: lng - radiusInDegrees,
+      $lte: lng + radiusInDegrees
+    }
+  })
+    .populate("author", "username")
+    .sort({ createdAt: -1 });
 }
 
 function getCommentById(commentId) {
-  return Comment.findById(commentId).populate('author', 'username');
+  return Comment.findById(commentId).populate(
+    "author",
+    "username"
+  );
 }
 
 async function deleteComment(commentId) {
@@ -18,19 +46,35 @@ async function deleteComment(commentId) {
 }
 
 async function removeComment(commentId) {
-  return Comment.findByIdAndUpdate(commentId, {removed: true}, { new: true });
+  return Comment.findByIdAndUpdate(
+    commentId,
+    { removed: true },
+    { new: true }
+  );
 }
 
 async function unremoveComment(commentId) {
-  return Comment.findByIdAndUpdate(commentId, {removed: false}, { new: true });
+  return Comment.findByIdAndUpdate(
+    commentId,
+    { removed: false },
+    { new: true }
+  );
 }
 
 async function addFlag(commentId) {
-  return Comment.findByIdAndUpdate(commentId, { $inc: { flag: 1 } }, { new: true });
+  return Comment.findByIdAndUpdate(
+    commentId,
+    { $inc: { flag: 1 } },
+    { new: true }
+  );
 }
 
 async function removeFlag(commentId) {
-  return Comment.findByIdAndUpdate(commentId, { $inc: { flag: -1 } }, { new: true });
+  return Comment.findByIdAndUpdate(
+    commentId,
+    { $inc: { flag: -1 } },
+    { new: true }
+  );
 }
 
 /**
@@ -70,7 +114,10 @@ async function searchComments(filters = {}) {
   }
 
   // Filter by flag count
-  if (filters.minFlags !== undefined || filters.maxFlags !== undefined) {
+  if (
+    filters.minFlags !== undefined ||
+    filters.maxFlags !== undefined
+  ) {
     query.flag = {};
     if (filters.minFlags !== undefined) {
       query.flag.$gte = filters.minFlags;
@@ -87,30 +134,37 @@ async function searchComments(filters = {}) {
 
   // Search text in comment content
   if (filters.searchText) {
-    query.comment = { $regex: filters.searchText, $options: 'i' };
+    query.comment = {
+      $regex: filters.searchText,
+      $options: "i"
+    };
   }
 
   // Location-based filtering (within radius)
-  if (filters.lat !== undefined && filters.lng !== undefined && filters.radius) {
+  if (
+    filters.lat !== undefined &&
+    filters.lng !== undefined &&
+    filters.radius
+  ) {
     const radiusInDegrees = filters.radius / 111; // Approximate conversion
-    query['location.lat'] = { 
-      $gte: filters.lat - radiusInDegrees, 
-      $lte: filters.lat + radiusInDegrees 
+    query["location.lat"] = {
+      $gte: filters.lat - radiusInDegrees,
+      $lte: filters.lat + radiusInDegrees
     };
-    query['location.lng'] = { 
-      $gte: filters.lng - radiusInDegrees, 
-      $lte: filters.lng + radiusInDegrees 
+    query["location.lng"] = {
+      $gte: filters.lng - radiusInDegrees,
+      $lte: filters.lng + radiusInDegrees
     };
   }
 
   // Build sort options
-  const sortField = filters.sortBy || 'createdAt';
-  const sortOrder = filters.sortOrder === 'asc' ? 1 : -1;
+  const sortField = filters.sortBy || "createdAt";
+  const sortOrder = filters.sortOrder === "asc" ? 1 : -1;
   const sort = { [sortField]: sortOrder };
 
   // Build query with pagination
   let queryBuilder = Comment.find(query)
-    .populate('author', 'username')
+    .populate("author", "username")
     .sort(sort);
 
   if (filters.skip) {
@@ -126,9 +180,13 @@ async function searchComments(filters = {}) {
 
 async function getCommentStats() {
   const totalComments = await Comment.countDocuments();
-  const flaggedComments = await Comment.countDocuments({ flag: { $gt: 0 } });
-  const removedComments = await Comment.countDocuments({ removed: true });
-  
+  const flaggedComments = await Comment.countDocuments({
+    flag: { $gt: 0 }
+  });
+  const removedComments = await Comment.countDocuments({
+    removed: true
+  });
+
   return {
     total: totalComments,
     flagged: flaggedComments,
@@ -140,6 +198,7 @@ async function getCommentStats() {
 export default {
   createComment,
   getComments,
+  getCommentsByArea,
   getCommentById,
   deleteComment,
   removeComment,
