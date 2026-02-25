@@ -56,7 +56,6 @@ async function removeQuestFlag(questId) {
 }
 
 /**
- * Search and filter quests with various parameters
  * @param {Object} filters - Filter parameters
  * @param {string} filters.author - Filter by author name
  * @param {string} filters.startDate - Filter quests on or after this date
