@@ -28,7 +28,7 @@ function MyApp() {
 
       <main style={{ paddingTop: "70px" }}>
         <Routes>
-          <Route path="/" element={<h1>Home</h1>} />
+          <Route path="/" element={<Comments user={user} />} />
           <Route element={<AuthenticationRoute />}>
             <Route path="/Login" element={<Login handleSubmit={loginCall} setUser={setUser}/>} />
             <Route path="/Signup" element={<Signup handleSubmit={signupCall}/>} />
