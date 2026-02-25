@@ -22,7 +22,7 @@ app.use(express.json());
 // Mongo setup
 mongoose.set("debug", true);
 const mongoUri =
-  process.env.MONGODB_URI || "mongodb://localhost:27017/KWESTA";
+  process.env.MONGO_URI ? process.env.MONGO_URI : "mongodb://localhost:27017/KWESTA";
 
 mongoose
   .connect(mongoUri)
