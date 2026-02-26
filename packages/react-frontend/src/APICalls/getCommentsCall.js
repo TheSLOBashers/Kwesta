@@ -7,12 +7,13 @@ const getCommentsCall = async () => {
 
         const data = await response.json();
 
-        return data.map(c => ({
-            id: c.id,
-            author: c.author,
+        return data.comments.map(c => ({
+            id: c._id,
+            author: c.author?.username || c.author,
             date: c.date,
-            time: c.time,
             comment: c.comment,
+            location: c.location,
+            flag: c.flag,
         }));
     } catch (err) {
         console.error("Error fetching comments:", err);

@@ -11,7 +11,7 @@ const LocationSchema = new mongoose.Schema(
 
 const CommentSchema = new mongoose.Schema(
   {
-    author: { type: Schema.Types.ObjectId, ref: 'users_list', required: true },
+    author: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     date: { type: Date, required: true, default: Date.now },
     comment: { type: String, required: true },
     location: { type: LocationSchema, required: true },

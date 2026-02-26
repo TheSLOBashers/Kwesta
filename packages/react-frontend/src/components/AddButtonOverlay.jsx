@@ -23,8 +23,7 @@ function AddButtonOverlay( username="Anonymous" ){
     }, []);
 
 
-    const handleAddComment = async (author, comment, date, time, location) => {
-        const commentData = {author, comment, date, time, location};
+    const handleAddComment = async (commentData) => {
         const result = await addCommentCall(commentData);
         console.log("Added comment:", result);
     };

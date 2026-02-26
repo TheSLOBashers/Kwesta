@@ -35,12 +35,18 @@ const {
 
 router.post("/", authenticateToken, async (req, res) => {
   try {
-    const comment = await createComment({
+    const { comment, location } = req.body;
+
+    if (!comment || !location || location.lat == null || location.lng == null) {
+      return res.status(400).json({ message: "Comment and location required" });
+    }
+
+    const createdComment = await createComment({
       author: req.user._id,
-      comment: req.body.comment,
-      location: req.body.location
+      comment,
+      location,
     });
-    res.status(201).json({ comment });
+    res.status(201).json({ comment: createdComment });
   } catch (error) {
     return res.status(500).send("Error: " + error.message);
   }

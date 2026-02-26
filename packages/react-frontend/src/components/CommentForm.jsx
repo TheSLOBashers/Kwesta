@@ -31,7 +31,16 @@ function CommentForm({ onSubmit, onClose, username }) {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        onSubmit({ author: username, text, date, time, location });
+
+        if (!username || !text) return;
+
+        const commentData = {
+            comment: text,
+            location,
+            date: new Date(),
+        }
+
+        onSubmit(commentData);
         onClose();
     };
 
