@@ -4,6 +4,7 @@ import ReactDOMClient from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import MyApp from "./MyApp";
 import "./main.css";
+import "leaflet/dist/leaflet.css";
 
 // Create the container
 const container = document.getElementById("root");

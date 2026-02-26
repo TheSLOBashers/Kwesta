@@ -21,6 +21,9 @@ function NavBar(){
                 <li>
                 <Link to="/Signup">Signup</Link>
                 </li>
+                <li>
+                    <Link to="/map">Map Page</Link>
+                </li>
             </ul>
         </nav>
     );

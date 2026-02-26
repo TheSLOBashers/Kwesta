@@ -17,6 +17,7 @@ import ModerateUsers from "./components/ModerateUsers";
 import ModerateComments from "./components/ModerateComments"
 import Comments from "./components/Comments"
 import AddModerator from "./components/AddModerator";
+import MapPage from "./components/MapPage";
 
 function MyApp() {
 
@@ -43,6 +44,7 @@ function MyApp() {
             <Route path="/moderation/comments" element={<ModerateComments />} />
             <Route path="/moderation/add-moderator" element={<AddModerator />} />
           </Route>
+          <Route path="/map" element={<MapPage />} />
         </Routes>
 
       </main>
