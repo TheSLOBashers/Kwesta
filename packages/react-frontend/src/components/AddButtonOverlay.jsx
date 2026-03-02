@@ -1,3 +1,4 @@
+import React from "react";
 import { useState, useEffect, useRef } from "react";
 import AddButton from "./AddButton";
 import addCommentCall from "../APICalls/addCommentCall";
@@ -40,6 +41,7 @@ function AddButtonOverlay( username="Anonymous" ){
         >
             <AddButton onClick={() => setOpen(!open)}/>
             <button 
+                aria-label="add comment"
                 style={{
                 ...styles.menuButton, 
                 ...styles.commentButton,
@@ -57,6 +59,7 @@ function AddButtonOverlay( username="Anonymous" ){
                 C
             </button>
             <button 
+                aria-label="add event"
                 style={{
                 ...styles.menuButton, 
                 ...styles.eventButton,

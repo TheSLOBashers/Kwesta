@@ -1,6 +1,9 @@
+import React from "react";
+
 function AddButton({ onClick }){
     return (
         <button 
+            aria-label = "add button"
             onClick={onClick}
             style={styles.button}
         >

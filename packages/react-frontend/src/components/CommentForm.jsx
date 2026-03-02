@@ -1,3 +1,4 @@
+import React from "react";
 import { useState, useEffect, useRef } from "react";
 
 function CommentForm({ onSubmit, onClose, username }) {
@@ -63,7 +64,7 @@ function CommentForm({ onSubmit, onClose, username }) {
                     onChange={(e) => setText(e.target.value)}
                     style={styles.input}
                 />
-                <button type="submit" style={styles.submitButton}>Add Comment</button>
+                <button aria-label="submit comment" type="submit" style={styles.submitButton}>Add Comment</button>
             </form>
         </div>
     );

@@ -1,3 +1,4 @@
+import React from "react";
 import { useState, useEffect, useRef } from "react";
 
 function EventForm({ onSubmit, onClose, username }) {
@@ -35,7 +36,7 @@ function EventForm({ onSubmit, onClose, username }) {
                     onChange={(e) => setDescription(e.target.value)}
                     style={styles.input}
                 />
-                <button type="submit" style={styles.submitButton}>Add Event</button>
+                <button aria-label="submit event" type="submit" style={styles.submitButton}>Add Event</button>
             </form>
         </div>
     );
