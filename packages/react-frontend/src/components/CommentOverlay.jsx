@@ -25,7 +25,7 @@ function CommentOverlay({ close, comments = [] }){
     };
 
     return (
-        <div style={styles.backdrop} onClick={close}> 
+        <div style={styles.backdrop} onClick={close}>
             <div style={styles.overlay}>
                 <div
                     ref={carouselRef}
@@ -33,20 +33,31 @@ function CommentOverlay({ close, comments = [] }){
                     onScroll={onScroll}
                     onClick={(e) => e.stopPropagation()}
                 >
-                    {comments.map((c, i) => (
-                        <div 
-                            style={{
-                                ...styles.commentCard,
-                                transform:
-                                    i === active ? "scale(1)" : "scale(0.92)",
+                    {comments.map((c, i) => {
+                        const formattedDate = new Date(c.date).toLocaleString([], {
+                            year: "numeric",
+                            month: "short",
+                            day: "numeric",
+                            hour: "2-digit",
+                            minute: "2-digit",
+                        });
+
+                        return (
+                            <div
+                                style={{
+                                    ...styles.commentCard,
+                                    transform: i === active ? "scale(1)" : "scale(0.92)",
                                     transition: "transform 0.25s",
-                            }}
-                            key={c.id}
-                        >
-                            <h3 style={styles.author}>{c.author} - {c.date} - {c.time} - {`{${c.location.lng}, ${c.location.lat}}`}</h3>
-                            <p style={styles.comment}>{c.comment}</p>
-                        </div>
-                    ))}
+                                }}
+                                key={c.id}
+                            >
+                                <h3 style={styles.author}>
+                                    {c.author} - {formattedDate} - {`{${c.location.lat}, ${c.location.lng}}`}
+                                </h3>
+                                <p style={styles.comment}>{c.comment}</p>
+                            </div>
+                        );
+                    })}
                 </div>
             </div>
         </div>

@@ -16,7 +16,9 @@ const QuestSchema = new mongoose.Schema(
     description: { type: String, required: true },
     location: { type: LocationSchema, required: true },
     rsvpCount: { type: Number, default: 0 },
-    image: { type: String, required: true }
+    image: { type: String, required: true },
+    flag: { type: Number, default: 0 },
+    removed: { type: Boolean, default: false }
   },
   { timestamps: true }
 );

@@ -1,6 +1,9 @@
 import express from "express";
 import commentServices from "../models/comment-services.js";
-import { authenticateToken, authenticateModerator } from "./auth.js";
+import {
+  authenticateToken,
+  authenticateModerator
+} from "./auth.js";
 import user_services from "../models/user-services.js";
 const {
   authenticateUser,
@@ -16,12 +19,34 @@ const {
 } = user_services;
 
 const router = express.Router();
-const { createComment, getComments, removeComment, unremoveComment, addFlag, removeFlag } = commentServices;
+const {
+  createComment,
+  getComments,
+  getCommentsByArea,
+  getCommentById,
+  deleteComment,
+  removeComment,
+  unremoveComment,
+  addFlag,
+  removeFlag,
+  searchComments,
+  getCommentStats
+} = commentServices;
 
 router.post("/", authenticateToken, async (req, res) => {
   try {
-    const comment = await createComment({author: req.user._id, comment: req.body.comment, location: req.body.location});
-    res.status(201).json({comment});
+    const { comment, location } = req.body;
+
+    if (!comment || !location || location.lat == null || location.lng == null) {
+      return res.status(400).json({ message: "Comment and location required" });
+    }
+
+    const createdComment = await createComment({
+      author: req.user._id,
+      comment,
+      location,
+    });
+    res.status(201).json({ comment: createdComment });
   } catch (error) {
     return res.status(500).send("Error: " + error.message);
   }
@@ -30,67 +55,201 @@ router.post("/", authenticateToken, async (req, res) => {
 router.get("/", async (req, res) => {
   try {
     const comments = await getComments();
-    res.json({comments: comments});
+    res.json({ comments: comments });
   } catch (error) {
     res.status(500).send("Error");
   }
 });
 
-// Remove a comment
-router.put("/remove/:id", authenticateModerator, async (req, res) => {
-  const id = req.params["id"]; // or req.params.id
-  removeComment(id)
-    .then((comment) => {
-      res.status(200).json({comment});
-    })
-    .catch((error) => {
-      return res.status(500).send("Internal Server Error");
-    })
+// Get comments by area (for users to see comments about a location)
+router.get("/area", async (req, res) => {
+  try {
+    const { lat, lng, radius } = req.query;
+
+    if (!lat || !lng) {
+      return res
+        .status(400)
+        .json({
+          message: "lat and lng query parameters are required"
+        });
+    }
+
+    const comments = await getCommentsByArea(
+      parseFloat(lat),
+      parseFloat(lng),
+      radius ? parseFloat(radius) : 5
+    );
+    res.json({ comments });
+  } catch (error) {
+    res.status(500).send("Error: " + error.message);
+  }
 });
 
-// unremove a comment
-router.put("/unremove/:id", authenticateModerator, async (req, res) => {
-  const id = req.params["id"]; // or req.params.id
-  unremoveComment(id)
-    .then((comment) => {
-      res.status(200).json({comment});
-    })
-    .catch((error) => {
-      return res.status(500).send("Internal Server Error");
-    })
+// Get a single comment by ID
+router.get("/:id", async (req, res) => {
+  try {
+    const comment = await getCommentById(req.params.id);
+    if (!comment) {
+      return res
+        .status(404)
+        .json({ message: "Comment not found" });
+    }
+    res.json({ comment });
+  } catch (error) {
+    res.status(500).send("Error: " + error.message);
+  }
 });
+
+// Search and filter comments (for moderation)
+router.post(
+  "/search",
+  authenticateModerator,
+  async (req, res) => {
+    try {
+      const filters = {
+        author: req.body.author,
+        startDate: req.body.startDate,
+        endDate: req.body.endDate,
+        minFlags: req.body.minFlags,
+        maxFlags: req.body.maxFlags,
+        removed: req.body.removed,
+        searchText: req.body.searchText,
+        lat: req.body.lat,
+        lng: req.body.lng,
+        radius: req.body.radius,
+        sortBy: req.body.sortBy,
+        sortOrder: req.body.sortOrder,
+        limit: req.body.limit,
+        skip: req.body.skip
+      };
+
+      // Remove undefined values
+      Object.keys(filters).forEach(
+        key => filters[key] === undefined && delete filters[key]
+      );
+
+      const comments = await searchComments(filters);
+      res.json({ comments, count: comments.length });
+    } catch (error) {
+      res.status(500).send("Error: " + error.message);
+    }
+  }
+);
+
+// Get comment statistics (for moderation dashboard)
+router.get(
+  "/stats/summary",
+  authenticateModerator,
+  async (req, res) => {
+    try {
+      const stats = await getCommentStats();
+      res.json(stats);
+    } catch (error) {
+      res.status(500).send("Error: " + error.message);
+    }
+  }
+);
+
+// Permanently delete a comment (moderator only)
+router.delete(
+  "/:id",
+  authenticateModerator,
+  async (req, res) => {
+    try {
+      const comment = await deleteComment(req.params.id);
+      if (!comment) {
+        return res
+          .status(404)
+          .json({ message: "Comment not found" });
+      }
+      res.status(200).json({
+        message: "Comment deleted successfully",
+        comment
+      });
+    } catch (error) {
+      res.status(500).send("Error: " + error.message);
+    }
+  }
+);
+
+// Remove a comment
+router.put(
+  "/remove/:id",
+  authenticateModerator,
+  async (req, res) => {
+    const id = req.params["id"]; // or req.params.id
+    removeComment(id)
+      .then(comment => {
+        res.status(200).json({ comment });
+      })
+      .catch(error => {
+        return res.status(500).send("Internal Server Error");
+      });
+  }
+);
+
+// unremove a comment
+router.put(
+  "/unremove/:id",
+  authenticateModerator,
+  async (req, res) => {
+    const id = req.params["id"]; // or req.params.id
+    unremoveComment(id)
+      .then(comment => {
+        res.status(200).json({ comment });
+      })
+      .catch(error => {
+        return res.status(500).send("Internal Server Error");
+      });
+  }
+);
 
 // flag a comment
 router.put("/flag/:id", authenticateToken, async (req, res) => {
   const id = req.params["id"];
-  try {    
+  try {
     const flags = await getUserFlags(req.user._id);
-    if (flags.some(flaggedComment => flaggedComment._id.toString() === id)) {
-      return res.status(400).json({ message: "Comment already flagged" });
+    if (
+      flags.some(
+        flaggedComment => flaggedComment._id.toString() === id
+      )
+    ) {
+      return res
+        .status(400)
+        .json({ message: "Comment already flagged" });
     }
     await addUserFlag(req.user._id, id);
     const comment = await addFlag(id);
-    res.status(200).json({comment});
+    res.status(200).json({ comment });
   } catch (error) {
     return res.status(500).send("Internal Server Error");
   }
 });
-
 
 // unflag a comment
-router.put("/unflag/:id", authenticateToken, async (req, res) => {
-  const id = req.params["id"];
-  try {
-    const flags = await getUserFlags(req.user._id);
-    if (!flags.some(flaggedComment => flaggedComment._id.toString() === id)) {
-      return res.status(400).json({ message: "Comment not flagged" });
+router.put(
+  "/unflag/:id",
+  authenticateToken,
+  async (req, res) => {
+    const id = req.params["id"];
+    try {
+      const flags = await getUserFlags(req.user._id);
+      if (
+        !flags.some(
+          flaggedComment => flaggedComment._id.toString() === id
+        )
+      ) {
+        return res
+          .status(400)
+          .json({ message: "Comment not flagged" });
+      }
+      await user_services.removeUserFlag(req.user._id, id);
+      const comment = await removeFlag(id);
+      res.status(200).json({ comment });
+    } catch (error) {
+      return res.status(500).send("Internal Server Error");
     }
-    await user_services.removeUserFlag(req.user._id, id);
-    const comment = await removeFlag(id);
-    res.status(200).json({comment});
-  } catch (error) {
-    return res.status(500).send("Internal Server Error");
   }
-});
+);
 
 export default router;

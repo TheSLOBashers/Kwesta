@@ -22,6 +22,8 @@ function Comments(props) {
     fetchComments();
   }, []);
 
+  console.log(comments);
+
   const sampleComments = [
     {
       id: 1,
@@ -68,7 +70,7 @@ function Comments(props) {
         {/* Replace 'sampleComments' with 'comments' when backend is finished */}
         {commentIsOpen && (
           <CommentOverlay
-            comments={sampleComments}
+            comments={comments}
             close={() => setCommentIsOpen(false)}
           />
         )}
