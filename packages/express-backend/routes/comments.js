@@ -37,7 +37,7 @@ router.post("/", authenticateToken, async (req, res) => {
   try {
     const { comment, location } = req.body;
 
-    if (!comment || !location || location.lat == null || location.lng == null) {
+    if (!comment || location.lat == null || location.lng == null) {
       return res.status(400).json({ message: "Comment and location required" });
     }
 
