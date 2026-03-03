@@ -3,6 +3,7 @@ import React from "react";
 function CommentOpenButton({ onClick }){
     return (
         <button 
+            aria-label="open comments"
             onClick={onClick}
             style={styles.button}
         >

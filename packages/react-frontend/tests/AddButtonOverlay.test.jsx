@@ -5,19 +5,17 @@ import AddButtonOverlay from "../src/components/AddButtonOverlay";
 import addCommentCall from "../src/APICalls/addCommentCall";
 import addEventCall from "../src/APICalls/addEventCall";
 
-// Mock the API calls
-jest.mock("../src/APICalls/addCommentCall");
-jest.mock("../src/APICalls/addEventCall");
+const mockAddComment = jest.fn();
 
 test("renders AddButtonOverlay with AddButton", () => {
-    render(<AddButtonOverlay />);
+    render(<AddButtonOverlay username="testUser" onAddComment={mockAddComment}/>);
 
     const addButton = screen.getByRole("button", { name: /add button/i });
     expect(addButton).toBeInTheDocument();
 });
 
 test("opens comment and event buttons when AddButton is clicked", () => {
-    render(<AddButtonOverlay />);
+    render(<AddButtonOverlay username="testUser" onAddComment={mockAddComment}/>);
 
     const addButton = screen.getByRole("button", { name: /add button/i });
     fireEvent.click(addButton);
@@ -29,8 +27,22 @@ test("opens comment and event buttons when AddButton is clicked", () => {
     expect(eventButton).toBeInTheDocument();
 });
 
+test("clicking backdrop calls close", async () => {
+    render(<AddButtonOverlay username="testUser" onAddComment={mockAddComment}/>);
+
+    const addButton = screen.getByRole("button", { name: /add button/i });
+    fireEvent.click(addButton);
+
+    const commentButton = screen.getByRole("button", { name: /add comment/i });
+    expect(commentButton).toHaveStyle({ opacity: "1" });
+
+    fireEvent.mouseDown(document.body);
+
+    expect(commentButton).toHaveStyle({ opacity: "0" });
+});
+
 test("clicking comment button opens CommentForm", () => {
-    render(<AddButtonOverlay />);
+    render(<AddButtonOverlay username="testUser" onAddComment={mockAddComment}/>);
 
     const addButton = screen.getByRole("button", { name: /add button/i });
     fireEvent.click(addButton);
@@ -42,10 +54,8 @@ test("clicking comment button opens CommentForm", () => {
     expect(submitButton).toBeInTheDocument();
 });
 
-test("calls addCommentCall when CommentForm is submitted", async () => {
-    addCommentCall.mockResolvedValue({ success: true });
-
-    render(<AddButtonOverlay />);
+test("calls onAddComment when CommentForm is submitted", async () => {
+    render(<AddButtonOverlay username="testUser" onAddComment={mockAddComment}/>);
     fireEvent.click(screen.getByRole("button", { name: /add button/i }));
     fireEvent.click(screen.getByRole("button", { name: /add comment/i }));
 
@@ -56,7 +66,12 @@ test("calls addCommentCall when CommentForm is submitted", async () => {
     const submitCommentButton = screen.getByRole("button", { name: /submit comment/i });
     fireEvent.click(submitCommentButton);
 
-    expect(addCommentCall).toHaveBeenCalled();
+    expect(mockAddComment).toHaveBeenCalledWith(
+        expect.objectContaining({
+            comment: "hi",
+            location: { lat:0, lng:0 },
+        })
+    );
 });
 
 

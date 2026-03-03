@@ -1,9 +1,11 @@
+import React from "react";
 import { useState, useEffect } from "react";
 
 import CommentOverlay from "./CommentOverlay";
 import CommentOpenButton from "./CommentOpenButton";
 import getCommentsCall from "../APICalls/getCommentsCall";
 import AddButtonOverlay from "./AddButtonOverlay";
+import addCommentCall from "../APICalls/addCommentCall";
 
 function Comments(props) {
   const [comments, setComments] = useState([]);
@@ -22,9 +24,42 @@ function Comments(props) {
     fetchComments();
   }, []);
 
-  console.log(comments);
+  const handleAddComment = async (commentData) => {
+    const newComment = await addCommentCall(commentData);
+    const commentWithUsername = {...newComment, author: props.user}
+    setComments((prev) => [commentWithUsername, ...prev]);
+  }
 
-  const sampleComments = [
+  
+  return (
+    <div>
+      <>
+        {loading && <div>Loading comments...</div>}
+        <CommentOpenButton
+          onClick={() => setCommentIsOpen(!commentIsOpen)}
+        />
+
+        {commentIsOpen && (
+          <CommentOverlay
+            key={comments.length}
+            comments={comments}
+            close={() => setCommentIsOpen(false)}
+          />
+        )}
+      </>
+
+      <AddButtonOverlay 
+        username={props.user || "Anonymous"}
+        onAddComment={handleAddComment}
+      />
+    </div>
+  );
+}
+
+export default Comments;
+
+
+/*const sampleComments = [
     {
       id: 1,
       author: "Jimmy",
@@ -58,27 +93,4 @@ function Comments(props) {
       location: {lat:2, lng:3},
     },
   ]
-
-  return (
-    <div>
-      <>
-        {loading && <div>Loading comments...</div>}
-        <CommentOpenButton
-          onClick={() => setCommentIsOpen(!commentIsOpen)}
-        />
-
-        {/* Replace 'sampleComments' with 'comments' when backend is finished */}
-        {commentIsOpen && (
-          <CommentOverlay
-            comments={comments}
-            close={() => setCommentIsOpen(false)}
-          />
-        )}
-      </>
-
-      <AddButtonOverlay username={props.user} />
-    </div>
-  );
-}
-
-export default Comments;
+*/

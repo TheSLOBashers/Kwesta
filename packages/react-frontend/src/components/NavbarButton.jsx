@@ -1,3 +1,5 @@
+import React from "react";
+
 function NavbarButton({ onClick }){
     return (
         <button 

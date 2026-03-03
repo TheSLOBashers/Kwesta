@@ -21,7 +21,7 @@ import MapPage from "./components/MapPage";
 
 function MyApp() {
 
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(() => localStorage.getItem("username") || null);
 
   return (
     <div className="container">

@@ -1,8 +1,9 @@
 import { Link } from "react-router-dom";
+import React from "react";
 
 function OverlayNavbar({ close }){
     return (
-        <div style={styles.overlay} onClick={close}>
+        <div role="presentation" style={styles.overlay} onClick={close}>
             <div
                 style={styles.box}
                 onClick={(e) => e.stopPropagation()}

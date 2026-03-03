@@ -13,7 +13,6 @@ function Login(props) {
     password: ""
   });
   async function submitForm() {
-    setUserDetails({ username: "", password: "" });
     try {
         await props.handleSubmit(
             userDetails["username"],
@@ -29,8 +28,11 @@ function Login(props) {
           navigate("/", { replace: true });
         }
 
-        setUser(userDetails["username"]);
+        localStorage.setItem("username", userDetails.username);
+        props.setUser(userDetails.username);
         navigate("/", { replace: true });
+
+        setUserDetails({ username: "", password: "" });
     }
     catch (error) {
         console.log(error.msg);

@@ -1,5 +1,6 @@
 import React from "react";
 import { useState, useEffect, useRef } from "react";
+import { act } from "react";
 import AddButton from "./AddButton";
 import addCommentCall from "../APICalls/addCommentCall";
 import addEventCall from "../APICalls/addEventCall";
@@ -7,7 +8,7 @@ import addEventCall from "../APICalls/addEventCall";
 import CommentForm from "./CommentForm";
 import EventForm from "./EventForm";
 
-function AddButtonOverlay( username="Anonymous" ){
+function AddButtonOverlay({ username="Anonymous", onAddComment }){
     
     const [open, setOpen] = useState(false);
     const [formType, setFormType] = useState(null);
@@ -23,11 +24,6 @@ function AddButtonOverlay( username="Anonymous" ){
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
-
-    const handleAddComment = async (commentData) => {
-        const result = await addCommentCall(commentData);
-        console.log("Added comment:", result);
-    };
     const handleAddEvent = async (author, description, date, time, location) => {
         const eventData = {author, description, date, time, location};
         const result = await addEventCall(eventData);
@@ -79,7 +75,12 @@ function AddButtonOverlay( username="Anonymous" ){
 
             {formType === "comment" && (
                 <CommentForm
-                    onSubmit={handleAddComment}
+                    onSubmit={async (commentData) => {
+                        await onAddComment(commentData);
+                        act(() => {
+                            setFormType(null);
+                        });
+                    }}
                     onClose={() => setFormType(null)}
                     username={username}
                 />

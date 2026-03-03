@@ -1,5 +1,5 @@
 import React from "react";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 
 function CommentOverlay({ close, comments = [] }){
     const carouselRef = useRef(null);
@@ -26,7 +26,7 @@ function CommentOverlay({ close, comments = [] }){
     };
 
     return (
-        <div style={styles.backdrop} onClick={close}>
+        <div role="dialog" aria-label="comments overlay" style={styles.backdrop} onClick={close}>
             <div style={styles.overlay}>
                 <div
                     ref={carouselRef}
@@ -43,6 +43,8 @@ function CommentOverlay({ close, comments = [] }){
                             minute: "2-digit",
                         });
 
+                        const key = c._id || `${c.comment}-${i}`;
+
                         return (
                             <div
                                 style={{
@@ -50,7 +52,7 @@ function CommentOverlay({ close, comments = [] }){
                                     transform: i === active ? "scale(1)" : "scale(0.92)",
                                     transition: "transform 0.25s",
                                 }}
-                                key={c.id}
+                                key={key}
                             >
                                 <h3 style={styles.author}>
                                     {c.author} - {formattedDate} - {`{${c.location.lat}, ${c.location.lng}}`}
