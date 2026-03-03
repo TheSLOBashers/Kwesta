@@ -7,7 +7,9 @@ const getCommentsCall = async () => {
 
         const data = await response.json();
 
-        return data.comments.map(c => ({
+        const commentsArray = data.comments || [];
+
+        return commentsArray.map(c => ({
             id: c._id,
             author: c.author?.username || c.author,
             date: c.date,

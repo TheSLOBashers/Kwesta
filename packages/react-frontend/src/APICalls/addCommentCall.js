@@ -10,10 +10,10 @@ const addCommentCall = async (commentData) => {
             body: JSON.stringify(commentData),
         });
         
-        const json = await response.json();
         if (!response.ok) {
             throw new Error(`Error: ${response.status}`);
         }
+        const json = await response.json();
         return json.comment;
     } catch (err) {
         console.error("Error adding comment:", err);

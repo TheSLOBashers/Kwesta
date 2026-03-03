@@ -1,7 +1,7 @@
 import React from "react";
 import { useRef, useState, useEffect } from "react";
 
-function CommentOverlay({ close, comments = [] }){
+function EventOverlay({ close, events = [] }){
     const carouselRef = useRef(null);
     const [active, setActive] = useState(0);
 
@@ -26,16 +26,17 @@ function CommentOverlay({ close, comments = [] }){
     };
 
     return (
-        <div role="dialog" aria-label="comments overlay" style={styles.backdrop} onClick={close}>
+        <div role="dialog" aria-label="events overlay" style={styles.backdrop} onClick={close}>
             <div style={styles.overlay}>
                 <div
                     ref={carouselRef}
-                    style={styles.commentSlider}
+                    style={styles.eventSlider}
                     onScroll={onScroll}
                     onClick={(e) => e.stopPropagation()}
                 >
-                    {comments.map((c, i) => {
-                        const formattedDate = new Date(c.date).toLocaleString([], {
+                    {events.map((e, i) => {
+                        const eventDate = new Date(`${e.date}T${e.time}`);
+                        const formattedDate = eventDate.toLocaleString([], {
                             year: "numeric",
                             month: "short",
                             day: "numeric",
@@ -43,21 +44,24 @@ function CommentOverlay({ close, comments = [] }){
                             minute: "2-digit",
                         });
 
-                        const key = c.id || `${c.comment}-${i}`;
+                        const key = e.id || `${e.description}-${i}`;
+
+                        const lat = e.location?.lat ?? 0;
+                        const lng = e.location?.lng ?? 0;
 
                         return (
                             <div
                                 style={{
-                                    ...styles.commentCard,
+                                    ...styles.eventCard,
                                     transform: i === active ? "scale(1)" : "scale(0.92)",
                                     transition: "transform 0.25s",
                                 }}
                                 key={key}
                             >
                                 <h3 style={styles.author}>
-                                    {c.author} - {formattedDate} - {`{${c.location.lat}, ${c.location.lng}}`}
+                                    {e.author} - {formattedDate} - {`{${lat}, ${lng}}`}
                                 </h3>
-                                <p style={styles.comment}>{c.comment}</p>
+                                <p style={styles.event}>{e.description}</p>
                             </div>
                         );
                     })}
@@ -86,7 +90,7 @@ const styles = {
         justifyContent: "stretch",
         pointerEvents: "auto",
     },
-    commentSlider: {
+    eventSlider: {
         width: "100%",
         display: "flex",
         gap: "16px",
@@ -102,7 +106,7 @@ const styles = {
         msOverflowStyle: "none",
         pointerEvents: "auto",
     },
-    commentCard: {
+    eventCard: {
         flex: "0 0 85%",
         width: "85%",
         height: "100%",
@@ -120,7 +124,7 @@ const styles = {
         fontSize: "1.1rem",
         fontWeight: "600",
     },
-    comment: {
+    event: {
         color: "#000000",
         margin: 0,
         fontSize: "0.95rem",
@@ -128,4 +132,4 @@ const styles = {
     },
 };
 
-export default CommentOverlay;
+export default EventOverlay;

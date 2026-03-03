@@ -2,13 +2,11 @@ import React from "react";
 import { useState, useEffect, useRef } from "react";
 import { act } from "react";
 import AddButton from "./AddButton";
-import addCommentCall from "../APICalls/addCommentCall";
-import addEventCall from "../APICalls/addEventCall";
 
 import CommentForm from "./CommentForm";
 import EventForm from "./EventForm";
 
-function AddButtonOverlay({ username="Anonymous", onAddComment }){
+function AddButtonOverlay({ username="Anonymous", onAddComment, onAddEvent }){
     
     const [open, setOpen] = useState(false);
     const [formType, setFormType] = useState(null);
@@ -23,12 +21,6 @@ function AddButtonOverlay({ username="Anonymous", onAddComment }){
         document.addEventListener("mousedown", handleClickOutside);
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
-
-    const handleAddEvent = async (author, description, date, time, location) => {
-        const eventData = {author, description, date, time, location};
-        const result = await addEventCall(eventData);
-        console.log("Added event:", result);
-    };
 
     return (
         <div
@@ -88,7 +80,12 @@ function AddButtonOverlay({ username="Anonymous", onAddComment }){
 
             {formType === "event" && (
                 <EventForm
-                    onSubmit={handleAddEvent}
+                    onSubmit={async (eventData) => {
+                        await onAddEvent(eventData);
+                        act(() => {
+                            setFormType(null);
+                        });
+                    }}
                     onClose={() => setFormType(null)}
                     username={username}
                 />

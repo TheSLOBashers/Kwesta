@@ -3,55 +3,23 @@ import { useState, useEffect } from "react";
 
 import CommentOverlay from "./CommentOverlay";
 import CommentOpenButton from "./CommentOpenButton";
-import getCommentsCall from "../APICalls/getCommentsCall";
-import AddButtonOverlay from "./AddButtonOverlay";
-import addCommentCall from "../APICalls/addCommentCall";
 
-function Comments(props) {
-  const [comments, setComments] = useState([]);
+function Comments({ comments }) {
   const [commentIsOpen, setCommentIsOpen] = useState(false);
-  const [addIsOpen, setAddIsOpen] = useState(false);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    const fetchComments = async () => {
-      setLoading(true);
-      const data = await getCommentsCall();
-      setComments(data);
-      setLoading(false);
-    };
-
-    fetchComments();
-  }, []);
-
-  const handleAddComment = async (commentData) => {
-    const newComment = await addCommentCall(commentData);
-    const commentWithUsername = {...newComment, author: props.user}
-    setComments((prev) => [commentWithUsername, ...prev]);
-  }
-
-  
   return (
     <div>
-      <>
-        {loading && <div>Loading comments...</div>}
-        <CommentOpenButton
-          onClick={() => setCommentIsOpen(!commentIsOpen)}
-        />
-
-        {commentIsOpen && (
-          <CommentOverlay
-            key={comments.length}
-            comments={comments}
-            close={() => setCommentIsOpen(false)}
-          />
-        )}
-      </>
-
-      <AddButtonOverlay 
-        username={props.user || "Anonymous"}
-        onAddComment={handleAddComment}
+      <CommentOpenButton
+        onClick={() => setCommentIsOpen(!commentIsOpen)}
       />
+
+      {commentIsOpen && (
+        <CommentOverlay
+          key={comments.length}
+          comments={comments}
+          close={() => setCommentIsOpen(false)}
+        />
+      )}
     </div>
   );
 }

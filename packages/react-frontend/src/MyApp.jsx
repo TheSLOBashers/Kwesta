@@ -15,7 +15,7 @@ import ModerationRoute from "./components/ModerationRoute";
 import ModerationPortal from "./components/ModerationPortal";
 import ModerateUsers from "./components/ModerateUsers";
 import ModerateComments from "./components/ModerateComments"
-import Comments from "./components/Comments"
+import UserFeed from "./components/UserFeed";
 import AddModerator from "./components/AddModerator";
 import MapPage from "./components/MapPage";
 
@@ -29,14 +29,14 @@ function MyApp() {
 
       <main style={{ paddingTop: "70px" }}>
         <Routes>
-          <Route path="/" element={<Comments user={user} />} />
+          <Route path="/" element={<UserFeed user={user} />} />
           <Route element={<AuthenticationRoute />}>
             <Route path="/Login" element={<Login handleSubmit={loginCall} setUser={setUser}/>} />
             <Route path="/Signup" element={<Signup handleSubmit={signupCall}/>} />
           </Route>
           <Route element={<ProtectedRoute />}>
             <Route path="/Protected" element={<Protected />} />
-            <Route path="/Comments" element = {<Comments user={user} />} />
+            <Route path="/UserFeed" element = {<UserFeed user={user} />} />
           </Route>
           <Route element={<ModerationRoute />}>
             <Route path="/moderation/Portal" element={<ModerationPortal />} />

@@ -6,10 +6,6 @@ function CommentForm({ onSubmit, onClose, username }) {
     const [text, setText] = useState("");
     const [location, setLocation] = useState({ lat: null, lng: null });
 
-    const now = new Date();
-    const date = `${now.getMonth() + 1}/${now.getDate()}/${now.getFullYear()}`;
-    const time = now.toLocaleDateString([], { hour: '2-digit', minute: "2-digit"});
-
     useEffect(() => {
         if (navigator.geolocation) {
             navigator.geolocation.getCurrentPosition(

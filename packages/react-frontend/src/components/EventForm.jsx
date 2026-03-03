@@ -3,17 +3,26 @@ import { useState, useEffect, useRef } from "react";
 
 function EventForm({ onSubmit, onClose, username }) {
     const formRef = useRef(null);
-    const [description, setDescription] = useState("");
-
-    const [location, setLocation] = useState({ lat: null, lng: null });
-
-    const now = new Date();
-    const date = `${now.getMonth() + 1}/${now.getDate()}/${now.getFullYear()}`;
-    const time = now.toLocaleDateString([], { hour: '2-digit', minute: "2-digit"});
+    const [text, setText] = useState("");
+    const [date, setDate] = useState("");
+    const [time, setTime] = useState("");
+    const [location, setLocation] = useState({ lat: 0, lng: 0 });
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        onSubmit({ author: username, description, date, time, location});
+
+        if(!username || !text || !date || !time) return;
+
+        const eventData = {
+            author: username,
+            description: text,
+            date,
+            time,
+            location,
+            rsvpCount: 0,
+        }
+
+        onSubmit(eventData);
         onClose();
     };
 
@@ -32,9 +41,21 @@ function EventForm({ onSubmit, onClose, username }) {
             <form ref={formRef} style={styles.form} onSubmit={handleSubmit}>
                 <input 
                     placeholder="Description"
-                    value={description}
-                    onChange={(e) => setDescription(e.target.value)}
+                    value={text}
+                    onChange={(e) => setText(e.target.value)}
                     style={styles.input}
+                />
+                <input
+                    type="date"
+                    value={date}
+                    onChange={(e) => setDate(e.target.value)}
+                    style={styles.calendarInput}
+                />
+                <input
+                    type="time"
+                    value={time}
+                    onChange={(e) => setTime(e.target.value)}
+                    style={styles.calendarInput}
                 />
                 <button aria-label="submit event" type="submit" style={styles.submitButton}>Add Event</button>
             </form>
@@ -63,6 +84,15 @@ const styles = {
         fontSize: "0.9rem",
         borderRadius: "6px",
         border: "1px solid #ccc",
+    },
+    calendarInput: {
+        padding: "6px 10px",
+        fontSize: "0.9rem",
+        borderRadius: "6px",
+        border: "1px solid #ccc",
+        background: "#333333",
+        color: "#818080",
+        textAlign: "center",
     },
     submitButton: {
         padding: "8px",
