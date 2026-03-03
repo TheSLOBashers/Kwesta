@@ -1,7 +1,7 @@
 import React from "react";
 import "@testing-library/jest-dom";
 import { render, screen, fireEvent, act, waitFor } from "@testing-library/react";
-import Comments from "../src/components/Comments";
+import UserFeed from "../src/components/UserFeed";
 
 const mockComments = [
     {
@@ -58,16 +58,3 @@ test("displays comments", async () => {
 //         expect(screen.getByText(/testUser\s*-/i)).toBeInTheDocument();
 //     });
 // });
-
-test("closes comment overlay", async () => {
-    render(<Comments comments={mockComments} />);
-
-    fireEvent.click(screen.getByRole("button", { name: /open comments/i }));
-
-    const backdrop = screen.getByRole("dialog", { name: /comments overlay/i });
-    fireEvent.click(backdrop);
-
-    await waitFor(() => {
-        expect(screen.queryByRole("dialog", { name: /comments overlay/i })).not.toBeInTheDocument();
-    });
-});

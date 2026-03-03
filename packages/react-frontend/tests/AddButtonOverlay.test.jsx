@@ -6,6 +6,7 @@ import addCommentCall from "../src/APICalls/addCommentCall";
 import addEventCall from "../src/APICalls/addEventCall";
 
 const mockAddComment = jest.fn();
+const mockAddEvent = jest.fn();
 
 test("renders AddButtonOverlay with AddButton", () => {
     render(<AddButtonOverlay username="testUser" onAddComment={mockAddComment}/>);
@@ -51,6 +52,19 @@ test("clicking comment button opens CommentForm", () => {
     fireEvent.click(commentButton);
 
     const submitButton = screen.getByRole("button", { name: /submit comment/i });
+    expect(submitButton).toBeInTheDocument();
+});
+
+test("clicking event button opens EventForm", () => {
+    render(<AddButtonOverlay username="testUser" onAddEvent={mockAddEvent}/>);
+
+    const addButton = screen.getByRole("button", { name: /add button/i });
+    fireEvent.click(addButton);
+
+    const eventButton = screen.getByRole("button", { name: /add event/i });
+    fireEvent.click(eventButton);
+
+    const submitButton = screen.getByRole("button", { name: /submit event/i });
     expect(submitButton).toBeInTheDocument();
 });
 
