@@ -28,7 +28,7 @@ test("opens comment and event buttons when AddButton is clicked", () => {
     expect(eventButton).toBeInTheDocument();
 });
 
-test("clicking backdrop calls close", async () => {
+test("clicking backdrop for comment calls close", async () => {
     render(<AddButtonOverlay username="testUser" onAddComment={mockAddComment}/>);
 
     const addButton = screen.getByRole("button", { name: /add button/i });
@@ -40,6 +40,20 @@ test("clicking backdrop calls close", async () => {
     fireEvent.mouseDown(document.body);
 
     expect(commentButton).toHaveStyle({ opacity: "0" });
+});
+
+test("clicking backdrop for event calls close", async () => {
+    render(<AddButtonOverlay username="testUser" onAddEvent={mockAddEvent}/>);
+
+    const addButton = screen.getByRole("button", { name: /add button/i });
+    fireEvent.click(addButton);
+
+    const eventButton = screen.getByRole("button", { name: /add event/i });
+    expect(eventButton).toHaveStyle({ opacity: "1" });
+
+    fireEvent.mouseDown(document.body);
+
+    expect(eventButton).toHaveStyle({ opacity: "0" });
 });
 
 test("clicking comment button opens CommentForm", () => {
