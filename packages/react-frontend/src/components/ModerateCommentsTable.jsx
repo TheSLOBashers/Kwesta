@@ -48,7 +48,7 @@ function TableBody(props) {
     return (
       <tr key={index}>
         <td>{row._id}</td>
-        <td>{row.author}</td>
+        <td>{row.author.username}</td>
         <td>{row.comment}</td>
         <td>{row.flag}</td>
         <td>{row.date}</td>

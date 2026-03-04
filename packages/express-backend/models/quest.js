@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+const Schema = mongoose.Schema;
 
 const LocationSchema = new mongoose.Schema(
   {
@@ -11,12 +12,13 @@ const LocationSchema = new mongoose.Schema(
 const QuestSchema = new mongoose.Schema(
   {
     author: { type: String, required: true },
-    date: { type: String, required: true },
+    date: { type: String, required: true, default: Date.now },
     time: { type: String, required: true },
     description: { type: String, required: true },
     location: { type: LocationSchema, required: true },
-    rsvpCount: { type: Number, default: 0 },
-    image: { type: String, required: true },
+    rsvpList: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+    points: { type: Number, default: 0 },
+    image: { type: String, required: false },
     flag: { type: Number, default: 0 },
     removed: { type: Boolean, default: false }
   },

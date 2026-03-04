@@ -15,9 +15,12 @@ import ModerationRoute from "./components/ModerationRoute";
 import ModerationPortal from "./components/ModerationPortal";
 import ModerateUsers from "./components/ModerateUsers";
 import ModerateComments from "./components/ModerateComments"
+import ModerateQuests from "./components/ModerateQuests";
 import UserFeed from "./components/UserFeed";
 import AddModerator from "./components/AddModerator";
+import AddQuest from "./components/AddQuest";
 import MapPage from "./components/MapPage";
+import AddComment from "./components/ModerationAddComment";
 
 function MyApp() {
 
@@ -42,7 +45,10 @@ function MyApp() {
             <Route path="/moderation/Portal" element={<ModerationPortal />} />
             <Route path="/moderation/users" element={<ModerateUsers />} />
             <Route path="/moderation/comments" element={<ModerateComments />} />
+            <Route path="/moderation/quests" element={<ModerateQuests />} />
             <Route path="/moderation/add-moderator" element={<AddModerator />} />
+            <Route path="/moderation/add-quest" element={<AddQuest />} />
+            <Route path="/moderation/add-comment" element={<AddComment />} />
           </Route>
           <Route path="/map" element={<MapPage />} />
         </Routes>

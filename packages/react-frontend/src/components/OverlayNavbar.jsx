@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import LogOutButton from "./LogOutButton";
 import React from "react";
 
 function OverlayNavbar({ close }){
@@ -19,6 +20,21 @@ function OverlayNavbar({ close }){
                         <li style={styles.menuItem}>
                         <Link to="/" style={styles.link} onClick={close}>About</Link>
                         </li>
+                        {
+                            Boolean(localStorage.getItem("moderator")) && localStorage.getItem("moderator") ?
+                            <li style={styles.menuItem}>
+                                <Link to="/moderation/portal" style={styles.link} onClick={close}>Portal</Link>
+                            </li>
+                            :
+                            null
+                        }
+                        { localStorage.getItem("authToken") ? 
+                            (<li style={styles.menuItem}>
+                                <LogOutButton />
+                            </li>) 
+                            : 
+                            null
+                        }
                     </ul>
                 </nav>
             </div>

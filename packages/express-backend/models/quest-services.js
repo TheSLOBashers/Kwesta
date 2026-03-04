@@ -134,6 +134,7 @@ async function searchQuests(filters = {}) {
     };
   }
 
+  /* retired for now
   // Filter by RSVP count
   if (
     filters.minRsvp !== undefined ||
@@ -147,6 +148,7 @@ async function searchQuests(filters = {}) {
       query.rsvpCount.$lte = filters.maxRsvp;
     }
   }
+    */
 
   // Location-based filtering (within radius)
   if (
@@ -201,6 +203,22 @@ async function getQuestStats() {
   };
 }
 
+async function joinQuest(questId, userId) {
+  return Quest.findByIdAndUpdate(
+    questId,  
+    { $addToSet: { rsvpList: userId} },
+    { new: true }
+  );
+}
+
+async function unjoinQuest(questId, userId) {
+  return Quest.findByIdAndUpdate(
+    questId,  
+    { $pull: { rsvpList: userId} },
+    { new: true }
+  );
+}
+
 export default {
   createQuest,
   getQuests,
@@ -212,5 +230,7 @@ export default {
   addQuestFlag,
   removeQuestFlag,
   searchQuests,
-  getQuestStats
+  getQuestStats,
+  joinQuest,
+  unjoinQuest
 };
