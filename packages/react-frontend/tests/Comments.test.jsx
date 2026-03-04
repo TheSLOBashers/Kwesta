@@ -23,42 +23,6 @@ test("displays comments", async () => {
     expect(await screen.getByText(/hello world/i)).toBeInTheDocument();
 });
 
-// test("adds a comment and updates overlay", async () => {
-//     addCommentCall.mockResolvedValue({
-//         _id: "mockedId",
-//         comment: "New Comment",
-//         author: "testUser",
-//         location: { lat: 0, lng: 0 },
-//         date: new Date().toISOString(),
-//     });
-
-//     render(<Comments user={"testUser"} />);
-
-//     fireEvent.click(screen.getByRole("button", { name: /add button/i }));
-//     fireEvent.click(screen.getByRole("button", { name: /add comment/i }));
-
-//     const input = screen.getByPlaceholderText("Comment");
-//     fireEvent.change(input, { target: { value: "New Comment" } });
-
-//     await act(async () => {
-//         fireEvent.click(screen.getByRole("button", { name: /submit comment/i }));
-//     });
-
-//     expect(addCommentCall).toHaveBeenCalledWith(
-//         expect.objectContaining({
-//             comment: "New Comment",
-//             location: { lat:0, lng:0 },
-//         })
-//     );
-
-//     fireEvent.click(screen.getByRole("button", { name: /open comments/i }));
-
-//     await waitFor(() => {
-//         expect(screen.getByText(/New Comment/i)).toBeInTheDocument();
-//         expect(screen.getByText(/testUser\s*-/i)).toBeInTheDocument();
-//     });
-// });
-
 test("closes comment overlay", async () => {
     render(<Comments comments={mockComments} />);
 

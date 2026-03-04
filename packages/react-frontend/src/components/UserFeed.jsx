@@ -40,9 +40,6 @@ function UserFeed(props) {
   }
 
   if (loading) return <div>Loading feed...</div>;
-  
-  
-  console.log(events);
 
   return (
     <div>
