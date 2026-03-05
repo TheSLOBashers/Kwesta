@@ -14,12 +14,21 @@ const {
   addQuestFlag,
   removeQuestFlag,
   searchQuests,
-  getQuestStats
+  getQuestStats,
+  joinQuest,
+  unjoinQuest
 } = questServices;
 
-router.post("/", authenticateToken, async (req, res) => {
+router.post("/", authenticateModerator, async (req, res) => {
   try {
-    const quest = await createQuest(req.body);
+    const quest = await createQuest({
+      author: req.user._id,
+      description: req.body.description,
+      points: req.body.points,
+      time: req.body.time,
+      location: req.body.location,
+      date: req.body.date
+    });
     res.status(201).json(quest);
   } catch (error) {
     return res.status(500).send("Error: " + error.message);
@@ -29,7 +38,7 @@ router.post("/", authenticateToken, async (req, res) => {
 router.get("/", async (req, res) => {
   try {
     const quests = await getQuests();
-    res.json(quests);
+    res.status(201).json({ quests });
   } catch (error) {
     res.status(500).send("Error");
   }
@@ -64,8 +73,8 @@ router.post("/search", authenticateModerator, async (req, res) => {
       lat: req.body.lat,
       lng: req.body.lng,
       radius: req.body.radius,
-      minRsvp: req.body.minRsvp,
-      maxRsvp: req.body.maxRsvp,
+      //minRsvp: req.body.minRsvp,
+      //maxRsvp: req.body.maxRsvp,
       sortBy: req.body.sortBy,
       sortOrder: req.body.sortOrder,
       limit: req.body.limit,
@@ -74,6 +83,10 @@ router.post("/search", authenticateModerator, async (req, res) => {
     
     // Remove undefined values
     Object.keys(filters).forEach(key => filters[key] === undefined && delete filters[key]);
+
+    if (!filters.limit || filters.limit > 1000) {
+      filters.limit = 1000; // Set a maximum limit to prevent abuse
+    }
     
     const quests = await searchQuests(filters);
     res.json({ quests, count: quests.length });
@@ -161,6 +174,19 @@ router.put("/flag/:id", authenticateToken, async (req, res) => {
 router.put("/unflag/:id", authenticateToken, async (req, res) => {
   try {
     const quest = await removeQuestFlag(req.params.id);
+    if (!quest) {
+      return res.status(404).json({ message: "Quest not found" });
+    }
+    res.status(200).json({ quest });
+  } catch (error) {
+    res.status(500).send("Error: " + error.message);
+  }
+});
+
+// join a quest
+router.post("/join/:id", authenticateToken, async (req, res) => {
+  try {
+    const quest = await joinQuest(req.params.id, req.user._id);
     if (!quest) {
       return res.status(404).json({ message: "Quest not found" });
     }

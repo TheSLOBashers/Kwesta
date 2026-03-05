@@ -128,6 +128,10 @@ router.post(
         key => filters[key] === undefined && delete filters[key]
       );
 
+      if (!filters.limit || filters.limit > 1000) {
+        filters.limit = 1000; // Set a maximum limit to prevent abuse
+      }
+
       const comments = await searchComments(filters);
       res.json({ comments, count: comments.length });
     } catch (error) {

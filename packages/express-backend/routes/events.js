@@ -74,6 +74,10 @@ router.post("/search", authenticateModerator, async (req, res) => {
     
     // Remove undefined values
     Object.keys(filters).forEach(key => filters[key] === undefined && delete filters[key]);
+
+    if (!filters.limit || filters.limit > 1000) {
+        filters.limit = 1000; // Set a maximum limit to prevent abuse
+    }
     
     const events = await searchEvents(filters);
     res.json({ events, count: events.length });
