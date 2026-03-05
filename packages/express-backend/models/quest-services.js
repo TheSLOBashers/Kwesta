@@ -6,7 +6,9 @@ function createQuest(questData) {
 }
 
 function getQuests() {
-  return Quest.find().sort({ createdAt: -1 });
+  return Quest.find()
+    .populate("author", "username")
+    .sort({ createdAt: -1 });
 }
 
 function getQuestById(questId) {

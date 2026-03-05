@@ -3,16 +3,19 @@ import { useState, useEffect } from "react";
 
 import Comments from "./Comments";
 import Events from "./Events";
+import Quests from "./Quests";
 import AddButtonOverlay from "./AddButtonOverlay";
 
 import getCommentsCall from "../APICalls/getCommentsCall";
 import getEventsCall from "../APICalls/getEventsCall";
+import getQuestsCall from "../APICalls/getQuestsCall";
 import addCommentCall from "../APICalls/addCommentCall";
 import addEventCall from "../APICalls/addEventCall";
 
 function UserFeed(props) {
   const [comments, setComments] = useState([]);
   const [events, setEvents] = useState([]);
+  const [quests, setQuests] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -20,8 +23,10 @@ function UserFeed(props) {
       setLoading(true);
       const commentData = await getCommentsCall();
       const eventData = await getEventsCall();
+      const questData = await getQuestsCall();
       setComments(commentData);
       setEvents(eventData);
+      setQuests(questData);
       setLoading(false);
     };
     
@@ -48,6 +53,7 @@ function UserFeed(props) {
     <div>
       <Comments comments={comments} />
       <Events events={events} />
+      <Quests quests={quests} />
 
       <AddButtonOverlay
         username={props.user}

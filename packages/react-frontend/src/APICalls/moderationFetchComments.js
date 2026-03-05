@@ -1,16 +1,17 @@
-const moderationFetchComments = async (setError, setIsLoading) => {
+const moderationFetchComments = async (setError, setIsLoading, searchParams) => {
   try {
 
     setIsLoading(true);
 
     const response = await fetch(
-      "http://localhost:8000/comments/",
+      "http://localhost:8000/comments/search",
       {
-        method: "GET", // Specify the method
+        method: "POST", // Specify the method
         headers: {
           "Content-Type": "application/json", // Indicate the content type
           "Authorization": `Bearer ${localStorage.getItem("authToken")}`
-        }
+        },
+        body: JSON.stringify(searchParams) // Convert the search parameters to JSON
       }
     );
 

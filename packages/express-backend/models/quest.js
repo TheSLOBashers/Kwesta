@@ -11,7 +11,7 @@ const LocationSchema = new mongoose.Schema(
 
 const QuestSchema = new mongoose.Schema(
   {
-    author: { type: String, required: true },
+    author: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     date: { type: String, required: true, default: Date.now },
     time: { type: String, required: true },
     description: { type: String, required: true },

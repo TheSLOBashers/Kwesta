@@ -19,7 +19,7 @@ function Search(props) {
     <div>
       {/* Search Column Selector */}
       <div>
-        <label>Search by:</label>
+        <label>Quick search by:</label>
         <select
           value={searchColumn}
           onChange={(e) => setSearchColumn(e.target.value)}

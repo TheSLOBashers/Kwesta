@@ -51,6 +51,7 @@ function ModerateQuests() {
   ];
 
   const [searchParams, setSearchParams] = useState({});
+  const [openSearch, setOpenSearch] = useState(false);
 
   const [quests, setQuests] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
@@ -78,27 +79,36 @@ function ModerateQuests() {
         />
       ) : (
         <div>
-          <form>
-            <label htmlFor="searchOptions">Search by: </label>
-            {searchOptions.map((option) => (
-              <div key={option.value}>
-                <label htmlFor={option.value}>
-                  {option.label}:{" "}
-                </label>
-                <input
-                  type={option.type}
-                  id={option.value}
-                  value={searchParams[option.value] || ""}
-                  onChange={(e) =>
-                    setSearchParams({
-                      ...searchParams,
-                      [option.value]: e.target.value
-                    })
-                  }
-                />
-              </div>
-            ))}
-          </form>
+          {openSearch ? (
+            <form>
+              <button onClick={() => setOpenSearch(false)}>
+                Close Search
+              </button>
+              <label htmlFor="searchOptions">Search by: </label>
+              {searchOptions.map((option) => (
+                <div key={option.value}>
+                  <label htmlFor={option.value}>
+                    {option.label}:{" "}
+                  </label>
+                  <input
+                    type={option.type}
+                    id={option.value}
+                    value={searchParams[option.value] || ""}
+                    onChange={(e) =>
+                      setSearchParams({
+                        ...searchParams,
+                        [option.value]: e.target.value
+                      })
+                    }
+                  />
+                </div>
+              ))}
+            </form>
+          ) : (
+            <button onClick={() => setOpenSearch(true)}>
+              Open Search
+            </button>
+          )}
 
           <Search
             options={options}

@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+const Schema = mongoose.Schema;
 
 const LocationSchema = new mongoose.Schema(
   {
@@ -10,7 +11,7 @@ const LocationSchema = new mongoose.Schema(
 
 const EventSchema = new mongoose.Schema(
   {
-    author: { type: String, required: true },
+    author: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     date: { type: String, required: true },
     time: { type: String, required: true },
     description: { type: String, required: true },
