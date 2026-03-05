@@ -29,6 +29,7 @@ function EventOverlay({ close, events = [] }){
         <div role="dialog" aria-label="events overlay" style={styles.backdrop} onClick={close}>
             <div style={styles.overlay}>
                 <div
+                    data-testid="event-slider"
                     ref={carouselRef}
                     style={styles.eventSlider}
                     onScroll={onScroll}

@@ -46,12 +46,14 @@ function EventForm({ onSubmit, onClose, username }) {
                     style={styles.input}
                 />
                 <input
+                    data-testid="date input"
                     type="date"
                     value={date}
                     onChange={(e) => setDate(e.target.value)}
                     style={styles.calendarInput}
                 />
                 <input
+                    data-testid="time input"
                     type="time"
                     value={time}
                     onChange={(e) => setTime(e.target.value)}

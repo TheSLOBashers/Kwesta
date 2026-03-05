@@ -6,6 +6,7 @@ import addCommentCall from "../src/APICalls/addCommentCall";
 import addEventCall from "../src/APICalls/addEventCall";
 
 const mockAddComment = jest.fn();
+const mockAddEvent = jest.fn();
 
 test("renders AddButtonOverlay with AddButton", () => {
     render(<AddButtonOverlay username="testUser" onAddComment={mockAddComment}/>);
@@ -27,7 +28,7 @@ test("opens comment and event buttons when AddButton is clicked", () => {
     expect(eventButton).toBeInTheDocument();
 });
 
-test("clicking backdrop calls close", async () => {
+test("clicking backdrop for comment calls close", async () => {
     render(<AddButtonOverlay username="testUser" onAddComment={mockAddComment}/>);
 
     const addButton = screen.getByRole("button", { name: /add button/i });
@@ -41,6 +42,20 @@ test("clicking backdrop calls close", async () => {
     expect(commentButton).toHaveStyle({ opacity: "0" });
 });
 
+test("clicking backdrop for event calls close", async () => {
+    render(<AddButtonOverlay username="testUser" onAddEvent={mockAddEvent}/>);
+
+    const addButton = screen.getByRole("button", { name: /add button/i });
+    fireEvent.click(addButton);
+
+    const eventButton = screen.getByRole("button", { name: /add event/i });
+    expect(eventButton).toHaveStyle({ opacity: "1" });
+
+    fireEvent.mouseDown(document.body);
+
+    expect(eventButton).toHaveStyle({ opacity: "0" });
+});
+
 test("clicking comment button opens CommentForm", () => {
     render(<AddButtonOverlay username="testUser" onAddComment={mockAddComment}/>);
 
@@ -51,6 +66,19 @@ test("clicking comment button opens CommentForm", () => {
     fireEvent.click(commentButton);
 
     const submitButton = screen.getByRole("button", { name: /submit comment/i });
+    expect(submitButton).toBeInTheDocument();
+});
+
+test("clicking event button opens EventForm", () => {
+    render(<AddButtonOverlay username="testUser" onAddEvent={mockAddEvent}/>);
+
+    const addButton = screen.getByRole("button", { name: /add button/i });
+    fireEvent.click(addButton);
+
+    const eventButton = screen.getByRole("button", { name: /add event/i });
+    fireEvent.click(eventButton);
+
+    const submitButton = screen.getByRole("button", { name: /submit event/i });
     expect(submitButton).toBeInTheDocument();
 });
 

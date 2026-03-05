@@ -1,30 +1,32 @@
 import React from "react";
 import "@testing-library/jest-dom";
 import { render, screen, fireEvent } from "@testing-library/react";
-import CommentOverlay from "../src/components/CommentOverlay";
+import EventOverlay from "../src/components/EventOverlay";
 
-const mockComments = [
+const mockEvents = [
     {
-        id: 1,
+        id: 123,
         author: "Bobby",
-        comment: "Hello World",
-        date: "2024-01-01T12:00:00Z",
-        location: { lat: 10, lng: 20 },
+        date: "2024-01-01",
+        time: "12:00:00Z",
+        description: "Hike here",
+        location: { lat: 12, lng: 23 },
+        rsvpCount: 2
     },
 ];
 
-test("renders comments", () => {
-    render(<CommentOverlay close={jest.fn()} comments={mockComments} />);
+test("renders events", () => {
+    render(<EventOverlay close={jest.fn()} events={mockEvents} />);
 
     expect(screen.getByText(/bobby/i)).toBeInTheDocument();
-    expect(screen.getByText(/hello world/i)).toBeInTheDocument();
+    expect(screen.getByText(/hike here/i)).toBeInTheDocument();
 });
 
 test("clicking backdrop calls close", async () => {
     const closeMock = jest.fn();
 
     const { container } = render(
-        <CommentOverlay close={closeMock} comments={mockComments} />
+        <EventOverlay close={closeMock} events={mockEvents} />
     );
 
     await fireEvent.click(container.firstChild);
@@ -35,38 +37,44 @@ test("clicking backdrop calls close", async () => {
 test("clicking inside overlay does not call close", async () => {
     const closeMock = jest.fn();
 
-    render(<CommentOverlay close={closeMock} comments={mockComments} />);
+    render(<EventOverlay close={closeMock} events={mockEvents} />);
 
-    const commentText = screen.getByText(/hello world/i);
+    const eventText = screen.getByText(/hike here/i);
 
-    await fireEvent.click(commentText);
+    await fireEvent.click(eventText);
 
     expect(closeMock).not.toHaveBeenCalled();
 });
 
 
-describe("CommentOverlay scroll behavior", () => {
-    const scrollMockComments = [
+describe("EventOverlay scroll behavior", () => {
+    const scrollMockEvents = [
         {
             id: "1",
             author: "A",
-            comment: "First",
-            date: new Date(),
+            date: "2006-07-20",
+            time: "12:00:00Z",
+            description: "First",
             location: { lat: 1, lng: 1 },
+            rsvpCount: 1
         },
         {
-        id: "2",
+            id: "2",
             author: "B",
-            comment: "Second",
-            date: new Date(),
+            date: "2025-02-21",
+            time: "01:00:00Z",
+            description: "Second",
             location: { lat: 2, lng: 2 },
+            rsvpCount: 2
         },
         {
             id: "3",
             author: "C",
-            comment: "Third",
-            date: new Date(),
+            date: "2026-01-02",
+            time: "07:00:00Z",
+            description: "Third",
             location: { lat: 3, lng: 3 },
+            rsvpCount: 3
         },
     ];
 
@@ -96,9 +104,9 @@ describe("CommentOverlay scroll behavior", () => {
     }
 
     test("sets active to closest card when scrolled", () => {
-        render(<CommentOverlay close={jest.fn()} comments={scrollMockComments} />);
+        render(<EventOverlay close={jest.fn()} events={scrollMockEvents} />);
 
-        const slider = screen.getByTestId("comment-slider");
+        const slider = screen.getByTestId("event-slider");
 
         mockLayout(slider);
 
@@ -113,9 +121,9 @@ describe("CommentOverlay scroll behavior", () => {
     });
 
     test("keeps first card active when centered near start", () => {
-        render(<CommentOverlay close={jest.fn()} comments={scrollMockComments} />);
+        render(<EventOverlay close={jest.fn()} events={scrollMockEvents} />);
 
-        const slider = screen.getByTestId("comment-slider");
+        const slider = screen.getByTestId("event-slider");
 
         mockLayout(slider);
 
