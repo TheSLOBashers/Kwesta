@@ -29,6 +29,7 @@ function CommentOverlay({ close, comments = [] }){
         <div role="dialog" aria-label="comments overlay" style={styles.backdrop} onClick={close}>
             <div style={styles.overlay}>
                 <div
+                    data-testid="comment-slider"
                     ref={carouselRef}
                     style={styles.commentSlider}
                     onScroll={onScroll}
