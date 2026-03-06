@@ -48,9 +48,9 @@ function UserFeed(props) {
 
   return (
     <div>
-      <Comments comments={comments} />
+      <Comments comments={comments} setComments={setComments} />
       <Events events={events} />
-      <Quests quests={quests} />
+      <Quests quests={quests} setQuests={setQuests} />
 
       <AddButtonOverlay
         username={props.user}

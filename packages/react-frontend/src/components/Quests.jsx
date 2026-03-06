@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import QuestOverlay from "./QuestOverlay";
 import QuestOpenButton from "./QuestOpenButton";
 
-function Events({ quests }) {
+function Events({ quests, setQuests }) {
   const [questIsOpen, setQuestIsOpen] = useState(false);
 
   return (
@@ -15,6 +15,7 @@ function Events({ quests }) {
 
       {questIsOpen && (
         <QuestOverlay
+          setQuests={setQuests}
           quests={quests}
           close={() => setQuestIsOpen(false)}
         />

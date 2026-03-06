@@ -8,7 +8,8 @@ function createComment(commentData) {
 function getComments() {
   return Comment.find({ removed: false })
     .populate("author", "username")
-    .sort({ createdAt: -1 });
+    .sort({ createdAt: -1 })
+    .lean();
 }
 
 /**

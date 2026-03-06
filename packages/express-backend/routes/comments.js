@@ -52,9 +52,15 @@ router.post("/", authenticateToken, async (req, res) => {
   }
 });
 
-router.get("/", async (req, res) => {
+router.get("/", authenticateToken, async (req, res) => {
   try {
     const comments = await getComments();
+    const flags = await getUserFlags(req.user._id);
+    comments.forEach(comment => {
+      comment.flaggedByUser = flags.some(
+        flaggedComment => flaggedComment._id.toString() === comment._id.toString()
+      );
+    });
     res.json({ comments: comments });
   } catch (error) {
     res.status(500).send("Error");

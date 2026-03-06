@@ -35,10 +35,13 @@ router.post("/", authenticateModerator, async (req, res) => {
   }
 });
 
-router.get("/", async (req, res) => {
+router.get("/", authenticateToken, async (req, res) => {
   try {
     const quests = await getQuests();
-    res.status(201).json({ quests });
+    quests.forEach(q => {
+      q.joined = q.rsvpList.some(id => id.toString() === req.user._id.toString());
+    });
+    res.status(201).json({ quests, userId: req.user._id });
   } catch (error) {
     res.status(500).send("Error");
   }
@@ -187,6 +190,19 @@ router.put("/unflag/:id", authenticateToken, async (req, res) => {
 router.post("/join/:id", authenticateToken, async (req, res) => {
   try {
     const quest = await joinQuest(req.params.id, req.user._id);
+    if (!quest) {
+      return res.status(404).json({ message: "Quest not found" });
+    }
+    res.status(200).json({ quest });
+  } catch (error) {
+    res.status(500).send("Error: " + error.message);
+  }
+});
+
+// unjoin a quest
+router.post("/unjoin/:id", authenticateToken, async (req, res) => {
+  try {
+    const quest = await unjoinQuest(req.params.id, req.user._id);
     if (!quest) {
       return res.status(404).json({ message: "Quest not found" });
     }
