@@ -6,7 +6,9 @@ const getCommentsCall = async () => {
         method: "GET", // Specify the method
         headers: {
           "Content-Type": "application/json", // Indicate the content type
-          Authorization: `Bearer ${localStorage.getItem("authToken")}`
+          Authorization: `Bearer ${localStorage.getItem(
+            "authToken"
+          )}`
         }
       }
     );
@@ -18,13 +20,15 @@ const getCommentsCall = async () => {
 
     const commentsArray = data.comments || [];
 
-    return commentsArray.map((c) => ({
+    return commentsArray.map(c => ({
       id: c._id,
       author: c.author?.username || c.author,
       date: c.date,
       comment: c.comment,
       location: c.location,
+      likes: c.likes || 0,
       flag: c.flag,
+      likedByUser: c.likedByUser || false,
       flaggedByUser: c.flaggedByUser || false
     }));
   } catch (err) {

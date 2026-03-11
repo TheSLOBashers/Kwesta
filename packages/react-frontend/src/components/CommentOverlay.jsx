@@ -1,24 +1,53 @@
 import React from "react";
 import { useRef, useState, useEffect } from "react";
 import flagComment from "../APICalls/flagComment";
+import likeComment from "../APICalls/likeComment";
 import unflagComment from "../APICalls/unflagComment";
 
-function CommentOverlay({ close, comments, setComments }) {
+function CommentOverlay({
+  close,
+  comments,
+  setComments,
+  onPointsChanged
+}) {
   const carouselRef = useRef(null);
   const [active, setActive] = useState(0);
+
+  function handleLike(commentId) {
+    likeComment(commentId)
+      .then(async () => {
+        setComments(prevComments =>
+          prevComments.map(c =>
+            c.id === commentId
+              ? {
+                  ...c,
+                  likes: (c.likes || 0) + 1,
+                  likedByUser: true
+                }
+              : c
+          )
+        );
+        if (onPointsChanged) {
+          await onPointsChanged();
+        }
+      })
+      .catch(error => {
+        alert("Error liking comment: " + error.message);
+      });
+  }
 
   function handleFlag(CId) {
     flagComment(CId)
       .then(() => {
         // Update the local state to reflect the change
-        setComments((prevComments) =>
-          prevComments.map((c) =>
+        setComments(prevComments =>
+          prevComments.map(c =>
             c.id === CId ? { ...c, flaggedByUser: true } : c
           )
         );
         alert("Successfully flagged comment!");
       })
-      .catch((error) => {
+      .catch(error => {
         alert("Error flagging comment: " + error.message);
       });
   }
@@ -26,14 +55,14 @@ function CommentOverlay({ close, comments, setComments }) {
   function handleUnflag(CId) {
     unflagComment(CId)
       .then(() => {
-        setComments((prevComments) =>
-          prevComments.map((c) =>
+        setComments(prevComments =>
+          prevComments.map(c =>
             c.id === CId ? { ...c, flaggedByUser: false } : c
           )
         );
         alert("Successfully unflagged comment!");
       })
-      .catch((error) => {
+      .catch(error => {
         alert("Error unflagging comment: " + error.message);
       });
   }
@@ -72,7 +101,7 @@ function CommentOverlay({ close, comments, setComments }) {
           ref={carouselRef}
           style={styles.commentSlider}
           onScroll={onScroll}
-          onClick={(e) => e.stopPropagation()}
+          onClick={e => e.stopPropagation()}
         >
           {comments.map((c, i) => {
             const formattedDate = new Date(
@@ -102,6 +131,13 @@ function CommentOverlay({ close, comments, setComments }) {
                   {`{${c.location.lat}, ${c.location.lng}}`}
                 </h3>
                 <p style={styles.comment}>{c.comment}</p>
+                <p style={styles.meta}>Likes: {c.likes || 0}</p>
+                <button
+                  onClick={() => handleLike(c.id)}
+                  disabled={Boolean(c.likedByUser)}
+                >
+                  {c.likedByUser ? "Liked" : "Like Comment"}
+                </button>
                 {c.flaggedByUser ? (
                   <button onClick={() => handleUnflag(c.id)}>
                     Unflag Comment
@@ -178,6 +214,12 @@ const styles = {
     margin: 0,
     fontSize: "0.95rem",
     lineHeight: 1.4
+  },
+  meta: {
+    color: "#000000",
+    margin: "12px 0",
+    fontSize: "0.95rem",
+    fontWeight: "600"
   }
 };
 

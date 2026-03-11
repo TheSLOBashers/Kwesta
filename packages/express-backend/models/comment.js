@@ -11,12 +11,18 @@ const LocationSchema = new mongoose.Schema(
 
 const CommentSchema = new mongoose.Schema(
   {
-    author: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    author: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+      required: true
+    },
     date: { type: Date, required: true, default: Date.now },
     comment: { type: String, required: true },
     location: { type: LocationSchema, required: true },
-    flag: { type: Number, default: 0, required: true},
-    removed: { type: Boolean, default: false}
+    flag: { type: Number, default: 0, required: true },
+    likes: { type: Number, default: 0, required: true },
+    likedBy: [{ type: Schema.Types.ObjectId, ref: "User" }],
+    removed: { type: Boolean, default: false }
   },
   { timestamps: true }
 );

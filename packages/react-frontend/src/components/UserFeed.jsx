@@ -29,28 +29,60 @@ function UserFeed(props) {
       setQuests(questData);
       setLoading(false);
     };
-    
+
     fetchAll();
   }, []);
 
-  const handleAddComment = async (data) => {
+  const handleAddComment = async data => {
     const newComment = await addCommentCall(data);
-    const commentWithUsername = {...newComment, author: props.user}
-    setComments((prev) => [commentWithUsername, ...prev]);
-  }
-  const handleAddEvent = async (data) => {
+    if (!newComment) {
+      return;
+    }
+
+    const commentWithUsername = {
+      ...newComment,
+      id: newComment._id || newComment.id,
+      author: props.user,
+      likes: newComment.likes || 0,
+      likedByUser: false,
+      flaggedByUser: false
+    };
+    setComments(prev => [commentWithUsername, ...prev]);
+    if (props.onPointsChanged) {
+      await props.onPointsChanged();
+    }
+  };
+  const handleAddEvent = async data => {
     const newEvent = await addEventCall(data);
-    const eventWithUsername = {...newEvent, author: props.user}
-    setEvents((prev) => [eventWithUsername, ...prev]);
-  }
+    if (!newEvent) {
+      return;
+    }
+
+    const eventWithUsername = {
+      ...newEvent,
+      author: props.user
+    };
+    setEvents(prev => [eventWithUsername, ...prev]);
+    if (props.onPointsChanged) {
+      await props.onPointsChanged();
+    }
+  };
 
   if (loading) return <div>Loading feed...</div>;
 
   return (
     <div>
-      <Comments comments={comments} setComments={setComments} />
+      <Comments
+        comments={comments}
+        setComments={setComments}
+        onPointsChanged={props.onPointsChanged}
+      />
       <Events events={events} />
-      <Quests quests={quests} setQuests={setQuests} />
+      <Quests
+        quests={quests}
+        setQuests={setQuests}
+        onPointsChanged={props.onPointsChanged}
+      />
 
       <AddButtonOverlay
         username={props.user}

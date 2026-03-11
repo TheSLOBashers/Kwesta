@@ -1,6 +1,11 @@
-const signupCall = async (username, email, password, setError, setIsLoading) => {
+const signupCall = async (
+  username,
+  email,
+  password,
+  setError,
+  setIsLoading
+) => {
   try {
-
     setIsLoading(true);
 
     const response = await fetch(
@@ -10,13 +15,16 @@ const signupCall = async (username, email, password, setError, setIsLoading) => 
         headers: {
           "Content-Type": "application/json" // Indicate the content type
         },
-        body: JSON.stringify({username, email, password}) // Convert the data to a JSON string
+        body: JSON.stringify({ username, email, password }) // Convert the data to a JSON string
       }
     );
 
     const json = await response.json();
     if (!response.ok) {
-      if(json.message === "Username already exists" || json.message === "Email already exists") {
+      if (
+        json.message === "Username already exists" ||
+        json.message === "Email already exists"
+      ) {
         setError(json.message);
         throw new Error(`${json.message}`);
       }
@@ -24,12 +32,14 @@ const signupCall = async (username, email, password, setError, setIsLoading) => 
     }
     setError("");
   } catch (error) {
+    setError(
+      error.message ||
+        "Unable to connect. Is the server running?"
+    );
     throw new Error(`${error.message}`);
-  } 
-  finally {
+  } finally {
     setIsLoading(false);
   }
-
 };
 
 export default signupCall;

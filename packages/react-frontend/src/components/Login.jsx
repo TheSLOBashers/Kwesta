@@ -14,28 +14,25 @@ function Login(props) {
   });
   async function submitForm() {
     try {
-        await props.handleSubmit(
-            userDetails["username"],
-            userDetails["password"],
-            setError,
-            setIsLoading
-        );
-        const isModerator = Boolean(localStorage.getItem("moderator")) && localStorage.getItem("moderator");
-        if (isModerator) {
-          navigate("/moderation/Portal", { replace: true });
-        }
-        else {
-          navigate("/", { replace: true });
-        }
-
-        localStorage.setItem("username", userDetails.username);
-        props.setUser(userDetails.username);
+      await props.handleSubmit(
+        userDetails["username"],
+        userDetails["password"],
+        setError,
+        setIsLoading
+      );
+      const isModerator =
+        Boolean(localStorage.getItem("moderator")) &&
+        localStorage.getItem("moderator");
+      localStorage.setItem("username", userDetails.username);
+      props.setUser(userDetails.username);
+      setUserDetails({ username: "", password: "" });
+      if (isModerator) {
+        navigate("/moderation/Portal", { replace: true });
+      } else {
         navigate("/", { replace: true });
-
-        setUserDetails({ username: "", password: "" });
-    }
-    catch (error) {
-        console.log(error.msg);
+      }
+    } catch (error) {
+      console.log(error.message);
     }
   }
   function handleChange(event) {
@@ -87,7 +84,9 @@ function Login(props) {
         color="#000000"
         visible={isLoading}
       />
-      <p style={{ color: "red", fontWeight: "bold" }} >{error === "" ? "" : error}</p>
+      <p style={{ color: "red", fontWeight: "bold" }}>
+        {error === "" ? "" : error}
+      </p>
       <p>
         Don't have an account? <Link to="/Signup">Signup</Link>
       </p>

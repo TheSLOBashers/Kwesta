@@ -19,17 +19,28 @@ function createUser(userData) {
 }
 
 function updateUser(userId, updateData) {
-  return User.findByIdAndUpdate(userId, updateData, { new: true });
+  return User.findByIdAndUpdate(userId, updateData, {
+    new: true
+  });
 }
 
 // Specific functions for api routes
 
 // Create a new user with only username, email, and password
 async function createNewUser(username, email, password) {
-  const hashedPassword = await bcrypt.hash(password, saltRounds);
-  const userData = { username, email, password: hashedPassword };
+  const hashedPassword = await bcrypt.hash(
+    password,
+    saltRounds
+  );
+  const userData = {
+    username,
+    email,
+    password: hashedPassword
+  };
 
-  const existingUsername = await getUserByUsername(userData.username);
+  const existingUsername = await getUserByUsername(
+    userData.username
+  );
   const existingEmail = await getUserByEmail(userData.email);
 
   if (existingUsername && existingUsername._id) {
@@ -47,45 +58,78 @@ async function authenticateUser(username, password) {
       throw new Error("User not found");
     }
 
-    return bcrypt.compare(password, user.password).then(match => {
-      if (!match) {
-        throw new Error("Invalid password");
-      }
-      else if (user.permissions === "banned") {
-        throw new Error("Banned");
-      }
-      return user;
-    });
+    return bcrypt
+      .compare(password, user.password)
+      .then(match => {
+        if (!match) {
+          throw new Error("Invalid password");
+        } else if (user.permissions === "banned") {
+          throw new Error("Banned");
+        }
+        return user;
+      });
   });
 }
 
 async function getAllNonModeratorUsers() {
-  return await User.find({ permissions: { $ne: "moderator" } }).select('-password');
+  return await User.find({
+    permissions: { $ne: "moderator" }
+  }).select("-password");
 }
 
 async function banUser(userId) {
-  return User.findByIdAndUpdate(userId, {permissions: "Banned"}, { new: true });
+  return User.findByIdAndUpdate(
+    userId,
+    { permissions: "Banned" },
+    { new: true }
+  );
 }
 
 async function unbanUser(userId) {
-  return User.findByIdAndUpdate(userId, {permissions: "regular"}, { new: true });
+  return User.findByIdAndUpdate(
+    userId,
+    { permissions: "regular" },
+    { new: true }
+  );
 }
 
 async function getUserFlags(userId) {
-  const user = await User.findById(userId).populate('flagList.comment');
+  const user = await User.findById(userId).populate(
+    "flagList.comment"
+  );
   return user.flagList.map(flag => flag.comment);
 }
 
 async function addUserFlag(userId, commentId) {
-  return User.findByIdAndUpdate(userId, { $addToSet: { flagList: { comment: commentId } } }, { new: true });
+  return User.findByIdAndUpdate(
+    userId,
+    { $addToSet: { flagList: { comment: commentId } } },
+    { new: true }
+  );
 }
 
 async function removeUserFlag(userId, commentId) {
-  return User.findByIdAndUpdate(userId, { $pull: { flagList: { comment: commentId } } }, { new: true });
+  return User.findByIdAndUpdate(
+    userId,
+    { $pull: { flagList: { comment: commentId } } },
+    { new: true }
+  );
 }
 
 async function upgradeToModerator(userId) {
-  return User.findByIdAndUpdate(userId, {permissions: "moderator"}, { new: true });
+  return User.findByIdAndUpdate(
+    userId,
+    { permissions: "moderator" },
+    { new: true }
+  );
+}
+
+async function addPoints(userId, amount = 10) {
+  return User.findByIdAndUpdate(
+    userId,
+    { $inc: { points: amount } },
+    { new: true }
+  );
 }
 
 export default {
@@ -98,7 +142,8 @@ export default {
   getUserFlags,
   addUserFlag,
   removeUserFlag,
-  upgradeToModerator
+  upgradeToModerator,
+  addPoints
 };
 
 /*

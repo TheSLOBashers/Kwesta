@@ -1,7 +1,10 @@
 import express from "express";
 const router = express.Router();
 import user_services from "../models/user-services.js";
-import { authenticateToken, authenticateModerator } from "./auth.js";
+import {
+  authenticateToken,
+  authenticateModerator
+} from "./auth.js";
 const {
   authenticateUser,
   createNewUser,
@@ -47,47 +50,80 @@ router.get("/", authenticateModerator, async (req, res) => {
   }
 });
 
-// Ban a user
-router.put("/ban/:id", authenticateModerator, async (req, res) => {
-  const id = req.params["id"]; // or req.params.id
-  banUser(id)
-    .then((user) => {
-      delete user.password;
-      res.status(200).json({user});
-    })
-    .catch((error) => {
-      return res.status(500).send("Internal Server Error");
-    })
-});
-
-// unban a user
-router.put("/unban/:id", authenticateModerator, async (req, res) => {
-  const id = req.params["id"]; // or req.params.id
-  unbanUser(id)
-    .then((user) => {
-      delete user.password;
-      res.status(200).json({user});
-    })
-    .catch((error) => {
-      return res.status(500).send("Internal Server Error");
-    })
-});
-
-// add moderator permissions to a user, given username
-router.put("/moderators", authenticateModerator, async (req, res) => {
-  const username = req.body.username;
+router.get("/me", authenticateToken, async (req, res) => {
   try {
-    const user = await getUserByUsername(username);
+    const user = await getUserByUsername(req.user.username);
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return res
+        .status(404)
+        .json({ message: "User not found" });
     }
-    await upgradeToModerator(user._id);
-    delete user.password;
-    res.status(200).json({user});
+
+    return res.status(200).json({
+      username: user.username,
+      points: user.points || 0,
+      permissions: user.permissions
+    });
   } catch (error) {
     return res.status(500).send("Internal Server Error");
   }
 });
+
+// Ban a user
+router.put(
+  "/ban/:id",
+  authenticateModerator,
+  async (req, res) => {
+    const id = req.params["id"]; // or req.params.id
+    banUser(id)
+      .then(user => {
+        delete user.password;
+        res.status(200).json({ user });
+      })
+      .catch(error => {
+        return res.status(500).send("Internal Server Error");
+      });
+  }
+);
+
+// unban a user
+router.put(
+  "/unban/:id",
+  authenticateModerator,
+  async (req, res) => {
+    const id = req.params["id"]; // or req.params.id
+    unbanUser(id)
+      .then(user => {
+        delete user.password;
+        res.status(200).json({ user });
+      })
+      .catch(error => {
+        return res.status(500).send("Internal Server Error");
+      });
+  }
+);
+
+// add moderator permissions to a user, given username
+router.put(
+  "/moderators",
+  authenticateModerator,
+  async (req, res) => {
+    const username = req.body.username;
+    try {
+      const user = await getUserByUsername(username);
+      if (!user) {
+        return res
+          .status(404)
+          .json({ message: "User not found" });
+      }
+      await upgradeToModerator(user._id);
+      delete user.password;
+      res.status(200).json({ user });
+    } catch (error) {
+      return res.status(500).send("Internal Server Error");
+    }
+  }
+);
 
 export default router;
 

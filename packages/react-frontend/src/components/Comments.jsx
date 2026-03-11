@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import CommentOverlay from "./CommentOverlay";
 import CommentOpenButton from "./CommentOpenButton";
 
-function Comments({ comments, setComments }) {
+function Comments({ comments, setComments, onPointsChanged }) {
   const [commentIsOpen, setCommentIsOpen] = useState(false);
 
   return (
@@ -18,6 +18,7 @@ function Comments({ comments, setComments }) {
           key={comments.length}
           comments={comments}
           setComments={setComments}
+          onPointsChanged={onPointsChanged}
           close={() => setCommentIsOpen(false)}
         />
       )}

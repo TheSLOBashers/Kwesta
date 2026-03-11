@@ -1,6 +1,10 @@
-const loginCall = async (username, password, setError, setIsLoading) => {
+const loginCall = async (
+  username,
+  password,
+  setError,
+  setIsLoading
+) => {
   try {
-
     setIsLoading(true);
 
     const response = await fetch(
@@ -10,17 +14,16 @@ const loginCall = async (username, password, setError, setIsLoading) => {
         headers: {
           "Content-Type": "application/json" // Indicate the content type
         },
-        body: JSON.stringify({username, password}) // Convert the data to a JSON string
+        body: JSON.stringify({ username, password }) // Convert the data to a JSON string
       }
     );
 
     const json = await response.json();
     if (!response.ok) {
-      if(json.message === "Invalid username or password") {
+      if (json.message === "Invalid username or password") {
         setError(json.message);
         throw new Error(`${json.message}`);
-      }
-      else if (json.message === "Account banned") {
+      } else if (json.message === "Account banned") {
         setError(json.message);
         throw new Error(`${json.message}`);
       }
@@ -28,14 +31,17 @@ const loginCall = async (username, password, setError, setIsLoading) => {
     }
 
     if (json.permissions && json.permissions === "moderator") {
-      localStorage.setItem('moderator', true);
+      localStorage.setItem("moderator", true);
     }
-    localStorage.setItem('authToken', json.token);
+    localStorage.setItem("authToken", json.token);
     setError("");
   } catch (error) {
+    setError(
+      error.message ||
+        "Unable to connect. Is the server running?"
+    );
     throw new Error(`Error: ${error.message}`);
-  } 
-  finally {
+  } finally {
     setIsLoading(false);
   }
 };

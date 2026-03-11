@@ -78,6 +78,20 @@ async function removeFlag(commentId) {
   );
 }
 
+async function likeComment(commentId, userId) {
+  return Comment.findOneAndUpdate(
+    {
+      _id: commentId,
+      likedBy: { $ne: userId }
+    },
+    {
+      $addToSet: { likedBy: userId },
+      $inc: { likes: 1 }
+    },
+    { new: true }
+  ).populate("author", "username");
+}
+
 /**
  * @param {Object} filters - Filter parameters
  * @param {string} filters.author - Filter by author ID
@@ -206,6 +220,7 @@ export default {
   unremoveComment,
   addFlag,
   removeFlag,
+  likeComment,
   searchComments,
   getCommentStats
 };

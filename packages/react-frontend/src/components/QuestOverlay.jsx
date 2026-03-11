@@ -3,22 +3,30 @@ import { useRef, useState, useEffect } from "react";
 import joinQuest from "../APICalls/joinQuest";
 import unjoinQuest from "../APICalls/unjoinQuest";
 
-function QuestOverlay({ close, quests, setQuests }) {
+function QuestOverlay({
+  close,
+  quests,
+  setQuests,
+  onPointsChanged
+}) {
   const carouselRef = useRef(null);
   const [active, setActive] = useState(0);
 
   function handleJoin(questId) {
     joinQuest(questId)
-      .then(() => {
+      .then(async () => {
         // Update the local state to reflect the change
-        setQuests((prevQuests) =>
-          prevQuests.map((q) =>
+        setQuests(prevQuests =>
+          prevQuests.map(q =>
             q.id === questId ? { ...q, joined: true } : q
           )
         );
+        if (onPointsChanged) {
+          await onPointsChanged();
+        }
         alert("Successfully joined quest!");
       })
-      .catch((error) => {
+      .catch(error => {
         alert("Error joining quest: " + error.message);
       });
   }
@@ -26,14 +34,14 @@ function QuestOverlay({ close, quests, setQuests }) {
   function handleUnjoin(questId) {
     unjoinQuest(questId)
       .then(() => {
-        setQuests((prevQuests) =>
-          prevQuests.map((q) =>
+        setQuests(prevQuests =>
+          prevQuests.map(q =>
             q.id === questId ? { ...q, joined: false } : q
           )
         );
         alert("Successfully unjoined quest!");
       })
-      .catch((error) => {
+      .catch(error => {
         alert("Error joining quest: " + error.message);
       });
   }
@@ -71,7 +79,7 @@ function QuestOverlay({ close, quests, setQuests }) {
           ref={carouselRef}
           style={styles.questSlider}
           onScroll={onScroll}
-          onClick={(e) => e.stopPropagation()}
+          onClick={e => e.stopPropagation()}
         >
           {quests.map((q, i) => {
             const questDate = new Date(`${q.date}T${q.time}`);

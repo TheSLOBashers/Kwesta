@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import QuestOverlay from "./QuestOverlay";
 import QuestOpenButton from "./QuestOpenButton";
 
-function Events({ quests, setQuests }) {
+function Events({ quests, setQuests, onPointsChanged }) {
   const [questIsOpen, setQuestIsOpen] = useState(false);
 
   return (
@@ -17,6 +17,7 @@ function Events({ quests, setQuests }) {
         <QuestOverlay
           setQuests={setQuests}
           quests={quests}
+          onPointsChanged={onPointsChanged}
           close={() => setQuestIsOpen(false)}
         />
       )}

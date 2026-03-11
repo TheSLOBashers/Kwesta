@@ -15,7 +15,8 @@ const {
   getUserFlags,
   addUserFlag,
   removeUserFlag,
-  upgradeToModerator
+  upgradeToModerator,
+  addPoints
 } = user_services;
 
 const router = express.Router();
@@ -29,6 +30,7 @@ const {
   unremoveComment,
   addFlag,
   removeFlag,
+  likeComment,
   searchComments,
   getCommentStats
 } = commentServices;
@@ -37,15 +39,22 @@ router.post("/", authenticateToken, async (req, res) => {
   try {
     const { comment, location } = req.body;
 
-    if (!comment || location.lat == null || location.lng == null) {
-      return res.status(400).json({ message: "Comment and location required" });
+    if (
+      !comment ||
+      location.lat == null ||
+      location.lng == null
+    ) {
+      return res
+        .status(400)
+        .json({ message: "Comment and location required" });
     }
 
     const createdComment = await createComment({
       author: req.user._id,
       comment,
-      location,
+      location
     });
+    await addPoints(req.user._id, 10);
     res.status(201).json({ comment: createdComment });
   } catch (error) {
     return res.status(500).send("Error: " + error.message);
@@ -58,8 +67,15 @@ router.get("/", authenticateToken, async (req, res) => {
     const flags = await getUserFlags(req.user._id);
     comments.forEach(comment => {
       comment.flaggedByUser = flags.some(
-        flaggedComment => flaggedComment._id.toString() === comment._id.toString()
+        flaggedComment =>
+          flaggedComment._id.toString() ===
+          comment._id.toString()
       );
+      comment.likedByUser = (comment.likedBy || []).some(
+        likedUserId =>
+          likedUserId.toString() === req.user._id.toString()
+      );
+      delete comment.likedBy;
     });
     res.json({ comments: comments });
   } catch (error) {
@@ -73,11 +89,9 @@ router.get("/area", async (req, res) => {
     const { lat, lng, radius } = req.query;
 
     if (!lat || !lng) {
-      return res
-        .status(400)
-        .json({
-          message: "lat and lng query parameters are required"
-        });
+      return res.status(400).json({
+        message: "lat and lng query parameters are required"
+      });
     }
 
     const comments = await getCommentsByArea(
@@ -261,5 +275,35 @@ router.put(
     }
   }
 );
+
+router.put("/like/:id", authenticateToken, async (req, res) => {
+  const id = req.params["id"];
+
+  try {
+    const existingComment = await getCommentById(id);
+    if (!existingComment) {
+      return res
+        .status(404)
+        .json({ message: "Comment not found" });
+    }
+
+    if (
+      (existingComment.likedBy || []).some(
+        likedUserId =>
+          likedUserId.toString() === req.user._id.toString()
+      )
+    ) {
+      return res
+        .status(400)
+        .json({ message: "Comment already liked" });
+    }
+
+    const comment = await likeComment(id, req.user._id);
+    await addPoints(req.user._id, 10);
+    res.status(200).json({ comment });
+  } catch (error) {
+    return res.status(500).send("Internal Server Error");
+  }
+});
 
 export default router;
