@@ -204,6 +204,22 @@ async function getEventStats() {
   };
 }
 
+async function joinEvent(eventId, userId) {
+  return Event.findByIdAndUpdate(
+    eventId,  
+    { $addToSet: { rsvpList: userId} },
+    { new: true }
+  );
+}
+
+async function unjoinEvent(eventId, userId) {
+  return Event.findByIdAndUpdate(
+    eventId,  
+    { $pull: { rsvpList: userId} },
+    { new: true }
+  );
+}
+
 export default {
   createEvent,
   getEvents,
@@ -215,5 +231,7 @@ export default {
   addEventFlag,
   removeEventFlag,
   searchEvents,
-  getEventStats
+  getEventStats,
+  joinEvent,
+  unjoinEvent
 };
