@@ -1,10 +1,11 @@
 import React from "react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 
 import Comments from "./Comments";
 import Events from "./Events";
 import Quests from "./Quests";
 import AddButtonOverlay from "./AddButtonOverlay";
+import MapSection from './MapSection';
 
 import getCommentsCall from "../APICalls/getCommentsCall";
 import getEventsCall from "../APICalls/getEventsCall";
@@ -17,6 +18,14 @@ function UserFeed(props) {
   const [events, setEvents] = useState([]);
   const [quests, setQuests] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  // New
+  const [selectedCommentId, setSelectedCommentId] = useState(null);
+
+  const selectedComment = useMemo(
+    () => comments.find((c) => c.id === selectedCommentId) || null,
+    [comments, selectedCommentId]
+  );
 
   useEffect(() => {
     const fetchAll = async () => {
@@ -72,17 +81,27 @@ function UserFeed(props) {
 
   return (
     <div>
-      <Comments
-        comments={comments}
-        setComments={setComments}
-        onPointsChanged={props.onPointsChanged}
-      />
-      <Events events={events} />
-      <Quests
-        quests={quests}
-        setQuests={setQuests}
-        onPointsChanged={props.onPointsChanged}
-      />
+      <div style={{ height: "calc(50vh)", width: "100%" }}>
+        <Comments
+          comments={comments}
+          setComments={setComments}
+          onPointsChanged={props.onPointsChanged}
+          onSelectComment={(comment) => setSelectedCommentId(comment?.id ?? null)}
+        />
+        <Events events={events} />
+        <Quests
+          quests={quests}
+          setQuests={setQuests}
+          onPointsChanged={props.onPointsChanged}
+        />
+      </div>
+
+      <div style={{ height: "calc(100vh - 140px)", width: "100%" }}>
+        <MapSection 
+          comments={comments} 
+          selectedComment={selectedComment}
+        />
+      </div>
 
       <AddButtonOverlay
         username={props.user}
