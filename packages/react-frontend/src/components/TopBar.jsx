@@ -38,7 +38,8 @@ const styles = {
     left: 0,
     width: "100%",
     height: "70px",
-    backgroundColor: "#f5f5f5",
+    backgroundColor: "rgb(213, 215, 206)",
+    //backgroundColor: "linear-gradient(90deg,rgba(213, 215, 206, 1) 0%, rgba(198, 219, 160, 1) 51%, rgba(52, 54, 46, 0.75) 100%);",
     display: "flex",
     alignItems: "center",
     justifyContent: "space-between",
@@ -50,7 +51,8 @@ const styles = {
   title: {
     margin: 0,
     fontSize: "3rem",
-    color: "#334f74"
+    color: "#223040",
+    fontFamily: "MeltSwashes",
   },
   rightSection: {
     display: "flex",
@@ -61,11 +63,12 @@ const styles = {
     display: "flex",
     alignItems: "center",
     gap: "8px",
-    color: "#334f74",
+    color: "#223040",
     fontWeight: "600"
   },
   pointsLabel: {
-    fontSize: "1rem"
+    fontSize: "1rem",
+    fontFamily: "Acephimere",
   },
   pointsValue: {
     fontSize: "1.1rem"
