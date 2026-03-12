@@ -49,12 +49,17 @@ function UserFeed(props) {
     }
 
     const commentWithUsername = {
-      ...newComment,
-      id: newComment._id || newComment.id,
+      ...newComment.comment,            // use backend response
+      id: newComment.comment._id,
       author: props.user,
-      likes: newComment.likes || 0,
-      likedByUser: false,
-      flaggedByUser: false
+      likes: newComment.comment.likes || 0,
+      likedByUser: (newComment.comment.likedBy || []).some(
+        uid => uid.toString() === props.userId
+      ),
+      flaggedByUser: (newComment.comment.flags || []).some(
+        f => f.toString() === props.userId
+      ),
+      location: newComment.location || { lat: 0, lng: 0 },
     };
     setComments(prev => [commentWithUsername, ...prev]);
     if (props.onPointsChanged) {
