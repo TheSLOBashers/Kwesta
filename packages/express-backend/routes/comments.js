@@ -236,8 +236,10 @@ router.put("/flag/:id", authenticateToken, async (req, res) => {
   const id = req.params["id"];
   try {
     const flags = await getUserFlags(req.user._id);
+
+    const validFlags = flags.filter((flaggedComment) => flaggedComment && flaggedComment._id);
     if (
-      flags.some(
+      validFlags.some(
         (flaggedComment) => flaggedComment._id.toString() === id
       )
     ) {
@@ -249,6 +251,7 @@ router.put("/flag/:id", authenticateToken, async (req, res) => {
     const comment = await addFlag(id);
     res.status(200).json({ comment });
   } catch (error) {
+    console.error("Error flagging comment:", error);
     return res.status(500).send("Internal Server Error");
   }
 });
