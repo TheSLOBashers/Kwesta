@@ -1,3 +1,20 @@
+@font-face {
+  font-family: "CashMarket";
+  src: url('assets/CashMarket-BoldRounded.ttf') format("TrueType");
+}
+@font-face {
+  font-family: "Acephimere";
+  src: url('assets/Acephimere.otf') format("OpenType");
+}
+@font-face {
+  font-family: "Cocogoose";
+  src: url('assets/Cocogoose-Classic-Medium-trial.ttf') format("TrueType");
+}
+@font-face {
+  font-family: "MeltSwashes";
+  src: url('assets/Melt-Swashes.ttf') format("TrueType");
+}
+
 /*! 
  * Primitive UI | MIT License
  *
@@ -373,7 +390,7 @@ html {
 
 body {
   color: light-dark(#797979, #ffffff);
-  background: light-dark(#ffffff, #414141);
+  background: light-dark(#ffffff, #34362e);
   font-size: 1rem;
 }
 

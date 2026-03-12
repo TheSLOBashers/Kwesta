@@ -4,8 +4,8 @@ import { Link } from "react-router-dom";
 function NavBar(){
     return (
         <nav>
-            <h1>Pages:</h1>
-            <ul>
+            <h1 style={styles.link}>Pages:</h1>
+            <ul style={styles.link}>
                 <li>
                 <Link to="/">Home</Link>
                 </li>
@@ -13,7 +13,7 @@ function NavBar(){
                 <Link to="/">Quests</Link>
                 </li>
                 <li>
-                <Link to="/">About</Link>
+                <Link to="/About">About</Link>
                 </li>
                 <li>
                 <Link to="/Login">Login</Link>
@@ -27,6 +27,12 @@ function NavBar(){
             </ul>
         </nav>
     );
+}
+
+const styles = {
+    link: {
+        fontFamily: "Acephimere"
+    }
 }
 
 export default NavBar;

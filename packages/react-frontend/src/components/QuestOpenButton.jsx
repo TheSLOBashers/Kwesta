@@ -27,6 +27,7 @@ const styles = {
         cursor: "pointer",
         zIndex: 1000,
         alignItems: "center",
+        fontFamily: "Acephimere",
     },
     text: {
         color: "#000000",
