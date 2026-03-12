@@ -1,6 +1,17 @@
 const getEventsCall = async () => {
     try {
-        const response = await fetch("http://localhost:8000/events");
+        const response = await fetch(
+        "http://localhost:8000/events",
+        {
+            method: "GET", // Specify the method
+            headers: {
+            "Content-Type": "application/json", // Indicate the content type
+            Authorization: `Bearer ${localStorage.getItem(
+                "authToken"
+            )}`
+            }
+        }
+        );
         if(!response.ok) {
             throw new Error("Failed to fetch events");
         }

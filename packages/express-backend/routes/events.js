@@ -24,7 +24,15 @@ const {
 
 router.post("/", authenticateToken, async (req, res) => {
   try {
-    const event = await createEvent(req.body);
+    const { description, date, time, location } = req.body;
+
+    const event = await createEvent({
+      author: req.user._id,
+      description,
+      date,
+      time,
+      location
+    });
     await addPoints(req.user._id, 10);
     res.status(201).json(event);
   } catch (error) {
