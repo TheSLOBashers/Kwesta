@@ -79,7 +79,6 @@ router.get("/", authenticateToken, async (req, res) => {
         delete comment.likedBy;
       });
     }
-    console.log("breakpoint 2");
     res.json({ comments: comments });
   } catch (error) {
     res.status(500).send(error.message);
