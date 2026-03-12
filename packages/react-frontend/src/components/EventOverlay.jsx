@@ -1,9 +1,45 @@
 import React from "react";
 import { useRef, useState, useEffect } from "react";
+import joinEvent from "../APICalls/joinEvent";
+import unjoinEvent from "../APICalls/unjoinEvent";
 
-function EventOverlay({ close, events = [] }){
+function EventOverlay({ close, events = [], setEvents, onPointsChanged }){
     const carouselRef = useRef(null);
     const [active, setActive] = useState(0);
+
+    function handleJoin(eventId) {
+        joinEvent(eventId)
+            .then(async () => {
+                // Update the local state to reflect the change
+                setEvents(prevEvents =>
+                prevEvents.map(e =>
+                    e.id === eventId ? { ...e, joined: true } : e
+                )
+                );
+                if (onPointsChanged) {
+                await onPointsChanged();
+                }
+                alert("Successfully joined event!");
+            })
+            .catch(error => {
+                alert("Error joining event: " + error.message);
+            });
+    }
+
+    function handleUnjoin(eventId) {
+        unjoinEvent(eventId)
+        .then(() => {
+            setEvents(prevEvents =>
+            prevEvents.map(e =>
+                e.id === eventId ? { ...e, joined: false } : e
+            )
+            );
+            alert("Successfully unjoined event!");
+        })
+        .catch(error => {
+            alert("Error joining event: " + error.message);
+        });
+    }
 
     const onScroll = () => {
         const container = carouselRef.current;
@@ -63,6 +99,16 @@ function EventOverlay({ close, events = [] }){
                                     {e.author} - {formattedDate} - {`{${lat}, ${lng}}`}
                                 </h3>
                                 <p style={styles.event}>{e.description}</p>
+                                {e.joined ? (
+                                <button onClick={() => handleUnjoin(e.id)}>
+                                    Unjoin Event
+                                </button>
+                                ) : (
+                                <button onClick={() => handleJoin(e.id)}>
+                                    Join Event
+                                </button>
+                                )}
+                                <p>{e.joined ? "Joined" : "Not Joined"}</p>
                             </div>
                         );
                     })}

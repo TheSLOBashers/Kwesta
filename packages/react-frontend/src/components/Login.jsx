@@ -51,11 +51,11 @@ function Login(props) {
 
   return (
     <div>
-      <h1>Login</h1>
-      <p>Here is where you would login</p>
+      <h1 style={styles.title}>Login</h1>
+      <p style={styles.text}>Here is where you would login</p>
       <div>
         <form>
-          <label htmlFor="username">Username</label>
+          <label htmlFor="username" style={styles.title}>Username</label>
           <input
             type="text"
             name="username"
@@ -63,7 +63,7 @@ function Login(props) {
             value={userDetails.username}
             onChange={handleChange}
           />
-          <label htmlFor="password">Password</label>
+          <label htmlFor="password" style={styles.title}>Password</label>
           <input
             type="text"
             name="password"
@@ -75,6 +75,7 @@ function Login(props) {
             type="button"
             value="Submit"
             onClick={submitForm}
+            style={styles.title}
           />
         </form>
       </div>
@@ -87,11 +88,20 @@ function Login(props) {
       <p style={{ color: "red", fontWeight: "bold" }}>
         {error === "" ? "" : error}
       </p>
-      <p>
+      <p style={styles.text}>
         Don't have an account? <Link to="/Signup">Signup</Link>
       </p>
     </div>
   );
+}
+
+const styles = {
+  title: {
+    fontFamily: "Cocogoose",
+  },
+  text: {
+    fontFamily: "Acephimere",
+  }
 }
 
 export default Login;

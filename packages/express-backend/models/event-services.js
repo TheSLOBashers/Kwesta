@@ -1,8 +1,10 @@
 import Event from "./event.js";
 
-function createEvent(eventData) {
+async function createEvent(eventData) {
   const newEvent = new Event(eventData);
-  return newEvent.save();
+  await newEvent.save();
+
+  return newEvent.populate("author", "username");
 }
 
 function getEvents() {
@@ -204,6 +206,22 @@ async function getEventStats() {
   };
 }
 
+async function joinEvent(eventId, userId) {
+  return Event.findByIdAndUpdate(
+    eventId,  
+    { $addToSet: { rsvpList: userId} },
+    { new: true }
+  );
+}
+
+async function unjoinEvent(eventId, userId) {
+  return Event.findByIdAndUpdate(
+    eventId,  
+    { $pull: { rsvpList: userId} },
+    { new: true }
+  );
+}
+
 export default {
   createEvent,
   getEvents,
@@ -215,5 +233,7 @@ export default {
   addEventFlag,
   removeEventFlag,
   searchEvents,
-  getEventStats
+  getEventStats,
+  joinEvent,
+  unjoinEvent
 };

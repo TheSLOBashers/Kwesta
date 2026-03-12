@@ -58,11 +58,11 @@ function Signup(props) {
 
   return (
     <div>
-      <h1>Signup</h1>
-      <p>Here is where you would signup</p>
+      <h1 style={styles.title}>Signup</h1>
+      <p style={styles.text}>Here is where you would signup</p>
       <div>
         <form>
-          <label htmlFor="username">Username</label>
+          <label htmlFor="username" style={styles.title}>Username</label>
           <input
             type="text"
             name="username"
@@ -70,7 +70,7 @@ function Signup(props) {
             value={userDetails.username}
             onChange={handleChange}
           />
-          <label htmlFor="email">Email</label>
+          <label htmlFor="email" style={styles.title}>Email</label>
           <input
             type="text"
             name="email"
@@ -78,7 +78,7 @@ function Signup(props) {
             value={userDetails.email}
             onChange={handleChange}
           />
-          <label htmlFor="password">Password</label>
+          <label htmlFor="password" style={styles.title}>Password</label>
           <input
             type="text"
             name="password"
@@ -90,6 +90,7 @@ function Signup(props) {
             type="button"
             value="Submit"
             onClick={submitForm}
+            style={styles.title}
           />
         </form>
         <p>{accountCreated ? "Account created" : ""}</p>
@@ -103,11 +104,20 @@ function Signup(props) {
       <p style={{ color: "red", fontWeight: "bold" }}>
         {error === "" ? "" : error}
       </p>
-      <p>
+      <p style={styles.text}>
         Already have an account? <Link to="/Login">Login</Link>
       </p>
     </div>
   );
+}
+
+const styles = {
+  title: {
+    fontFamily: "Cocogoose",
+  },
+  text: {
+    fontFamily: "Acephimere",
+  }
 }
 
 export default Signup;

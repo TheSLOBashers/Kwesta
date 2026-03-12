@@ -27,7 +27,7 @@ const getEventsCall = async () => {
             time: e.time,
             description: e.description,
             location: e.location,
-            rsvpCount: e.rsvpCount,
+            joined: e.joined || false,
             image: e.image,
             flag: e.flag,
         }));
