@@ -66,22 +66,23 @@ router.get("/", authenticateToken, async (req, res) => {
     const comments = await getComments();
     const flags = await getUserFlags(req.user._id);
     if (!flags.length === 0) {
-      comments.forEach(comment => {
+      comments.forEach((comment) => {
         comment.flaggedByUser = flags.some(
-          flaggedComment =>
+          (flaggedComment) =>
             flaggedComment._id.toString() ===
             comment._id.toString()
         );
         comment.likedByUser = (comment.likedBy || []).some(
-          likedUserId =>
+          (likedUserId) =>
             likedUserId.toString() === req.user._id.toString()
         );
         delete comment.likedBy;
       });
     }
+    console.log("breakpoint 2");
     res.json({ comments: comments });
   } catch (error) {
-    res.status(500).send("Error");
+    res.status(500).send(error.message);
   }
 });
 
@@ -147,7 +148,8 @@ router.post(
 
       // Remove undefined values
       Object.keys(filters).forEach(
-        key => filters[key] === undefined && delete filters[key]
+        (key) =>
+          filters[key] === undefined && delete filters[key]
       );
 
       if (!filters.limit || filters.limit > 1000) {
@@ -262,7 +264,8 @@ router.put(
       const flags = await getUserFlags(req.user._id);
       if (
         !flags.some(
-          (flaggedComment) => flaggedComment._id.toString() === id
+          (flaggedComment) =>
+            flaggedComment._id.toString() === id
         )
       ) {
         return res

@@ -29,7 +29,7 @@ function LocationMarker() {
 
   return position === null ? null : (
     <Marker position={position}>
-      <Tooltip>You are here, you lost ah mf</Tooltip>
+      <Tooltip>You are here</Tooltip>
     </Marker>
   )
 }
@@ -88,7 +88,7 @@ function MapPage() {
             </MapContainer>
         </div>
 
-        <h2>WYA??</h2>
+        /*<h2>WYA??</h2>
         <div style={{ height: "calc(100vh - 140px)", width: "100%" }}>
             <MapContainer 
                 center={[20.74085079117805, -156.2268428410732]} 
@@ -104,7 +104,7 @@ function MapPage() {
                     maxZoom={21}
                 />
 
-                {/* Boundaries and Labels Oberlay */}
+                {/* Boundaries and Labels Overlay */}
                 <TileLayer
                     attribution='Labels &copy Esri'
                     url="https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}"
