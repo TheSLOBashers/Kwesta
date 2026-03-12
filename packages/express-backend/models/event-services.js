@@ -6,7 +6,10 @@ function createEvent(eventData) {
 }
 
 function getEvents() {
-  return Event.find().sort({ createdAt: -1 });
+  return Event.find()
+    .populate("author", "username")
+    .sort({ createdAt: -1 })
+    .lean();
 }
 
 function getEventById(eventId) {
