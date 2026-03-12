@@ -62,7 +62,19 @@ function UserFeed(props) {
       ...newEvent,
       author: props.user
     };
-    setEvents(prev => [eventWithUsername, ...prev]);
+    setEvents(prev => [
+      {
+        id: newEvent._id,
+        author: newEvent.author?.username || newEvent.author,
+        date: newEvent.date,
+        time: newEvent.time,
+        description: newEvent.description,
+        location: newEvent.location,
+        joined: false,
+        image: newEvent.image,
+        flag: newEvent.flag
+      },
+      ...prev]);
     if (props.onPointsChanged) {
       await props.onPointsChanged();
     }

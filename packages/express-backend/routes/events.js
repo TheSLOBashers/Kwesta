@@ -42,11 +42,12 @@ router.post("/", authenticateToken, async (req, res) => {
   }
 });
 
-router.get("/", async (req, res) => {
+router.get("/", authenticateToken, async (req, res) => {
   try {
     const events = await getEvents();
     events.forEach(e => {
-      e.joined = e.rsvpList.some(
+      const list = e.rsvpList || [];
+      e.joined = list.some(
         id => id.toString() === req.user._id.toString()
       );
     });

@@ -16,7 +16,7 @@ const EventSchema = new mongoose.Schema(
     time: { type: String, required: true },
     description: { type: String, required: true },
     location: { type: LocationSchema, required: true },
-    rsvpList: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+    rsvpList: [{ type: Schema.Types.ObjectId, ref: 'User', default: [] }],
     image: { type: String, required: false },
     flag: { type: Number, default: 0 },
     removed: { type: Boolean, default: false }

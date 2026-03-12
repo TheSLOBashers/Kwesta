@@ -1,8 +1,10 @@
 import Event from "./event.js";
 
-function createEvent(eventData) {
+async function createEvent(eventData) {
   const newEvent = new Event(eventData);
-  return newEvent.save();
+  await newEvent.save();
+
+  return newEvent.populate("author", "username");
 }
 
 function getEvents() {

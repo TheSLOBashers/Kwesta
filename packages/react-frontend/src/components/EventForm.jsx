@@ -17,8 +17,7 @@ function EventForm({ onSubmit, onClose, username }) {
             description: text,
             date,
             time,
-            location,
-            rsvpCount: 0,
+            location
         }
 
         onSubmit(eventData);
