@@ -77,7 +77,11 @@ function UserFeed(props) {
         setComments={setComments}
         onPointsChanged={props.onPointsChanged}
       />
-      <Events events={events} />
+      <Events 
+        events={events} 
+        setEvents={setEvents}
+        onPointsChanged={props.onPointsChanged}
+      />
       <Quests
         quests={quests}
         setQuests={setQuests}
