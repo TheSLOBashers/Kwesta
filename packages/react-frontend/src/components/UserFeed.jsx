@@ -81,7 +81,13 @@ function UserFeed(props) {
 
   return (
     <div>
-      <div style={{ height: "calc(50vh)", width: "100%" }}>
+      <div style={{ height: "calc(100vh - 140px)", width: "100%" }}>
+        <MapSection 
+          comments={comments} 
+          selectedComment={selectedComment}
+        />
+      </div>
+      <div style={{ height: "10vh", width: "100%"}}>
         <Comments
           comments={comments}
           setComments={setComments}
@@ -93,13 +99,6 @@ function UserFeed(props) {
           quests={quests}
           setQuests={setQuests}
           onPointsChanged={props.onPointsChanged}
-        />
-      </div>
-
-      <div style={{ height: "calc(100vh - 140px)", width: "100%" }}>
-        <MapSection 
-          comments={comments} 
-          selectedComment={selectedComment}
         />
       </div>
 

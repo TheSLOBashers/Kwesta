@@ -15,7 +15,7 @@ function QuestOpenButton({ onClick }){
 const styles = {
     button: {
         position: "absolute",
-        bottom: "15vh",
+        bottom: "0vh",
         left: "50vw",
         width: "100px",
         height: "40px",
