@@ -311,6 +311,35 @@ describe("comment-services", () => {
     ]);
   });
 
+  it("searchComments supports maxFlags-only filtering", async () => {
+    const expectedComments = [{ _id: "comment-11" }];
+    const { builder, calls } = createQueryBuilder(
+      expectedComments,
+      "exec"
+    );
+    const findMock = mock.method(
+      Comment,
+      "find",
+      () => builder
+    );
+
+    const result = await commentServices.searchComments({
+      maxFlags: 2
+    });
+
+    assert.deepEqual(result, expectedComments);
+    assert.deepEqual(findMock.mock.calls[0].arguments, [
+      {
+        flag: { $lte: 2 }
+      }
+    ]);
+    assert.deepEqual(calls, [
+      { method: "populate", args: ["author", "username"] },
+      { method: "sort", args: [{ createdAt: -1 }] },
+      { method: "exec", args: [] }
+    ]);
+  });
+
   it("getCommentStats aggregates totals and active count", async () => {
     const countMock = mock.method(
       Comment,

@@ -240,6 +240,145 @@ describe("quest-services", () => {
     ]);
   });
 
+  it("searchQuests supports startDate-only with maxFlags-only filtering", async () => {
+    const expectedQuests = [{ _id: "quest-13" }];
+    const { builder, calls } = createQueryBuilder(
+      expectedQuests,
+      "exec"
+    );
+    const findMock = mock.method(Quest, "find", () => builder);
+
+    const result = await questServices.searchQuests({
+      startDate: "2026-04-01",
+      maxFlags: 4
+    });
+
+    assert.deepEqual(result, expectedQuests);
+    assert.deepEqual(findMock.mock.calls[0].arguments, [
+      {
+        date: { $gte: "2026-04-01" },
+        flag: { $lte: 4 }
+      }
+    ]);
+    assert.deepEqual(calls, [
+      { method: "sort", args: [{ createdAt: -1 }] },
+      { method: "exec", args: [] }
+    ]);
+  });
+
+  it("searchQuests supports endDate-only filtering", async () => {
+    const expectedQuests = [{ _id: "quest-14" }];
+    const { builder, calls } = createQueryBuilder(
+      expectedQuests,
+      "exec"
+    );
+    const findMock = mock.method(Quest, "find", () => builder);
+
+    const result = await questServices.searchQuests({
+      endDate: "2026-04-30"
+    });
+
+    assert.deepEqual(result, expectedQuests);
+    assert.deepEqual(findMock.mock.calls[0].arguments, [
+      {
+        date: { $lte: "2026-04-30" }
+      }
+    ]);
+    assert.deepEqual(calls, [
+      { method: "sort", args: [{ createdAt: -1 }] },
+      { method: "exec", args: [] }
+    ]);
+  });
+
+  it("searchQuests supports createdBefore-only filtering", async () => {
+    const expectedQuests = [{ _id: "quest-15" }];
+    const { builder, calls } = createQueryBuilder(
+      expectedQuests,
+      "exec"
+    );
+    const findMock = mock.method(Quest, "find", () => builder);
+
+    const result = await questServices.searchQuests({
+      createdBefore: "2026-04-15T00:00:00.000Z"
+    });
+
+    assert.deepEqual(result, expectedQuests);
+    assert.deepEqual(findMock.mock.calls[0].arguments, [
+      {
+        createdAt: { $lte: new Date("2026-04-15T00:00:00.000Z") }
+      }
+    ]);
+    assert.deepEqual(calls, [
+      { method: "sort", args: [{ createdAt: -1 }] },
+      { method: "exec", args: [] }
+    ]);
+  });
+
+  it("searchQuests does not apply location filter when radius is missing", async () => {
+    const expectedQuests = [{ _id: "quest-16" }];
+    const { builder, calls } = createQueryBuilder(
+      expectedQuests,
+      "exec"
+    );
+    const findMock = mock.method(Quest, "find", () => builder);
+
+    const result = await questServices.searchQuests({
+      lat: 35,
+      lng: -120
+    });
+
+    assert.deepEqual(result, expectedQuests);
+    assert.deepEqual(findMock.mock.calls[0].arguments, [{}]);
+    assert.deepEqual(calls, [
+      { method: "sort", args: [{ createdAt: -1 }] },
+      { method: "exec", args: [] }
+    ]);
+  });
+
+  it("searchQuests supports minFlags-only filtering", async () => {
+    const expectedQuests = [{ _id: "quest-17" }];
+    const { builder, calls } = createQueryBuilder(
+      expectedQuests,
+      "exec"
+    );
+    const findMock = mock.method(Quest, "find", () => builder);
+
+    const result = await questServices.searchQuests({
+      minFlags: 1
+    });
+
+    assert.deepEqual(result, expectedQuests);
+    assert.deepEqual(findMock.mock.calls[0].arguments, [
+      {
+        flag: { $gte: 1 }
+      }
+    ]);
+    assert.deepEqual(calls, [
+      { method: "sort", args: [{ createdAt: -1 }] },
+      { method: "exec", args: [] }
+    ]);
+  });
+
+  it("searchQuests supports ascending sort order", async () => {
+    const expectedQuests = [{ _id: "quest-18" }];
+    const { builder, calls } = createQueryBuilder(
+      expectedQuests,
+      "exec"
+    );
+    mock.method(Quest, "find", () => builder);
+
+    const result = await questServices.searchQuests({
+      sortBy: "date",
+      sortOrder: "asc"
+    });
+
+    assert.deepEqual(result, expectedQuests);
+    assert.deepEqual(calls, [
+      { method: "sort", args: [{ date: 1 }] },
+      { method: "exec", args: [] }
+    ]);
+  });
+
   it("getQuestStats returns totals, flagged, removed, and active counts", async () => {
     const countMock = mock.method(
       Quest,

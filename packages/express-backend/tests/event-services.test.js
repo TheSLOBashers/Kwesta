@@ -238,6 +238,58 @@ describe("event-services", () => {
     ]);
   });
 
+  it("searchEvents supports startDate-only with max-only flag and RSVP filters", async () => {
+    const expectedEvents = [{ _id: "event-11" }];
+    const { builder, calls } = createQueryBuilder(
+      expectedEvents,
+      "exec"
+    );
+    const findMock = mock.method(Event, "find", () => builder);
+
+    const result = await eventServices.searchEvents({
+      startDate: "2026-04-01",
+      maxFlags: 2,
+      maxRsvp: 5
+    });
+
+    assert.deepEqual(result, expectedEvents);
+    assert.deepEqual(findMock.mock.calls[0].arguments, [
+      {
+        date: { $gte: "2026-04-01" },
+        flag: { $lte: 2 },
+        rsvpCount: { $lte: 5 }
+      }
+    ]);
+    assert.deepEqual(calls, [
+      { method: "sort", args: [{ createdAt: -1 }] },
+      { method: "exec", args: [] }
+    ]);
+  });
+
+  it("searchEvents supports endDate-only filtering", async () => {
+    const expectedEvents = [{ _id: "event-12" }];
+    const { builder, calls } = createQueryBuilder(
+      expectedEvents,
+      "exec"
+    );
+    const findMock = mock.method(Event, "find", () => builder);
+
+    const result = await eventServices.searchEvents({
+      endDate: "2026-04-30"
+    });
+
+    assert.deepEqual(result, expectedEvents);
+    assert.deepEqual(findMock.mock.calls[0].arguments, [
+      {
+        date: { $lte: "2026-04-30" }
+      }
+    ]);
+    assert.deepEqual(calls, [
+      { method: "sort", args: [{ createdAt: -1 }] },
+      { method: "exec", args: [] }
+    ]);
+  });
+
   it("getEventStats returns totals, flagged, removed, and active counts", async () => {
     const countMock = mock.method(
       Event,
