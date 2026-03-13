@@ -65,21 +65,23 @@ router.get("/", authenticateToken, async (req, res) => {
   try {
     const comments = await getComments();
     const flags = await getUserFlags(req.user._id);
-    comments.forEach(comment => {
-      comment.flaggedByUser = flags.some(
-        flaggedComment =>
-          flaggedComment._id.toString() ===
-          comment._id.toString()
-      );
-      comment.likedByUser = (comment.likedBy || []).some(
-        likedUserId =>
-          likedUserId.toString() === req.user._id.toString()
-      );
-      delete comment.likedBy;
-    });
+    if (!flags.length === 0) {
+      comments.forEach((comment) => {
+        comment.flaggedByUser = flags.some(
+          (flaggedComment) =>
+            flaggedComment._id.toString() ===
+            comment._id.toString()
+        );
+        comment.likedByUser = (comment.likedBy || []).some(
+          (likedUserId) =>
+            likedUserId.toString() === req.user._id.toString()
+        );
+        delete comment.likedBy;
+      });
+    }
     res.json({ comments: comments });
   } catch (error) {
-    res.status(500).send("Error");
+    res.status(500).send(error.message);
   }
 });
 
@@ -145,7 +147,8 @@ router.post(
 
       // Remove undefined values
       Object.keys(filters).forEach(
-        key => filters[key] === undefined && delete filters[key]
+        (key) =>
+          filters[key] === undefined && delete filters[key]
       );
 
       if (!filters.limit || filters.limit > 1000) {
@@ -203,10 +206,10 @@ router.put(
   async (req, res) => {
     const id = req.params["id"]; // or req.params.id
     removeComment(id)
-      .then(comment => {
+      .then((comment) => {
         res.status(200).json({ comment });
       })
-      .catch(error => {
+      .catch((error) => {
         return res.status(500).send("Internal Server Error");
       });
   }
@@ -219,10 +222,10 @@ router.put(
   async (req, res) => {
     const id = req.params["id"]; // or req.params.id
     unremoveComment(id)
-      .then(comment => {
+      .then((comment) => {
         res.status(200).json({ comment });
       })
-      .catch(error => {
+      .catch((error) => {
         return res.status(500).send("Internal Server Error");
       });
   }
@@ -233,9 +236,11 @@ router.put("/flag/:id", authenticateToken, async (req, res) => {
   const id = req.params["id"];
   try {
     const flags = await getUserFlags(req.user._id);
+
+    const validFlags = flags.filter((flaggedComment) => flaggedComment && flaggedComment._id);
     if (
-      flags.some(
-        flaggedComment => flaggedComment._id.toString() === id
+      validFlags.some(
+        (flaggedComment) => flaggedComment._id.toString() === id
       )
     ) {
       return res
@@ -246,6 +251,7 @@ router.put("/flag/:id", authenticateToken, async (req, res) => {
     const comment = await addFlag(id);
     res.status(200).json({ comment });
   } catch (error) {
+    console.error("Error flagging comment:", error);
     return res.status(500).send("Internal Server Error");
   }
 });
@@ -260,7 +266,8 @@ router.put(
       const flags = await getUserFlags(req.user._id);
       if (
         !flags.some(
-          flaggedComment => flaggedComment._id.toString() === id
+          (flaggedComment) =>
+            flaggedComment._id.toString() === id
         )
       ) {
         return res
@@ -289,7 +296,7 @@ router.put("/like/:id", authenticateToken, async (req, res) => {
 
     if (
       (existingComment.likedBy || []).some(
-        likedUserId =>
+        (likedUserId) =>
           likedUserId.toString() === req.user._id.toString()
       )
     ) {

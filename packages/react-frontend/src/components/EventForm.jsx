@@ -14,12 +14,10 @@ function EventForm({ onSubmit, onClose, username }) {
         if(!username || !text || !date || !time) return;
 
         const eventData = {
-            author: username,
             description: text,
             date,
             time,
-            location,
-            rsvpCount: 0,
+            location
         }
 
         onSubmit(eventData);

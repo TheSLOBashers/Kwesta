@@ -8,10 +8,16 @@ function CommentOverlay({
   close,
   comments,
   setComments,
-  onPointsChanged
+  onPointsChanged,
+  onSelectComment
 }) {
   const carouselRef = useRef(null);
   const [active, setActive] = useState(0);
+
+  useEffect(() => {
+    if (!onSelectComment) return;
+    onSelectComment(comments[active] ?? null);
+  }, [active, comments, onSelectComment]);
 
   function handleLike(commentId) {
     likeComment(commentId)

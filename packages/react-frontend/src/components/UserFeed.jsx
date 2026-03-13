@@ -1,10 +1,11 @@
 import React from "react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 
 import Comments from "./Comments";
 import Events from "./Events";
 import Quests from "./Quests";
 import AddButtonOverlay from "./AddButtonOverlay";
+import MapSection from './MapSection';
 
 import getCommentsCall from "../APICalls/getCommentsCall";
 import getEventsCall from "../APICalls/getEventsCall";
@@ -17,6 +18,14 @@ function UserFeed(props) {
   const [events, setEvents] = useState([]);
   const [quests, setQuests] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  // New
+  const [selectedCommentId, setSelectedCommentId] = useState(null);
+
+  const selectedComment = useMemo(
+    () => comments.find((c) => c.id === selectedCommentId) || null,
+    [comments, selectedCommentId]
+  );
 
   useEffect(() => {
     const fetchAll = async () => {
@@ -40,12 +49,17 @@ function UserFeed(props) {
     }
 
     const commentWithUsername = {
-      ...newComment,
-      id: newComment._id || newComment.id,
+      ...newComment.comment,            // use backend response
+      id: newComment.comment._id,
       author: props.user,
-      likes: newComment.likes || 0,
-      likedByUser: false,
-      flaggedByUser: false
+      likes: newComment.comment.likes || 0,
+      likedByUser: (newComment.comment.likedBy || []).some(
+        uid => uid.toString() === props.userId
+      ),
+      flaggedByUser: (newComment.comment.flags || []).some(
+        f => f.toString() === props.userId
+      ),
+      location: newComment.location || { lat: 0, lng: 0 },
     };
     setComments(prev => [commentWithUsername, ...prev]);
     if (props.onPointsChanged) {
@@ -62,7 +76,19 @@ function UserFeed(props) {
       ...newEvent,
       author: props.user
     };
-    setEvents(prev => [eventWithUsername, ...prev]);
+    setEvents(prev => [
+      {
+        id: newEvent._id,
+        author: newEvent.author?.username || newEvent.author,
+        date: newEvent.date,
+        time: newEvent.time,
+        description: newEvent.description,
+        location: newEvent.location,
+        joined: false,
+        image: newEvent.image,
+        flag: newEvent.flag
+      },
+      ...prev]);
     if (props.onPointsChanged) {
       await props.onPointsChanged();
     }
@@ -72,17 +98,30 @@ function UserFeed(props) {
 
   return (
     <div>
-      <Comments
-        comments={comments}
-        setComments={setComments}
-        onPointsChanged={props.onPointsChanged}
-      />
-      <Events events={events} />
-      <Quests
-        quests={quests}
-        setQuests={setQuests}
-        onPointsChanged={props.onPointsChanged}
-      />
+      <div style={{ height: "calc(100vh - 140px)", width: "100%" }}>
+        <MapSection 
+          comments={comments} 
+          selectedComment={selectedComment}
+        />
+      </div>
+      <div style={{ height: "10vh", width: "100%"}}>
+        <Comments
+          comments={comments}
+          setComments={setComments}
+          onPointsChanged={props.onPointsChanged}
+          onSelectComment={(comment) => setSelectedCommentId(comment?.id ?? null)}
+        />
+        <Events 
+          events={events} 
+          setEvents={setEvents}
+          onPointsChanged={props.onPointsChanged}
+        />
+        <Quests
+          quests={quests}
+          setQuests={setQuests}
+          onPointsChanged={props.onPointsChanged}
+        />
+      </div>
 
       <AddButtonOverlay
         username={props.user}

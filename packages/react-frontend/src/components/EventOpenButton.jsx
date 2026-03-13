@@ -15,7 +15,7 @@ function EventOpenButton({ onClick }){
 const styles = {
     button: {
         position: "absolute",
-        bottom: "15vh",
+        bottom: "0vh",
         left: "30vw",
         width: "100px",
         height: "40px",
@@ -27,6 +27,7 @@ const styles = {
         cursor: "pointer",
         zIndex: 1000,
         alignItems: "center",
+        fontFamily: "Acephimere",
     },
     text: {
         color: "#000000",

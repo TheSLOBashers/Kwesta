@@ -19,12 +19,22 @@ const {
   addEventFlag,
   removeEventFlag,
   searchEvents,
-  getEventStats
+  getEventStats,
+  joinEvent,
+  unjoinEvent
 } = eventServices;
 
 router.post("/", authenticateToken, async (req, res) => {
   try {
-    const event = await createEvent(req.body);
+    const { description, date, time, location } = req.body;
+
+    const event = await createEvent({
+      author: req.user._id,
+      description,
+      date,
+      time,
+      location
+    });
     await addPoints(req.user._id, 10);
     res.status(201).json(event);
   } catch (error) {
@@ -32,10 +42,16 @@ router.post("/", authenticateToken, async (req, res) => {
   }
 });
 
-router.get("/", async (req, res) => {
+router.get("/", authenticateToken, async (req, res) => {
   try {
     const events = await getEvents();
-    res.json({ events: events });
+    events.forEach(e => {
+      const list = e.rsvpList || [];
+      e.joined = list.some(
+        id => id.toString() === req.user._id.toString()
+      );
+    });
+    res.status(201).json({ events, userId: req.user._id });
   } catch (error) {
     res.status(500).send("Error");
   }
@@ -210,6 +226,51 @@ router.put(
   async (req, res) => {
     try {
       const event = await removeEventFlag(req.params.id);
+      if (!event) {
+        return res
+          .status(404)
+          .json({ message: "Event not found" });
+      }
+      res.status(200).json({ event });
+    } catch (error) {
+      res.status(500).send("Error: " + error.message);
+    }
+  }
+);
+
+// join an event
+router.post(
+  "/join/:id",
+  authenticateToken,
+  async (req, res) => {
+    try {
+      const event = await joinEvent(
+        req.params.id,
+        req.user._id
+      );
+      if (!event) {
+        return res
+          .status(404)
+          .json({ message: "Event not found" });
+      }
+      await addPoints(req.user._id, 10);
+      res.status(200).json({ event });
+    } catch (error) {
+      res.status(500).send("Error: " + error.message);
+    }
+  }
+);
+
+// unjoin an event
+router.post(
+  "/unjoin/:id",
+  authenticateToken,
+  async (req, res) => {
+    try {
+      const event = await unjoinEvent(
+        req.params.id,
+        req.user._id
+      );
       if (!event) {
         return res
           .status(404)

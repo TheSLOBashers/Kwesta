@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import EventOverlay from "./EventOverlay";
 import EventOpenButton from "./EventOpenButton";
 
-function Events({ events }) {
+function Events({ events, setEvents, onPointsChanged }) {
   const [eventIsOpen, setEventIsOpen] = useState(false);
 
   return (
@@ -16,6 +16,8 @@ function Events({ events }) {
       {eventIsOpen && (
         <EventOverlay
           events={events}
+          setEvents={setEvents}
+          onPointsChanged={onPointsChanged}
           close={() => setEventIsOpen(false)}
         />
       )}

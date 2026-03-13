@@ -21,7 +21,9 @@ import UserFeed from "./components/UserFeed";
 import AddModerator from "./components/AddModerator";
 import AddQuest from "./components/AddQuest";
 import MapPage from "./components/MapPage";
+import About from "./components/AboutPage";
 import AddComment from "./components/ModerationAddComment";
+import AboutPage from "./components/AboutPage";
 
 function MyApp() {
   const [user, setUser] = useState(
@@ -118,6 +120,7 @@ function MyApp() {
             />
           </Route>
           <Route path="/map" element={<MapPage />} />
+          <Route path="/About" element={<AboutPage />} />
         </Routes>
       </main>
 

@@ -31,9 +31,14 @@ function CommentForm({ onSubmit, onClose, username }) {
 
         if (!username || !text) return;
 
+        const validLocation = {
+            lat: location.lat != null ? location.lat : 0,
+            lng: location.lng != null ? location.lng : 0,
+        };
+
         const commentData = {
             comment: text,
-            location,
+            location: validLocation,
             date: new Date(),
         }
 
