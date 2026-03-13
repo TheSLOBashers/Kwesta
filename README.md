@@ -11,6 +11,9 @@ https://www.figma.com/design/vIJz5Ic5fPsytRZv2OmnAW/Kwesta-WireFrame?node-id=0-1
 Class Diagram:
 https://docs.google.com/presentation/d/1dmzq3xeTC0SYu1JxJ3COm338a2zMQutCBzLJ3dsb2Kk/edit?usp=sharing
 
+Project Review Slides:
+https://docs.google.com/presentation/d/10wOHxZfP8yCFYVyZTwTtdKyZ9rbHlbcMGy1eXjpHqO0/edit?usp=sharing
+
 Code Coverage:
 
 ℹ tests 61
