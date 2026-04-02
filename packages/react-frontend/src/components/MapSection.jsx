@@ -15,7 +15,7 @@ L.Icon.Default.mergeOptions({
   shadowUrl: markerShadowUrl,
 });
 
-function RecenterOnSelected({selectedComment})
+function RecenterOnSelected({selectedComment, selectedQuest})
 {
     const map = useMap();
 
@@ -28,11 +28,21 @@ function RecenterOnSelected({selectedComment})
         map.flyTo([lat, lng], Math.max(map.getZoom(), 15), { duration: 0.8 });
     }, [selectedComment, map])
 
+    useEffect(() => {
+        const lat = selectedQuest?.location.lat ?? null;
+        const lng = selectedQuest?.location.lng ?? null;
+
+        if (lat == null || lng == null) return;
+
+        map.flyTo([lat, lng], Math.max(map.getZoom(), 15), { duration: 0.8 });
+    }, [selectedQuest, map])
+
     return null;
 }
 
-function MapSection({ comments, selectedComment }) {
+function MapSection({ comments, selectedComment, quests, selectedQuest }) {
     console.log("Selected Comment: " + selectedComment?.id ?? -1);
+    console.log("Selected Quest: " + selectedQuest?.id ?? -1);
     return (
         <MapContainer
             center={[20.74085079117805, -156.2268428410732]} 
@@ -64,7 +74,19 @@ function MapSection({ comments, selectedComment }) {
                 );
             })}
 
-        <RecenterOnSelected selectedComment={selectedComment} />
+            {quests.map((q) => {
+                const lat = q.location?.lat;
+                const lng = q.location?.lng;
+                if (lat == null || lng == null) return null;
+
+                return (
+                <Marker key={q.id ?? `${lat}-${lng}-${q.description}`} position={[lat, lng]}>
+                    <Popup>{q.description}</Popup>
+                </Marker>
+                );
+            })}
+
+        <RecenterOnSelected selectedComment={selectedComment} selectedQuest={selectedQuest}/>
         </MapContainer>
     );
 }

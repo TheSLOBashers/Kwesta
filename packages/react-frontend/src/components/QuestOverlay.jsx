@@ -7,10 +7,16 @@ function QuestOverlay({
   close,
   quests,
   setQuests,
-  onPointsChanged
+  onPointsChanged,
+  onSelectQuest
 }) {
   const carouselRef = useRef(null);
   const [active, setActive] = useState(0);
+
+  useEffect(() => {
+      if (!onSelectQuest) return;
+      onSelectQuest(quests[active] ?? null);
+    }, [active, quests, onSelectQuest]);
 
   function handleJoin(questId) {
     joinQuest(questId)

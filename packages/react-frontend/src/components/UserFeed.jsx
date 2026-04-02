@@ -21,10 +21,16 @@ function UserFeed(props) {
 
   // New
   const [selectedCommentId, setSelectedCommentId] = useState(null);
+  const [selectedQuestId, setselectedQuestId] = useState(null);
 
   const selectedComment = useMemo(
     () => comments.find((c) => c.id === selectedCommentId) || null,
     [comments, selectedCommentId]
+  );
+
+  const selectedQuest = useMemo(
+    () => quests.find((q) => q.id === selectedQuestId) || null,
+    [quests, selectedQuestId]
   );
 
   useEffect(() => {
@@ -102,6 +108,8 @@ function UserFeed(props) {
         <MapSection 
           comments={comments} 
           selectedComment={selectedComment}
+          quests={quests}
+          selectedQuest={selectedQuest}
         />
       </div>
       <div style={{ height: "10vh", width: "100%"}}>
@@ -120,6 +128,7 @@ function UserFeed(props) {
           quests={quests}
           setQuests={setQuests}
           onPointsChanged={props.onPointsChanged}
+          onSelectQuest={(quest) => setselectedQuestId(quest?.id ?? null)}
         />
       </div>
 
