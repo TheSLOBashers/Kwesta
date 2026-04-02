@@ -15,7 +15,7 @@ L.Icon.Default.mergeOptions({
   shadowUrl: markerShadowUrl,
 });
 
-function RecenterOnSelected({selectedComment, selectedQuest})
+function RecenterOnSelected({selectedComment, selectedQuest, selectedEvent})
 {
     const map = useMap();
 
@@ -37,12 +37,22 @@ function RecenterOnSelected({selectedComment, selectedQuest})
         map.flyTo([lat, lng], Math.max(map.getZoom(), 15), { duration: 0.8 });
     }, [selectedQuest, map])
 
+    useEffect(() => {
+        const lat = selectedEvent?.location.lat ?? null;
+        const lng = selectedEvent?.location.lng ?? null;
+
+        if (lat == null || lng == null) return;
+
+        map.flyTo([lat, lng], Math.max(map.getZoom(), 15), { duration: 0.8 });
+    }, [selectedEvent, map])
+
     return null;
 }
 
-function MapSection({ comments, selectedComment, quests, selectedQuest }) {
+function MapSection({ comments, selectedComment, quests, selectedQuest, events, selectedEvent }) {
     console.log("Selected Comment: " + selectedComment?.id ?? -1);
     console.log("Selected Quest: " + selectedQuest?.id ?? -1);
+    console.log("Selected Event: " + selectedEvent?.id ?? -1);
     return (
         <MapContainer
             center={[20.74085079117805, -156.2268428410732]} 
@@ -86,7 +96,21 @@ function MapSection({ comments, selectedComment, quests, selectedQuest }) {
                 );
             })}
 
-        <RecenterOnSelected selectedComment={selectedComment} selectedQuest={selectedQuest}/>
+            {events.map((e) => {
+                const lat = e.location?.lat;
+                const lng = e.location?.lng;
+                if (lat == null || lng == null) {
+                    return null
+                };
+
+                return (
+                <Marker key={e.id ?? `${lat}-${lng}-${e.description}`} position={[lat, lng]}>
+                    <Popup>{e.description}</Popup>
+                </Marker>
+                );
+            })}
+
+        <RecenterOnSelected selectedComment={selectedComment} selectedQuest={selectedQuest} selectedEvent={selectedEvent}/>
         </MapContainer>
     );
 }

@@ -3,9 +3,14 @@ import { useRef, useState, useEffect } from "react";
 import joinEvent from "../APICalls/joinEvent";
 import unjoinEvent from "../APICalls/unjoinEvent";
 
-function EventOverlay({ close, events = [], setEvents, onPointsChanged }){
+function EventOverlay({ close, events = [], setEvents, onPointsChanged, onSelectEvent }){
     const carouselRef = useRef(null);
     const [active, setActive] = useState(0);
+
+    useEffect(() => {
+          if (!onSelectEvent) return;
+          onSelectEvent(events[active] ?? null);
+        }, [active, events, onSelectEvent]);
 
     function handleJoin(eventId) {
         joinEvent(eventId)

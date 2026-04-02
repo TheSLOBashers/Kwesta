@@ -22,6 +22,7 @@ function UserFeed(props) {
   // New
   const [selectedCommentId, setSelectedCommentId] = useState(null);
   const [selectedQuestId, setselectedQuestId] = useState(null);
+  const [selectedEventId, setsselectedEventId] = useState(null);
 
   const selectedComment = useMemo(
     () => comments.find((c) => c.id === selectedCommentId) || null,
@@ -31,6 +32,11 @@ function UserFeed(props) {
   const selectedQuest = useMemo(
     () => quests.find((q) => q.id === selectedQuestId) || null,
     [quests, selectedQuestId]
+  );
+
+  const selectedEvent = useMemo(
+    () => events.find((e) => e.id === selectedEventId) || null,
+    [events, selectedEventId]
   );
 
   useEffect(() => {
@@ -110,6 +116,8 @@ function UserFeed(props) {
           selectedComment={selectedComment}
           quests={quests}
           selectedQuest={selectedQuest}
+          events={events}
+          selectedEvent={selectedEvent}
         />
       </div>
       <div style={{ height: "10vh", width: "100%"}}>
@@ -123,6 +131,7 @@ function UserFeed(props) {
           events={events} 
           setEvents={setEvents}
           onPointsChanged={props.onPointsChanged}
+          onSelectEvent={(event) => setsselectedEventId(event?.id ?? null)}
         />
         <Quests
           quests={quests}
