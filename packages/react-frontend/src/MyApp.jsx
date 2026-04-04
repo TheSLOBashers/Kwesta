@@ -53,15 +53,6 @@ function MyApp() {
 
       <main style={{ paddingTop: "70px" }}>
         <Routes>
-          <Route
-            path="/"
-            element={
-              <UserFeed
-                user={user}
-                onPointsChanged={refreshUserPoints}
-              />
-            }
-          />
           <Route element={<AuthenticationRoute />}>
             <Route
               path="/Login"
@@ -78,6 +69,15 @@ function MyApp() {
             />
           </Route>
           <Route element={<ProtectedRoute />}>
+            <Route
+              path="/"
+              element={
+                <UserFeed
+                  user={user}
+                  onPointsChanged={refreshUserPoints}
+                />
+              }
+            />
             <Route path="/Protected" element={<Protected />} />
             <Route
               path="/UserFeed"

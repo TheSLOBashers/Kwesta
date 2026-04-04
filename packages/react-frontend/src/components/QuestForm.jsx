@@ -1,11 +1,12 @@
 import React from "react";
 import { useState, useEffect, useRef } from "react";
 
-function EventForm({ onSubmit, onClose, username, clickedLocation }) {
+function QuestForm({ onSubmit, onClose, username, clickedLocation }) {
     const formRef = useRef(null);
     const [text, setText] = useState("");
     const [date, setDate] = useState("");
     const [time, setTime] = useState("");
+    const [points, setPoints] = useState(0);
     const [location, setLocation] = useState({ lat: 0, lng: 0 });
 
     useEffect(() => {
@@ -17,14 +18,15 @@ function EventForm({ onSubmit, onClose, username, clickedLocation }) {
 
         if (!username || !text || !date || !time) return;
 
-        const eventData = {
+        const questData = {
             description: text,
+            points,
             date,
             time,
             location
         }
 
-        onSubmit(eventData);
+        onSubmit(questData);
         onClose();
     };
 
@@ -41,6 +43,13 @@ function EventForm({ onSubmit, onClose, username, clickedLocation }) {
                     style={styles.input}
                 />
                 <input
+                    placeholder="Points"
+                    type="number"
+                    value={points}
+                    onChange={(e) => setPoints(e.target.value)}
+                    style={styles.input}
+                />
+                <input
                     data-testid="date input"
                     type="date"
                     value={date}
@@ -54,7 +63,7 @@ function EventForm({ onSubmit, onClose, username, clickedLocation }) {
                     onChange={(e) => setTime(e.target.value)}
                     style={styles.calendarInput}
                 />
-                <button aria-label="submit event" type="submit" style={styles.submitButton}>Add Event</button>
+                <button aria-label="submit event" type="submit" style={styles.submitButton}>Add Quest</button>
             </form>
         </div>
     );
@@ -101,4 +110,4 @@ const styles = {
     }
 }
 
-export default EventForm;
+export default QuestForm;

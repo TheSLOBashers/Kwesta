@@ -5,18 +5,17 @@ import markerIconUrl from "leaflet/dist/images/marker-icon.png";
 import markerIconRetinaUrl from "leaflet/dist/images/marker-icon-2x.png";
 import markerShadowUrl from "leaflet/dist/images/marker-shadow.png";
 
-import { MapContainer, TileLayer, Marker, Popup, useMap} from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, useMap, useMapEvents } from 'react-leaflet';
 
 delete L.Icon.Default.prototype._getIconUrl;
 
 L.Icon.Default.mergeOptions({
-  iconUrl: markerIconUrl,
-  iconRetinaUrl: markerIconRetinaUrl,
-  shadowUrl: markerShadowUrl,
+    iconUrl: markerIconUrl,
+    iconRetinaUrl: markerIconRetinaUrl,
+    shadowUrl: markerShadowUrl,
 });
 
-function RecenterOnSelected({selectedComment, selectedQuest, selectedEvent})
-{
+function RecenterOnSelected({ selectedComment, selectedQuest, selectedEvent }) {
     const map = useMap();
 
     useEffect(() => {
@@ -49,16 +48,23 @@ function RecenterOnSelected({selectedComment, selectedQuest, selectedEvent})
     return null;
 }
 
-function MapSection({ comments, selectedComment, quests, selectedQuest, events, selectedEvent }) {
-    console.log("Selected Comment: " + selectedComment?.id ?? -1);
-    console.log("Selected Quest: " + selectedQuest?.id ?? -1);
-    console.log("Selected Event: " + selectedEvent?.id ?? -1);
+function SetClickedPosition({ setclickedLocation }) {
+    const map = useMapEvents({
+        click(e) {
+            const { lat, lng } = e.latlng;
+            setclickedLocation({ lat, lng });
+        },
+    });
+    return null;
+}
+
+function MapSection({ comments, selectedComment, quests, selectedQuest, events, selectedEvent, setclickedLocation, showClickMarkers, clickedLocation }) {
     return (
         <MapContainer
-            center={[20.74085079117805, -156.2268428410732]} 
-            zoom={12} 
+            center={[20.74085079117805, -156.2268428410732]}
+            zoom={12}
             scrollWheelZoom={true}
-            style= {{height: "100%", width: "100%"}}
+            style={{ height: "100%", width: "100%" }}
         >
             {/* Map Overlay */}
             <TileLayer
@@ -78,9 +84,9 @@ function MapSection({ comments, selectedComment, quests, selectedQuest, events, 
                 if (lat == null || lng == null) return null;
 
                 return (
-                <Marker key={c.id ?? `${lat}-${lng}-${c.comment}`} position={[lat, lng]}>
-                    <Popup>{c.comment}</Popup>
-                </Marker>
+                    <Marker key={c.id ?? `${lat}-${lng}-${c.comment}`} position={[lat, lng]}>
+                        <Popup>{c.comment}</Popup>
+                    </Marker>
                 );
             })}
 
@@ -90,9 +96,9 @@ function MapSection({ comments, selectedComment, quests, selectedQuest, events, 
                 if (lat == null || lng == null) return null;
 
                 return (
-                <Marker key={q.id ?? `${lat}-${lng}-${q.description}`} position={[lat, lng]}>
-                    <Popup>{q.description}</Popup>
-                </Marker>
+                    <Marker key={q.id ?? `${lat}-${lng}-${q.description}`} position={[lat, lng]}>
+                        <Popup>{q.description}</Popup>
+                    </Marker>
                 );
             })}
 
@@ -104,13 +110,21 @@ function MapSection({ comments, selectedComment, quests, selectedQuest, events, 
                 };
 
                 return (
-                <Marker key={e.id ?? `${lat}-${lng}-${e.description}`} position={[lat, lng]}>
-                    <Popup>{e.description}</Popup>
-                </Marker>
+                    <Marker key={e.id ?? `${lat}-${lng}-${e.description}`} position={[lat, lng]}>
+                        <Popup>{e.description}</Popup>
+                    </Marker>
                 );
             })}
 
-        <RecenterOnSelected selectedComment={selectedComment} selectedQuest={selectedQuest} selectedEvent={selectedEvent}/>
+            {showClickMarkers ?
+                <Marker key={`${clickedLocation.lat}-${clickedLocation.lng}`} position={[clickedLocation.lat, clickedLocation.lng]}>
+                    <Popup>{"Place an event here"}</Popup>
+                </Marker>
+                : null}
+
+            <RecenterOnSelected selectedComment={selectedComment} selectedQuest={selectedQuest} selectedEvent={selectedEvent} />
+            <SetClickedPosition setclickedLocation={setclickedLocation} />
+
         </MapContainer>
     );
 }

@@ -5,13 +5,14 @@ import AddButton from "./AddButton";
 
 import CommentForm from "./CommentForm";
 import EventForm from "./EventForm";
+import QuestForm from "./QuestForm";
 
-function AddButtonOverlay({ username="Anonymous", onAddComment, onAddEvent }){
-    
+function AddButtonOverlay({ username = "Anonymous", onAddComment, onAddEvent, onAddQuest, clickedLocation, setShowClickMarkers }) {
+
     const [open, setOpen] = useState(false);
     const [formType, setFormType] = useState(null);
     const containerRef = useRef(null);
-    
+
     useEffect(() => {
         const handleClickOutside = (e) => {
             if (containerRef.current && !containerRef.current.contains(e.target)) {
@@ -22,21 +23,31 @@ function AddButtonOverlay({ username="Anonymous", onAddComment, onAddEvent }){
         return () => document.removeEventListener("mousedown", handleClickOutside);
     }, []);
 
+    useEffect(() => {
+        if (formType === "event" || formType === "quest") {
+            setShowClickMarkers(true);
+        }
+        else {
+            setShowClickMarkers(false)
+        }
+
+    }, [formType])
+
     return (
         <div
             ref={containerRef}
             style={styles.container}
         >
-            <AddButton onClick={() => setOpen(!open)}/>
-            <button 
+            <AddButton onClick={() => setOpen(!open)} />
+            <button
                 aria-label="add comment"
                 style={{
-                ...styles.menuButton, 
-                ...styles.commentButton,
-                opacity: open ? 1 : 0,
-                transform: open
-                    ? "translate(-120%, -120%) scale(1.2)"
-                    : "translate(0, 0) scale(0)",
+                    ...styles.menuButton,
+                    ...styles.commentButton,
+                    opacity: open ? 1 : 0,
+                    transform: open
+                        ? "translate(-120%, -120%) scale(1.2)"
+                        : "translate(0, 0) scale(0)",
                     pointerEvents: open ? "auto" : "none",
                 }}
                 onClick={() => {
@@ -46,15 +57,15 @@ function AddButtonOverlay({ username="Anonymous", onAddComment, onAddEvent }){
             >
                 C
             </button>
-            <button 
+            <button
                 aria-label="add event"
                 style={{
-                ...styles.menuButton, 
-                ...styles.eventButton,
-                opacity: open ? 1 : 0,
-                transform: open
-                    ? "translate(120%, -120%) scale(1.2)"
-                    : "translate(0, 0) scale(0)",
+                    ...styles.menuButton,
+                    ...styles.eventButton,
+                    opacity: open ? 1 : 0,
+                    transform: open
+                        ? "translate(120%, -120%) scale(1.2)"
+                        : "translate(0, 0) scale(0)",
                     pointerEvents: open ? "auto" : "none",
                 }}
                 onClick={() => {
@@ -64,6 +75,28 @@ function AddButtonOverlay({ username="Anonymous", onAddComment, onAddEvent }){
             >
                 E
             </button>
+            {Boolean(localStorage.getItem("moderator")) && localStorage.getItem("moderator") ?
+                <button
+                    aria-label="add quest"
+                    style={{
+                        ...styles.menuButton,
+                        ...styles.questButton,
+                        opacity: open ? 1 : 0,
+                        transform: open
+                            ? "translate(0%, -210%) scale(1.2)"
+                            : "translate(0, 0) scale(0)",
+                        pointerEvents: open ? "auto" : "none",
+                    }}
+                    onClick={() => {
+                        setFormType("quest");
+                        setOpen(false);
+                    }}
+                >
+                    Q
+                </button>
+                :
+                null
+            }
 
             {formType === "comment" && (
                 <CommentForm
@@ -88,6 +121,21 @@ function AddButtonOverlay({ username="Anonymous", onAddComment, onAddEvent }){
                     }}
                     onClose={() => setFormType(null)}
                     username={username}
+                    clickedLocation={clickedLocation}
+                />
+            )}
+
+            {formType === "quest" && (
+                <QuestForm
+                    onSubmit={async (questData) => {
+                        await onAddQuest(questData);
+                        act(() => {
+                            setFormType(null);
+                        });
+                    }}
+                    onClose={() => setFormType(null)}
+                    username={username}
+                    clickedLocation={clickedLocation}
                 />
             )}
 
@@ -121,6 +169,9 @@ const styles = {
     },
     eventButton: {
         background: "#2196F3",
+    },
+    questButton: {
+        background: "#f3c221",
     },
 };
 

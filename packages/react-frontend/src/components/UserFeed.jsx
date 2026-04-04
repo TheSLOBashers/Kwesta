@@ -12,6 +12,7 @@ import getEventsCall from "../APICalls/getEventsCall";
 import getQuestsCall from "../APICalls/getQuestsCall";
 import addCommentCall from "../APICalls/addCommentCall";
 import addEventCall from "../APICalls/addEventCall";
+import addQuestCall from "../APICalls/addQuestCall";
 
 function UserFeed(props) {
   const [comments, setComments] = useState([]);
@@ -19,6 +20,8 @@ function UserFeed(props) {
   const [quests, setQuests] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const [clickedLocation, setclickedLocation] = useState({ lat: 0, lng: 0 });
+  const [showClickMarkers, setShowClickMarkers] = useState(false);
   // New
   const [selectedCommentId, setSelectedCommentId] = useState(null);
   const [selectedQuestId, setselectedQuestId] = useState(null);
@@ -105,6 +108,33 @@ function UserFeed(props) {
       await props.onPointsChanged();
     }
   };
+  const handleAddQuest = async data => {
+    const newQuest = await addQuestCall(data.description, data.points, data.date, data.time, data.location);
+    if (!newQuest) {
+      return;
+    }
+    
+    const questWithUsername = {
+      ...newQuest,
+      author: props.user
+    };
+    setQuests(prev => [
+      {
+        id: newQuest._id,
+        author: newQuest.author?.username || newQuest.author,
+        date: newQuest.date,
+        time: newQuest.time,
+        description: newQuest.description,
+        location: newQuest.location,
+        joined: false,
+        image: newQuest.image,
+        flag: newQuest.flag
+      },
+      ...prev]);
+    if (props.onPointsChanged) {
+      await props.onPointsChanged();
+    }
+  };
 
   if (loading) return <div>Loading feed...</div>;
 
@@ -118,6 +148,9 @@ function UserFeed(props) {
           selectedQuest={selectedQuest}
           events={events}
           selectedEvent={selectedEvent}
+          setclickedLocation={setclickedLocation}
+          showClickMarkers={showClickMarkers}
+          clickedLocation={clickedLocation}
         />
       </div>
       <div style={{ height: "10vh", width: "100%"}}>
@@ -145,6 +178,9 @@ function UserFeed(props) {
         username={props.user}
         onAddComment={handleAddComment}
         onAddEvent={handleAddEvent}
+        onAddQuest={handleAddQuest}
+        clickedLocation={clickedLocation}
+        setShowClickMarkers={setShowClickMarkers}
       />
     </div>
   );
