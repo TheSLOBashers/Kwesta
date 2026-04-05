@@ -1,5 +1,6 @@
 {
   "name": "csc-308-app",
+  "private": true,
   "version": "1.0.0",
   "description": "",
   "license": "ISC",
