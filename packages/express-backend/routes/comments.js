@@ -65,23 +65,19 @@ router.get("/", authenticateToken, async (req, res) => {
   try {
     const comments = (await getComments()) ?? [];
     const flags = (await getUserFlags(req.user._id)) ?? [];
-    const userId = req.user._id.toString();
+    comments.forEach((comment) => {
+      comment.likedByUser = (comment.likedBy || []).some(
+        (likedUserId) =>
+          likedUserId.toString() === req.user._id.toString()
+      );
+      comment.flaggedByUser = flags.some(
+        (flaggedComment) =>
+          flaggedComment._id.toString() === comment._id.toString()
+      );
 
-    const enriched = comments.map((comment) => {
-      const likedBy = comment.likedBy ?? [];
-
-      return {
-        ...comment,
-        likedByUser: likedBy.some(
-          (id) => id.toString() === userId
-        ),
-        flaggedByUser: flags.some(
-          (f) => f._id.toString() === comment._id.toString()
-        ),
-        likedBy: undefined
-      };
+      delete comment.likedBy;
     });
-    res.json({ comments: enriched });
+    res.json({ comments: comments });
   } catch (error) {
     res.status(500).send(error.message);
   }
