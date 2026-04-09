@@ -63,9 +63,14 @@ router.post("/", authenticateToken, async (req, res) => {
 
 router.get("/", authenticateToken, async (req, res) => {
   try {
-    console.log("USER:", req.user);
-    const comments = (await getComments()) ?? [];
-    const flags = (await getUserFlags(req.user._id)) ?? [];
+    console.log("AUTH USER:", req.user._id);
+
+    const comments = await getComments();
+    console.log("COMMENTS OK");
+
+    const flags = await getUserFlags(req.user._id);
+    console.log("FLAGS OK");
+    
     comments.forEach((comment) => {
       comment.likedByUser = (comment.likedBy || []).some(
         (likedUserId) =>
