@@ -63,6 +63,7 @@ router.post("/", authenticateToken, async (req, res) => {
 
 router.get("/", authenticateToken, async (req, res) => {
   try {
+    console.log("USER:", req.user);
     const comments = (await getComments()) ?? [];
     const flags = (await getUserFlags(req.user._id)) ?? [];
     comments.forEach((comment) => {
@@ -79,7 +80,8 @@ router.get("/", authenticateToken, async (req, res) => {
     });
     res.json({ comments: comments });
   } catch (error) {
-    res.status(500).send(error.message);
+    console.error("GET /comments FAILED:", error);
+    res.status(500).json({ error: error.message });
   }
 });
 
