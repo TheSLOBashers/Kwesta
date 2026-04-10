@@ -258,15 +258,16 @@ router.put("/flag/:id", authenticateToken, async (req, res) => {
 });
 
 // unflag a comment
-router.put(
-  "/unflag/:id",
-  authenticateToken,
-  async (req, res) => {
+router.put("/unflag/:id", authenticateToken, async (req, res) => {
     const id = req.params["id"];
     try {
       const flags = await getUserFlags(req.user._id);
+      const validFlags = (flags ?? []).filter(
+        (flaggedComment) => flaggedComment && flaggedComment._id
+      );
+
       if (
-        !flags.some(
+        !validFlags.some(
           (flaggedComment) =>
             flaggedComment._id.toString() === id
         )
