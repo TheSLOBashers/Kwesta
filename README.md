@@ -1,4 +1,8 @@
 # Kwesta
+
+ExpoGo Frontend Repo:
+https://github.com/TheSLOBashers/Kwesta-mobile
+
 Style Guide:
 https://www.npmjs.com/package/prettier-airbnb-config
 
