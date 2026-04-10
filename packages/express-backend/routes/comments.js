@@ -16,7 +16,8 @@ const {
   addUserFlag,
   removeUserFlag,
   upgradeToModerator,
-  addPoints
+  addPoints,
+  getUserById
 } = user_services;
 
 const router = express.Router();
@@ -66,7 +67,7 @@ router.get("/", authenticateToken, async (req, res) => {
     const comments = await getComments();
 
     for (const comment of comments) {
-      const user = await getUserByUsername(comment.author); 
+      const user = await getUserById(comment.author); 
       
       comment.authorId = comment.author;
       comment.authorName = user?.username || "Unknown";

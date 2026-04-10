@@ -132,6 +132,15 @@ async function addPoints(userId, amount = 10) {
   );
 }
 
+const getUserById = async (id) => {
+  try {
+    return await User.findById(id).select("username");
+  } catch (err) {
+    console.error("Error in getUserById:", err.message);
+    return null;
+  }
+};
+
 export default {
   authenticateUser,
   createNewUser,
@@ -143,7 +152,8 @@ export default {
   addUserFlag,
   removeUserFlag,
   upgradeToModerator,
-  addPoints
+  addPoints,
+  getUserById,
 };
 
 /*
