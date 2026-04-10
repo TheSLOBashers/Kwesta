@@ -64,6 +64,14 @@ router.post("/", authenticateToken, async (req, res) => {
 router.get("/", authenticateToken, async (req, res) => {
   try {
     const comments = await getComments();
+
+    for (const comment of comments) {
+      const user = await getUserByUsername(comment.author); 
+      
+      comment.authorId = comment.author;
+      comment.authorName = user?.username || "Unknown";
+    }
+
     const flags = (await getUserFlags(req.user._id)) ?? [];
     const safeFlags = flags.filter(Boolean);
 
