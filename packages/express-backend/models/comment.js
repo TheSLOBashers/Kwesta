@@ -14,7 +14,8 @@ const CommentSchema = new mongoose.Schema(
     author: {
       type: Schema.Types.ObjectId,
       ref: "User",
-      required: true
+      required: true,
+      index: true
     },
     date: { type: Date, required: true, default: Date.now },
     comment: { type: String, required: true },
