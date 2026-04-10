@@ -13,7 +13,6 @@ const EventSchema = new mongoose.Schema(
   {
     author: { type: Schema.Types.ObjectId, ref: 'User', required: true, index: true },
     date: { type: String, required: true },
-    time: { type: String, required: true },
     description: { type: String, required: true },
     location: { type: LocationSchema, required: true },
     rsvpList: [{ type: Schema.Types.ObjectId, ref: 'User', default: [] }],
