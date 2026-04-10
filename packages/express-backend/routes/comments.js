@@ -123,6 +123,35 @@ router.get("/:id", async (req, res) => {
   }
 });
 
+// edit comment
+router.put("/:id", authenticateToken, async (req, res) => {
+  try {
+    const id = req.params.id;
+    const { comment, location } = req.body;
+
+    const existingComment = await getCommentById(id);
+
+    if (!existingComment) {
+      return res.status(404).json({ message: "Comment not found" });
+    }
+
+    if (existingComment.author.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: "Unauthorized" });
+    }
+
+    const updatedFields = {};
+    if (comment !== undefined) updatedFields.comment = comment;
+    if (location !== undefined) updatedFields.location = location;
+
+    const updatedComment = await commentServices.updateComment(id, updatedFields);
+
+    res.status(200).json({ comment: updatedComment });
+
+  } catch (error) {
+    res.status(500).send("Error: " + error.message);
+  }
+});
+
 // Search and filter comments (for moderation)
 router.post(
   "/search",

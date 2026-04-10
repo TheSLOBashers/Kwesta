@@ -92,6 +92,14 @@ async function likeComment(commentId, userId) {
   ).populate("author", "username");
 }
 
+async function updateComment(id, updatedFields) {
+  return Comment.findByIdAndUpdate(
+    id,
+    { $set: updatedFields },
+    { new: true }
+  );
+}
+
 /**
  * @param {Object} filters - Filter parameters
  * @param {string} filters.author - Filter by author ID
@@ -222,5 +230,6 @@ export default {
   removeFlag,
   likeComment,
   searchComments,
-  getCommentStats
+  getCommentStats,
+  updateComment
 };
