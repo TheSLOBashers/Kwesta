@@ -81,7 +81,7 @@ router.get("/:id", async (req, res) => {
 router.put("/:id", authenticateToken, async (req, res) => {
   try {
     const id = req.params.id;
-    const { quest, location, date } = req.body;
+    const { description, location, date } = req.body;
 
     const existingQuest = await getQuestById(id);
 
@@ -94,7 +94,7 @@ router.put("/:id", authenticateToken, async (req, res) => {
     }
 
     const updatedFields = {};
-    if (quest !== undefined) updatedFields.quest = quest;
+    if (description !== undefined) updatedFields.description = description;
     if (location !== undefined) updatedFields.location = location;
     if (date !== undefined) updatedFields.date = date;
 

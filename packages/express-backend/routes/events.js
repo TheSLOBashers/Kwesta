@@ -84,7 +84,7 @@ router.get("/:id", async (req, res) => {
 router.put("/:id", authenticateToken, async (req, res) => {
   try {
     const id = req.params.id;
-    const { event, location, date } = req.body;
+    const { description, location, date } = req.body;
 
     const existingEvent = await getEventById(id);
 
@@ -97,7 +97,7 @@ router.put("/:id", authenticateToken, async (req, res) => {
     }
 
     const updatedFields = {};
-    if (event !== undefined) updatedFields.event = event;
+    if (description !== undefined) updatedFields.description = description;
     if (location !== undefined) updatedFields.location = location;
     if (date !== undefined) updatedFields.date = date;
 

@@ -125,6 +125,28 @@ router.put(
   }
 );
 
+// get my posts
+// router.get("/me/posts", authenticateToken, async (req, res) => {
+//   try {
+//     const userId = req.user._id;
+
+//     const [comments, events, quests] = await Promise.all([
+//       commentServices.getCommentsByAuthor(userId),
+//       eventServices.getEventsByAuthor(userId),
+//       questServices.getQuestsByAuthor(userId),
+//     ]);
+
+//     res.json({
+//       comments,
+//       events,
+//       quests,
+//     });
+//   } catch (error) {
+//     console.error("GET /me/posts error:", error);
+//     res.status(500).json({ error: error.message });
+//   }
+// });
+
 export default router;
 
 /*
