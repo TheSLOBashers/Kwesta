@@ -136,9 +136,9 @@ router.get("/me/posts", authenticateToken, async (req, res) => {
     const userId = req.user._id;
 
     const [comments, events, quests, user] = await Promise.all([
-      commentServices.getCommentsByAuthor(userId).sort({ createdAt: -1 }),
-      eventServices.getEventsByAuthor(userId).sort({ createdAt: -1 }),
-      questServices.getQuestsByAuthor(userId).sort({ createdAt: -1 }),
+      commentServices.getCommentsByAuthor(userId),
+      eventServices.getEventsByAuthor(userId),
+      questServices.getQuestsByAuthor(userId),
       getUserById(userId)
     ]);
 
