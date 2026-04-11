@@ -5,7 +5,7 @@ import {
   authenticateModerator
 } from "./auth.js";
 import user_services from "../models/user-services.js";
-const { addPoints } = user_services;
+const { addPoints, getUserById } = user_services;
 
 const router = express.Router();
 const {
