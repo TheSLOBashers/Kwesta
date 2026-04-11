@@ -45,6 +45,14 @@ router.post("/", authenticateToken, async (req, res) => {
 router.get("/", authenticateToken, async (req, res) => {
   try {
     const events = await getEvents();
+
+    for (const event of events) {
+      const user = await getUserById(event.author); 
+      
+      event.authorId = event.author;
+      event.authorName = user?.username || "Unknown";
+    }
+
     events.forEach(e => {
       const list = e.rsvpList || [];
       e.joined = list.some(
@@ -67,6 +75,36 @@ router.get("/:id", async (req, res) => {
         .json({ message: "Event not found" });
     }
     res.json({ event });
+  } catch (error) {
+    res.status(500).send("Error: " + error.message);
+  }
+});
+
+// edit event
+router.put("/:id", authenticateToken, async (req, res) => {
+  try {
+    const id = req.params.id;
+    const { event, location, date } = req.body;
+
+    const existingEvent = await getEventById(id);
+
+    if (!existingEvent) {
+      return res.status(404).json({ message: "Event not found" });
+    }
+
+    if (existingEvent.author._id.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: "Unauthorized" });
+    }
+
+    const updatedFields = {};
+    if (event !== undefined) updatedFields.event = event;
+    if (location !== undefined) updatedFields.location = location;
+    if (date !== undefined) updatedFields.date = date;
+
+    const updatedEvent = await eventServices.updateEvent(id, updatedFields);
+
+    res.status(200).json({ event: updatedEvent });
+
   } catch (error) {
     res.status(500).send("Error: " + error.message);
   }

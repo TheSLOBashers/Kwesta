@@ -43,6 +43,14 @@ router.post("/", authenticateModerator, async (req, res) => {
 router.get("/", authenticateToken, async (req, res) => {
   try {
     const quests = await getQuests();
+
+    for (const quest of quests) {
+      const user = await getUserById(quest.author); 
+      
+      quest.authorId = quest.author;
+      quest.authorName = user?.username || "Unknown";
+    }
+
     quests.forEach(q => {
       q.joined = q.rsvpList.some(
         id => id.toString() === req.user._id.toString()
@@ -64,6 +72,36 @@ router.get("/:id", async (req, res) => {
         .json({ message: "Quest not found" });
     }
     res.json({ quest });
+  } catch (error) {
+    res.status(500).send("Error: " + error.message);
+  }
+});
+
+// edit quest
+router.put("/:id", authenticateToken, async (req, res) => {
+  try {
+    const id = req.params.id;
+    const { quest, location, date } = req.body;
+
+    const existingQuest = await getQuestById(id);
+
+    if (!existingQuest) {
+      return res.status(404).json({ message: "Quest not found" });
+    }
+
+    if (existingQuest.author._id.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: "Unauthorized" });
+    }
+
+    const updatedFields = {};
+    if (quest !== undefined) updatedFields.quest = quest;
+    if (location !== undefined) updatedFields.location = location;
+    if (date !== undefined) updatedFields.date = date;
+
+    const updatedQuest = await eventServices.updateQuest(id, updatedFields);
+
+    res.status(200).json({ quest: updatedQuest });
+
   } catch (error) {
     res.status(500).send("Error: " + error.message);
   }

@@ -58,6 +58,14 @@ async function removeQuestFlag(questId) {
   );
 }
 
+async function updateQuest(id, updatedFields) {
+  return Quest.findByIdAndUpdate(
+    id,
+    { $set: updatedFields },
+    { new: true }
+  );
+}
+
 /**
  * @param {Object} filters - Filter parameters
  * @param {string} filters.author - Filter by author name
@@ -235,5 +243,6 @@ export default {
   searchQuests,
   getQuestStats,
   joinQuest,
-  unjoinQuest
+  unjoinQuest,
+  updateQuest
 };

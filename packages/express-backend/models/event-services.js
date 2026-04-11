@@ -60,6 +60,14 @@ async function removeEventFlag(eventId) {
   );
 }
 
+async function updateEvent(id, updatedFields) {
+  return Event.findByIdAndUpdate(
+    id,
+    { $set: updatedFields },
+    { new: true }
+  );
+}
+
 /**
  * @param {Object} filters - Filter parameters
  * @param {string} filters.author - Filter by author name
@@ -235,5 +243,6 @@ export default {
   searchEvents,
   getEventStats,
   joinEvent,
-  unjoinEvent
+  unjoinEvent,
+  updateEvent
 };
