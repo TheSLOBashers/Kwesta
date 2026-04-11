@@ -101,7 +101,7 @@ async function updateComment(id, updatedFields) {
 }
 
 export async function getCommentsByAuthor(userId) {
-  return Comment.find({ author: userId });
+  return Comment.find({ author: userId }).sort({ createdAt: -1 });
 }
 
 /**

@@ -63,7 +63,7 @@ async function updateEvent(id, updatedFields) {
 }
 
 export async function getEventsByAuthor(userId) {
-  return Event.find({ author: userId });
+  return Event.find({ author: userId }).sort({ createdAt: -1 });
 }
 
 /**
