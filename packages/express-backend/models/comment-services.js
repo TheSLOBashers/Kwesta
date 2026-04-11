@@ -100,6 +100,10 @@ async function updateComment(id, updatedFields) {
   );
 }
 
+export async function getCommentsByAuthor(userId) {
+  return Comment.find({ author: userId });
+}
+
 /**
  * @param {Object} filters - Filter parameters
  * @param {string} filters.author - Filter by author ID
@@ -231,5 +235,6 @@ export default {
   likeComment,
   searchComments,
   getCommentStats,
-  updateComment
+  updateComment,
+  getCommentsByAuthor
 };

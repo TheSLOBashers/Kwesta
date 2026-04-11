@@ -60,6 +60,10 @@ async function updateQuest(id, updatedFields) {
   );
 }
 
+export async function getQuestsByAuthor(userId) {
+  return Quest.find({ author: userId });
+}
+
 /**
  * @param {Object} filters - Filter parameters
  * @param {string} filters.author - Filter by author name
@@ -237,5 +241,6 @@ export default {
   getQuestStats,
   joinQuest,
   unjoinQuest,
-  updateQuest
+  updateQuest,
+  getQuestsByAuthor
 };

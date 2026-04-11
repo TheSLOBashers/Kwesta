@@ -62,6 +62,10 @@ async function updateEvent(id, updatedFields) {
   );
 }
 
+export async function getEventsByAuthor(userId) {
+  return Event.find({ author: userId });
+}
+
 /**
  * @param {Object} filters - Filter parameters
  * @param {string} filters.author - Filter by author name
@@ -237,5 +241,6 @@ export default {
   getEventStats,
   joinEvent,
   unjoinEvent,
-  updateEvent
+  updateEvent,
+  getEventsByAuthor
 };

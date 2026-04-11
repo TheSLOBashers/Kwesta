@@ -15,8 +15,13 @@ const {
   getUserFlags,
   addUserFlag,
   removeUserFlag,
-  upgradeToModerator
+  upgradeToModerator,
+  getUserById
 } = user_services;
+
+import commentServices from "../models/comment-services.js";
+import eventServices from "../models/event-services.js";
+import questServices from "../models/quest-services.js";
 
 // routes
 
@@ -126,26 +131,45 @@ router.put(
 );
 
 // get my posts
-// router.get("/me/posts", authenticateToken, async (req, res) => {
-//   try {
-//     const userId = req.user._id;
+router.get("/me/posts", authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user._id;
 
-//     const [comments, events, quests] = await Promise.all([
-//       commentServices.getCommentsByAuthor(userId),
-//       eventServices.getEventsByAuthor(userId),
-//       questServices.getQuestsByAuthor(userId),
-//     ]);
+    const [comments, events, quests] = await Promise.all([
+      commentServices.getCommentsByAuthor(userId),
+      eventServices.getEventsByAuthor(userId),
+      questServices.getQuestsByAuthor(userId),
+    ]);
 
-//     res.json({
-//       comments,
-//       events,
-//       quests,
-//     });
-//   } catch (error) {
-//     console.error("GET /me/posts error:", error);
-//     res.status(500).json({ error: error.message });
-//   }
-// });
+    for (const comment of comments) {
+      const user = await getUserById(comment.author); 
+      
+      comment.authorId = comment.author;
+      comment.authorName = user?.username || "Unknown";
+    }
+    for (const event of events) {
+      const user = await getUserById(event.author); 
+      
+      event.authorId = event.author;
+      event.authorName = user?.username || "Unknown";
+    }
+    for (const quest of quests) {
+      const user = await getUserById(quest.author); 
+      
+      quest.authorId = quest.author;
+      quest.authorName = user?.username || "Unknown";
+    }
+
+    res.json({
+      comments,
+      events,
+      quests,
+    });
+  } catch (error) {
+    console.error("GET /me/posts error:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
 
 export default router;
 
