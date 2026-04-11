@@ -16,12 +16,6 @@ function getQuestById(questId) {
   return Quest.findById(questId);
 }
 
-async function updateQuest(questId, updateData) {
-  return Quest.findByIdAndUpdate(questId, updateData, {
-    new: true
-  });
-}
-
 async function deleteQuest(questId) {
   return Quest.findByIdAndDelete(questId);
 }
@@ -234,7 +228,6 @@ export default {
   createQuest,
   getQuests,
   getQuestById,
-  updateQuest,
   deleteQuest,
   removeQuest,
   unremoveQuest,

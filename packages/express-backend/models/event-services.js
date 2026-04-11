@@ -18,12 +18,6 @@ function getEventById(eventId) {
   return Event.findById(eventId);
 }
 
-async function updateEvent(eventId, updateData) {
-  return Event.findByIdAndUpdate(eventId, updateData, {
-    new: true
-  });
-}
-
 async function deleteEvent(eventId) {
   return Event.findByIdAndDelete(eventId);
 }
@@ -234,7 +228,6 @@ export default {
   createEvent,
   getEvents,
   getEventById,
-  updateEvent,
   deleteEvent,
   removeEvent,
   unremoveEvent,
