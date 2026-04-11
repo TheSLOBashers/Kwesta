@@ -139,31 +139,21 @@ router.get("/me/posts", authenticateToken, async (req, res) => {
       commentServices.getCommentsByAuthor(userId),
       eventServices.getEventsByAuthor(userId),
       questServices.getQuestsByAuthor(userId),
+      getUserById(userId)
     ]);
 
-    for (const comment of comments) {
-      const user = await getUserById(comment.author); 
-      
-      comment.authorId = comment.author;
-      comment.authorName = user?.username || "Unknown";
-    }
-    for (const event of events) {
-      const user = await getUserById(event.author); 
-      
-      event.authorId = event.author;
-      event.authorName = user?.username || "Unknown";
-    }
-    for (const quest of quests) {
-      const user = await getUserById(quest.author); 
-      
-      quest.authorId = quest.author;
-      quest.authorName = user?.username || "Unknown";
-    }
+    const authorName = user?.username || "Unknown";
+
+    const attachAuthor = (item) => {
+      item.authorId = item.author;
+      item.authorName = authorName;
+      return item;
+    };
 
     res.json({
-      comments,
-      events,
-      quests,
+      comments: comments.map(attachAuthor),
+      events: events.map(attachAuthor),
+      quests: quests.map(attachAuthor),
     });
   } catch (error) {
     console.error("GET /me/posts error:", error);
