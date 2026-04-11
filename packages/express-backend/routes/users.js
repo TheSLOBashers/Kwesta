@@ -144,16 +144,29 @@ router.get("/me/posts", authenticateToken, async (req, res) => {
 
     const authorName = user?.username || "Unknown";
 
-    const attachAuthor = (item) => ({
-      ...item,
-      authorId: item.author,
-      authorName,
-    });
+    const clean = (item) => {
+      const obj = item.toObject ? item.toObject() : item;
+
+      return {
+        id: obj._id.toString(),
+        authorId: obj.author?.toString?.() ?? obj.author,
+        authorName,
+
+        date: obj.date ?? obj.createdAt,
+        location: obj.location,
+
+        comment: obj.comment ?? null,
+        description: obj.description ?? null,
+
+        likes: obj.likes ?? 0,
+        flag: obj.flag ?? 0,
+      };
+    };
 
     res.json({
-      comments: comments.map(attachAuthor),
-      events: events.map(attachAuthor),
-      quests: quests.map(attachAuthor),
+      comments: comments.map(clean),
+      events: events.map(clean),
+      quests: quests.map(clean),
     });
   } catch (error) {
     console.error("GET /me/posts error:", error);
