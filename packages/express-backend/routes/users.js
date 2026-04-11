@@ -135,20 +135,20 @@ router.get("/me/posts", authenticateToken, async (req, res) => {
   try {
     const userId = req.user._id;
 
-    const [comments, events, quests] = await Promise.all([
-      commentServices.getCommentsByAuthor(userId),
-      eventServices.getEventsByAuthor(userId),
-      questServices.getQuestsByAuthor(userId),
+    const [comments, events, quests, user] = await Promise.all([
+      commentServices.getCommentsByAuthor(userId).sort({ createdAt: -1 }),
+      eventServices.getEventsByAuthor(userId).sort({ createdAt: -1 }),
+      questServices.getQuestsByAuthor(userId).sort({ createdAt: -1 }),
       getUserById(userId)
     ]);
 
     const authorName = user?.username || "Unknown";
 
-    const attachAuthor = (item) => {
-      item.authorId = item.author;
-      item.authorName = authorName;
-      return item;
-    };
+    const attachAuthor = (item) => ({
+      ...item,
+      authorId: item.author,
+      authorName,
+    });
 
     res.json({
       comments: comments.map(attachAuthor),
