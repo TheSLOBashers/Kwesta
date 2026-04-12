@@ -96,7 +96,7 @@ router.get("/", authenticateToken, async (req, res) => {
 });
 
 // Get comments by area (for users to see comments about a location)
-router.get("/area", async (req, res) => {
+router.get("/area", authenticateToken, async (req, res) => {
   try {
     const { lat, lng, radius } = req.query;
 
@@ -109,8 +109,32 @@ router.get("/area", async (req, res) => {
     const comments = await getCommentsByArea(
       parseFloat(lat),
       parseFloat(lng),
-      radius ? parseFloat(radius) : 5
+      radius ? parseFloat(radius) : 1
     );
+    for (const comment of comments) {
+      const user = await getUserById(comment.author);
+
+      comment.authorId = comment.author;
+      comment.authorName = user?.username || "Unknown";
+    }
+
+    const flags = (await getUserFlags(req.user._id)) ?? [];
+    const safeFlags = flags.filter(Boolean);
+
+    comments.forEach((comment) => {
+      comment.likedByUser = (comment.likedBy || []).some(
+        (likedUserId) =>
+          likedUserId.toString() === req.user._id.toString()
+      );
+
+      comment.flaggedByUser = safeFlags.some(
+        (flaggedComment) =>
+          flaggedComment._id.toString() === comment._id.toString()
+      );
+
+      delete comment.likedBy;
+    });
+
     res.json({ comments });
   } catch (error) {
     res.status(500).send("Error: " + error.message);
