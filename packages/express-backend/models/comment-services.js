@@ -32,7 +32,8 @@ function getCommentsByArea(lat, lng, radius = 5) {
     }
   })
     .populate("author", "username")
-    .sort({ createdAt: -1 });
+    .sort({ createdAt: -1 })
+    .lean();
 }
 
 function getCommentById(commentId) {

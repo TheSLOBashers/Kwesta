@@ -112,24 +112,10 @@ router.get("/area", authenticateToken, async (req, res) => {
       radius ? parseFloat(radius) : 1
     );
     for (const comment of comments) {
-      let authorId;
-      let authorName;
+      const user = await getUserById(comment.author);
 
-      if (typeof comment.author === "object") {
-        // Already populated
-        authorId = comment.author._id;
-        authorName = comment.author.username || "Unknown";
-      } else {
-        // Just an ID
-        authorId = comment.author;
-        const user = await getUserById(authorId);
-        authorName = user?.username || "Unknown";
-      }
-
-      comment.authorId = authorId;
-      comment.authorName = authorName;
-
-      delete comment.author;
+      comment.authorId = comment.author;
+      comment.authorName = user?.username || "Unknown";
     }
 
     const flags = (await getUserFlags(req.user._id)) ?? [];
