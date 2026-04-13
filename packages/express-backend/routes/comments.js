@@ -116,6 +116,7 @@ router.get("/area", authenticateToken, async (req, res) => {
 
       comment.authorId = comment.author;
       comment.authorName = user?.username || "Unknown";
+      delete comment.author;
     }
 
     const flags = (await getUserFlags(req.user._id)) ?? [];
