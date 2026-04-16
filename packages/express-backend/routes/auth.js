@@ -52,7 +52,7 @@ router.post('/login', async (req, res) => {
 });
 
 router.get('/test', authenticateToken, (req, res) => {
-  res.json({ message: "You are authenticated!" });
+  res.json({ valid: true });
 });
 
 // middleware
