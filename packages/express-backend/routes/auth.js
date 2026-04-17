@@ -44,21 +44,21 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ message: "Account banned" });
     }
     else if (error.message === "Device not permitted") {
-      return res.status(401).json({message: "Device not permitted"});
+      return res.status(401).json({ message: "Device not permitted" });
     }
     return res.status(500).send("Internal server error");
   }
 
   const token = jwt.sign(
-    { username },
+    { username, device },
     process.env.ACCESS_TOKEN_SECRET,
     { expiresIn: '30d' }
   );
 
-  let response = {token};
+  let response = { token };
 
-  if (user && user.permissions==="moderator") {
-    response = {token, permissions: "moderator"}
+  if (user && user.permissions === "moderator") {
+    response = { token, permissions: "moderator" }
   }
 
   res.json(response);
@@ -78,7 +78,7 @@ router.post('/blockDevice', authenticateToken, (req, res) => {
     };
     blockDevice(username, device);
   }
-  catch(error) {
+  catch (error) {
     return res.status(500).send("Internal server error");
   }
 
@@ -87,7 +87,7 @@ router.post('/blockDevice', authenticateToken, (req, res) => {
 
 router.get('/devices', authenticateToken, async (req, res) => {
   try {
-    let devices = await getDevices(req.user.username).catch((error)=>{throw Error(error.message)});
+    let devices = await getDevices(req.user.username).catch((error) => { throw Error(error.message) });
     return res.status(201).json(devices);
   }
   catch (error) {
@@ -111,8 +111,14 @@ function authenticateToken(req, res, next) {
         if (!foundUser) {
           return res.status(401).json({ message: "User not found" });
         }
-        req.user._id = foundUser._id;
-        next();
+        authenticateDevice(req.user.username, user.device)
+          .then(() => {
+            req.user._id = foundUser._id;
+            next();
+          })
+          .catch(() => {
+            return res.status(500).send("Device blocked.");
+          })
       })
       .catch(() => {
         return res.status(500).send("Internal Server Error");
@@ -135,7 +141,7 @@ function authenticateModerator(req, res, next) {
         if (!foundUser) {
           return res.status(401).json({ message: "User not found" });
         }
-        else if (foundUser.permissions!=="moderator") {
+        else if (foundUser.permissions !== "moderator") {
           return res.status(401).json({ message: "User not moderator" });
         }
         req.user._id = foundUser._id;
