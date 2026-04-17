@@ -71,6 +71,31 @@ async function authenticateUser(username, password) {
   });
 }
 
+async function authenticateDevice(username, device) {
+  return getUserByUsername(username)
+    .then(user => {
+      if (!user) {
+        throw new Error("User not found");
+      }
+
+      const found = [];
+      for (let i = 0; i < user.devices.length; i++) {
+        if (user.devices[i].device == device && user.devices[i].allowed) {
+          found.push(user.devices[i]);
+        }
+      }
+
+      if (!(found.length > 0)) {
+        throw Error("Device not permitted");
+      }
+
+      return found.length;
+    })
+    .catch((error) => {
+      throw Error(error.message)
+    })
+}
+
 async function getAllNonModeratorUsers() {
   return await User.find({
     permissions: { $ne: "moderator" }
@@ -132,6 +157,52 @@ async function addPoints(userId, amount = 10) {
   );
 }
 
+async function getDevices(username) {
+  return getUserByUsername(username)
+    .then((user) => {
+      if (!user) {
+        throw Error("No user found.")
+      }
+      return user.devices;
+    });
+}
+
+async function getDevice(username, device) {
+  return User.find({ username: username, "devices.device": device });
+}
+
+async function addDevice(username, device) {
+  return User.findOneAndUpdate(
+    { username: username },
+    { $addToSet: { devices: { device: device, allowed: true } } },
+  );
+}
+
+async function addDeviceIfNotAlready(username, device) {
+  return getDevice(username, device)
+    .then((devices) => {
+      if (devices.length <= 0) {
+        return addDevice(username, device)
+      }
+      return device;
+    });
+}
+
+async function blockDevice(username, device) {
+  return User.findOneAndUpdate({ username: username, "devices.device": device },
+    { $set: { "devices.$.allowed": false } },
+    { new: true })
+    .then((user) => {
+      if (!user) {
+        throw Error("No user / device found.")
+      }
+      return user;
+    })
+    .catch((error) => {
+      throw Error(error.message);
+    })
+}
+
 const getUserById = async (id) => {
   try {
     return await User.findById(id).select("username");
@@ -154,6 +225,10 @@ export default {
   upgradeToModerator,
   addPoints,
   getUserById,
+  authenticateDevice,
+  addDeviceIfNotAlready,
+  blockDevice,
+  getDevices
 };
 
 /*

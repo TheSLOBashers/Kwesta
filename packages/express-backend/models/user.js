@@ -21,6 +21,12 @@ const UserSchema = new mongoose.Schema(
       {
         comment: { type: Schema.Types.ObjectId, ref: "Comment" }
       }
+    ],
+    devices: [
+      {
+        device: { type: Object },
+        allowed: { type: Boolean }
+      }
     ]
   },
   {

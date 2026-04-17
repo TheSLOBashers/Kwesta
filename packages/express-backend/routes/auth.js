@@ -12,7 +12,11 @@ const {
   getUserFlags,
   addUserFlag,
   removeUserFlag,
-  upgradeToModerator
+  upgradeToModerator,
+  authenticateDevice,
+  addDeviceIfNotAlready,
+  blockDevice,
+  getDevices
 } = user_services;
 dotenv.config();
 const router = express.Router();
@@ -21,11 +25,17 @@ const router = express.Router();
 router.post('/login', async (req, res) => {
   const username = req.body.username;
   const password = req.body.password;
+  const device = req.body.device;
 
   let user = null;
 
   try {
     user = await authenticateUser(username, password);
+    if (device === null) {
+      throw Error("Device must be specified");
+    }
+    await addDeviceIfNotAlready(username, device);
+    await authenticateDevice(username, device);
   } catch (error) {
     if (error.message === "User not found" || error.message === "Invalid password") {
       return res.status(401).json({ message: "Invalid username or password" });
@@ -33,13 +43,16 @@ router.post('/login', async (req, res) => {
     else if (error.message === "Banned") {
       return res.status(401).json({ message: "Account banned" });
     }
-    return res.status(500).send("Internal Server Error");
+    else if (error.message === "Device not permitted") {
+      return res.status(401).json({message: "Device not permitted"});
+    }
+    return res.status(500).send("Internal server error");
   }
 
   const token = jwt.sign(
     { username },
     process.env.ACCESS_TOKEN_SECRET,
-    { expiresIn: '4h' }
+    { expiresIn: '30d' }
   );
 
   let response = {token};
@@ -53,6 +66,33 @@ router.post('/login', async (req, res) => {
 
 router.get('/test', authenticateToken, (req, res) => {
   res.json({ valid: true });
+});
+
+router.post('/blockDevice', authenticateToken, (req, res) => {
+  const username = req.user.username;
+  const device = req.body.device;
+
+  try {
+    if (device === null) {
+      throw Error("Device must be specified");
+    };
+    blockDevice(username, device);
+  }
+  catch(error) {
+    return res.status(500).send("Internal server error");
+  }
+
+  return res.status(201).send("Device blocked.");
+})
+
+router.get('/devices', authenticateToken, async (req, res) => {
+  try {
+    let devices = await getDevices(req.user.username).catch((error)=>{throw Error(error.message)});
+    return res.status(201).json(devices);
+  }
+  catch (error) {
+    return res.status(500).send("Internal server error");
+  }
 });
 
 // middleware
