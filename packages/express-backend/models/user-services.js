@@ -171,18 +171,18 @@ async function getDevice(username, device) {
   return User.find({ username: username, "devices.device": device });
 }
 
-async function addDevice(username, device) {
+async function addDevice(username, device, device_brand = null, device_designName = null, device_deviceName = null, device_deviceYearClass = null, device_deviceType = null) {
   return User.findOneAndUpdate(
     { username: username },
-    { $addToSet: { devices: { device: device, allowed: true } } },
+    { $addToSet: { devices: { device: device, allowed: true, device_brand, device_designName, device_deviceName, device_deviceYearClass, device_deviceType } } },
   );
 }
 
-async function addDeviceIfNotAlready(username, device) {
+async function addDeviceIfNotAlready(username, device, device_brand = null, device_designName = null, device_deviceName = null, device_deviceYearClass = null, device_deviceType = null) {
   return getDevice(username, device)
     .then((devices) => {
       if (devices.length <= 0) {
-        return addDevice(username, device)
+        return addDevice(username, device, device_brand, device_designName, device_deviceName, device_deviceYearClass, device_deviceType)
       }
       return device;
     });

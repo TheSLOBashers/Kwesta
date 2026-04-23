@@ -25,7 +25,12 @@ const UserSchema = new mongoose.Schema(
     devices: [
       {
         device: { type: Object },
-        allowed: { type: Boolean }
+        allowed: { type: Boolean },
+        device_brand: { type: String, null: true },
+        device_designName: { type: String, null: true },
+        device_deviceName: { type: String, null: true },
+        device_deviceYearClass: { type: String, null: true },
+        device_deviceType: { type: String, null: true }
       }
     ]
   },

@@ -25,16 +25,22 @@ const router = express.Router();
 router.post('/login', async (req, res) => {
   const username = req.body.username;
   const password = req.body.password;
-  const device = req.body.device;
+  const device_brand = req.body.device_brand;
+  const device_designName = req.body.device_designName;
+  const device_deviceName = req.body.device_deviceName;
+  const device_deviceYearClass = req.body.device_deviceYearClass;
+  const device_deviceType = req.body.device_deviceType;
 
   let user = null;
+  let device = null;
 
   try {
     user = await authenticateUser(username, password);
-    if (device === null) {
-      throw Error("Device must be specified");
+    if (device_brand === null || device_designName === null || device_deviceName === null || device_deviceYearClass === null || device_deviceType === null) {
+      throw Error("All device details must be specified");
     }
-    await addDeviceIfNotAlready(username, device);
+    device = device_brand + ":" + device_designName + ":" + device_deviceName + ":" + device_deviceYearClass + ":" + device_deviceType;
+    await addDeviceIfNotAlready(username, device, device_brand, device_designName, device_deviceName, device_deviceYearClass, device_deviceType);
     await authenticateDevice(username, device);
   } catch (error) {
     if (error.message === "User not found" || error.message === "Invalid password") {
