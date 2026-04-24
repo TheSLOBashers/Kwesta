@@ -174,6 +174,52 @@ router.get("/me/posts", authenticateToken, async (req, res) => {
   }
 });
 
+router.get("/me/joinedPosts", authenticateToken, async (req, res) => {
+  try {
+    const userId = req.user._id;
+
+    const [events, quests] = await Promise.all([
+      eventServices.getEventsUserJoined(userId),
+      questServices.getQuestsUserJoined(userId),
+    ]);
+
+    const clean = async (item) => {
+      const obj = item.toObject ? item.toObject() : item;
+
+      const user = await getUserById(obj.author);
+
+      return {
+        id: obj._id.toString(),
+        type: obj.description ? "event" : "quest",
+
+        authorId: obj.author?.toString?.() ?? obj.author,
+        authorName: user?.username || "Unknown",
+
+        date: obj.date ?? obj.createdAt,
+        location: obj.location,
+
+        description: obj.description ?? null,
+
+        joined: true,
+        likes: obj.likes ?? 0,
+        flag: obj.flag ?? 0,
+      };
+    };
+
+    const cleanEvents = await Promise.all(events.map(clean));
+    const cleanQuests = await Promise.all(quests.map(clean));
+
+    res.json({
+      events: cleanEvents,
+      quests: cleanQuests,
+    });
+
+  } catch (error) {
+    console.error("GET /me/joinedPosts error:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 export default router;
 
 /*

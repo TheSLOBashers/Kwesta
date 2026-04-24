@@ -62,8 +62,14 @@ async function updateEvent(id, updatedFields) {
   );
 }
 
-export async function getEventsByAuthor(userId) {
+async function getEventsByAuthor(userId) {
   return Event.find({ author: userId }).sort({ createdAt: -1 });
+}
+
+async function getEventsUserJoined(userId) {
+  return Event.find({
+    rsvpList: userId
+  });
 }
 
 /**
@@ -242,5 +248,6 @@ export default {
   joinEvent,
   unjoinEvent,
   updateEvent,
-  getEventsByAuthor
+  getEventsByAuthor,
+  getEventsUserJoined
 };

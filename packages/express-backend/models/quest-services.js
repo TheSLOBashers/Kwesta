@@ -60,8 +60,14 @@ async function updateQuest(id, updatedFields) {
   );
 }
 
-export async function getQuestsByAuthor(userId) {
+async function getQuestsByAuthor(userId) {
   return Quest.find({ author: userId }).sort({ createdAt: -1 });
+}
+
+async function getQuestsUserJoined(userId) {
+  return Quest.find({
+    rsvpList: userId
+  });
 }
 
 /**
@@ -242,5 +248,6 @@ export default {
   joinQuest,
   unjoinQuest,
   updateQuest,
-  getQuestsByAuthor
+  getQuestsByAuthor,
+  getQuestsUserJoined
 };
