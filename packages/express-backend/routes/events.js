@@ -97,9 +97,6 @@ router.get("/area", authenticateToken, async (req, res) => {
       );
     });
 
-    const flags = (await getUserFlags(req.user._id)) ?? [];
-    const safeFlags = flags.filter(Boolean);
-
     res.json({ events });
   } catch (error) {
     res.status(500).send("Error: " + error.message);
