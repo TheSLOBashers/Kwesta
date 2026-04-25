@@ -11,6 +11,7 @@ const router = express.Router();
 const {
   createQuest,
   getQuests,
+  getQuestsByArea,
   getQuestById,
   updateQuest,
   deleteQuest,
@@ -62,6 +63,46 @@ router.get("/", authenticateToken, async (req, res) => {
   }
 });
 
+// Get quests by area
+router.get("/area", authenticateToken, async (req, res) => {
+  try {
+    const { lat, lng, radius } = req.query;
+
+    if (!lat || !lng) {
+      return res.status(400).json({
+        message: "lat and lng query parameters are required"
+      });
+    }
+
+    const quests = await getQuestsByArea(
+      parseFloat(lat),
+      parseFloat(lng),
+      radius ? parseFloat(radius) : 10
+    );
+
+    for (const quest of quests) {
+      const user = await getUserById(quest.author); 
+      
+      quest.authorId = quest.author;
+      quest.authorName = user?.username || "Unknown";
+    }
+
+    quests.forEach(q => {
+      const list = q.rsvpList || [];
+      q.joined = list.some(
+        id => id.toString() === req.user._id.toString()
+      );
+    });
+
+    const flags = (await getUserFlags(req.user._id)) ?? [];
+    const safeFlags = flags.filter(Boolean);
+
+    res.json({ quests });
+  } catch (error) {
+    res.status(500).send("Error: " + error.message);
+  }
+});
+
 // Get a single quest by ID
 router.get("/:id", async (req, res) => {
   try {
@@ -98,7 +139,7 @@ router.put("/:id", authenticateToken, async (req, res) => {
     if (location !== undefined) updatedFields.location = location;
     if (date !== undefined) updatedFields.date = date;
 
-    const updatedQuest = await eventServices.updateQuest(id, updatedFields);
+    const updatedQuest = await questServices.updateQuest(id, updatedFields);
 
     res.status(200).json({ quest: updatedQuest });
 

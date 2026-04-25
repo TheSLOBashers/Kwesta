@@ -14,6 +14,30 @@ function getEvents() {
     .lean();
 }
 
+/**
+ * @param {number} lat - Center latitude
+ * @param {number} lng - Center longitude
+ * @param {number} radius - Radius in kilometers (default 5km)
+ */
+function getEventsByArea(lat, lng, radius = 10) {
+  const radiusInDegrees = radius / 111;
+
+  return Event.find({
+    removed: false,
+    "location.lat": {
+      $gte: lat - radiusInDegrees,
+      $lte: lat + radiusInDegrees
+    },
+    "location.lng": {
+      $gte: lng - radiusInDegrees,
+      $lte: lng + radiusInDegrees
+    }
+  })
+    .populate("author", "username")
+    .sort({ createdAt: -1 })
+    .lean();
+}
+
 function getEventById(eventId) {
   return Event.findById(eventId);
 }
@@ -237,6 +261,7 @@ async function unjoinEvent(eventId, userId) {
 export default {
   createEvent,
   getEvents,
+  getEventsByArea,
   getEventById,
   deleteEvent,
   removeEvent,

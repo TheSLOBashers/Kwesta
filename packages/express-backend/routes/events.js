@@ -11,6 +11,7 @@ const router = express.Router();
 const {
   createEvent,
   getEvents,
+  getEventsByArea,
   getEventById,
   updateEvent,
   deleteEvent,
@@ -62,6 +63,46 @@ router.get("/", authenticateToken, async (req, res) => {
     res.status(201).json({ events, userId: req.user._id });
   } catch (error) {
     res.status(500).send("Error");
+  }
+});
+
+// Get events by area
+router.get("/area", authenticateToken, async (req, res) => {
+  try {
+    const { lat, lng, radius } = req.query;
+
+    if (!lat || !lng) {
+      return res.status(400).json({
+        message: "lat and lng query parameters are required"
+      });
+    }
+
+    const events = await getEventsByArea(
+      parseFloat(lat),
+      parseFloat(lng),
+      radius ? parseFloat(radius) : 10
+    );
+
+    for (const event of events) {
+      const user = await getUserById(event.author); 
+      
+      event.authorId = event.author;
+      event.authorName = user?.username || "Unknown";
+    }
+
+    events.forEach(e => {
+      const list = e.rsvpList || [];
+      e.joined = list.some(
+        id => id.toString() === req.user._id.toString()
+      );
+    });
+
+    const flags = (await getUserFlags(req.user._id)) ?? [];
+    const safeFlags = flags.filter(Boolean);
+
+    res.json({ events });
+  } catch (error) {
+    res.status(500).send("Error: " + error.message);
   }
 });
 
