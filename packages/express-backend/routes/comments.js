@@ -243,18 +243,28 @@ router.get(
 // Permanently delete a comment (moderator only)
 router.delete(
   "/:id",
-  authenticateModerator,
+  authenticateToken,
   async (req, res) => {
     try {
-      const comment = await deleteComment(req.params.id);
+      const comment = await getCommentById(req.params.id);
       if (!comment) {
         return res
           .status(404)
           .json({ message: "Comment not found" });
       }
+
+      const isOwner = comment.author.toString() === req.user._id.toString();
+      const isModerator = req.user.permissions?.includes("moderator");
+
+      if (!isOwner && !isModerator) {
+        return res.status(403).json({message: "Unauthorized"});
+      }
+
+      const deleted = await deleteComment(req.params.id);
+
       res.status(200).json({
         message: "Comment deleted successfully",
-        comment
+        comment: deleted
       });
     } catch (error) {
       res.status(500).send("Error: " + error.message);

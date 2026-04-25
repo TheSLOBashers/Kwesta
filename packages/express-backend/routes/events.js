@@ -186,18 +186,28 @@ router.put("/:id", authenticateToken, async (req, res) => {
 // Permanently delete a event (moderator only)
 router.delete(
   "/:id",
-  authenticateModerator,
+  authenticateToken,
   async (req, res) => {
     try {
-      const event = await deleteEvent(req.params.id);
+      const event = await getEventById(req.params.id);
       if (!event) {
         return res
           .status(404)
           .json({ message: "Event not found" });
       }
+
+      const isOwner = event.author.toString() === req.user._id.toString();
+      const isModerator = req.user.permissions?.includes("moderator");
+
+      if (!isOwner && !isModerator) {
+        return res.status(403).json({message: "Unauthorized"});
+      }
+
+      const deleted = await deleteEvent(req.params.id);
+
       res
         .status(200)
-        .json({ message: "Event deleted successfully", event });
+        .json({ message: "Event deleted successfully", event: deleted });
     } catch (error) {
       res.status(500).send("Error: " + error.message);
     }

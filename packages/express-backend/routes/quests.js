@@ -183,18 +183,28 @@ router.put("/:id", authenticateToken, async (req, res) => {
 // Permanently delete a quest (moderator only)
 router.delete(
   "/:id",
-  authenticateModerator,
+  authenticateToken,
   async (req, res) => {
     try {
-      const quest = await deleteQuest(req.params.id);
+      const quest = await getQuestById(req.params.id);
       if (!quest) {
         return res
           .status(404)
           .json({ message: "Quest not found" });
       }
+
+      const isOwner = quest.author.toString() === req.user._id.toString();
+      const isModerator = req.user.permissions?.includes("moderator");
+
+      if (!isOwner && !isModerator) {
+        return res.status(403).json({message: "Unauthorized"});
+      }
+
+      const deleted = await deleteQuest(req.params.id);
+
       res
         .status(200)
-        .json({ message: "Quest deleted successfully", quest });
+        .json({ message: "Quest deleted successfully", quest: deleted });
     } catch (error) {
       res.status(500).send("Error: " + error.message);
     }
