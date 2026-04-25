@@ -246,6 +246,9 @@ router.delete(
   authenticateToken,
   async (req, res) => {
     try {
+      console.log("Deleting:", req.params.id);
+
+
       const comment = await getCommentById(req.params.id);
       if (!comment) {
         return res
@@ -261,6 +264,9 @@ router.delete(
       }
 
       const deleted = await deleteComment(req.params.id);
+
+      const check = await Comment.findById(req.params.id);
+      console.log("Still exists after delete?", check);
 
       res.status(200).json({
         message: "Comment deleted successfully",
