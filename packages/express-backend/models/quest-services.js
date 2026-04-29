@@ -12,6 +12,30 @@ function getQuests() {
     .lean();
 }
 
+/**
+ * @param {number} lat - Center latitude
+ * @param {number} lng - Center longitude
+ * @param {number} radius - Radius in kilometers (default 5km)
+ */
+function getQuestsByArea(lat, lng, radius = 10) {
+  const radiusInDegrees = radius / 111;
+
+  return Quest.find({
+    removed: false,
+    "location.lat": {
+      $gte: lat - radiusInDegrees,
+      $lte: lat + radiusInDegrees
+    },
+    "location.lng": {
+      $gte: lng - radiusInDegrees,
+      $lte: lng + radiusInDegrees
+    }
+  })
+    .populate("author", "username")
+    .sort({ createdAt: -1 })
+    .lean();
+}
+
 function getQuestById(questId) {
   return Quest.findById(questId);
 }
@@ -60,8 +84,14 @@ async function updateQuest(id, updatedFields) {
   );
 }
 
-export async function getQuestsByAuthor(userId) {
+async function getQuestsByAuthor(userId) {
   return Quest.find({ author: userId }).sort({ createdAt: -1 });
+}
+
+async function getQuestsUserJoined(userId) {
+  return Quest.find({
+    rsvpList: userId
+  });
 }
 
 /**
@@ -231,6 +261,7 @@ async function unjoinQuest(questId, userId) {
 export default {
   createQuest,
   getQuests,
+  getQuestsByArea,
   getQuestById,
   deleteQuest,
   removeQuest,
@@ -242,5 +273,6 @@ export default {
   joinQuest,
   unjoinQuest,
   updateQuest,
-  getQuestsByAuthor
+  getQuestsByAuthor,
+  getQuestsUserJoined
 };

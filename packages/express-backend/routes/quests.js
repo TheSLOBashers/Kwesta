@@ -11,6 +11,7 @@ const router = express.Router();
 const {
   createQuest,
   getQuests,
+  getQuestsByArea,
   getQuestById,
   updateQuest,
   deleteQuest,
@@ -62,6 +63,43 @@ router.get("/", authenticateToken, async (req, res) => {
   }
 });
 
+// Get quests by area
+router.get("/area", authenticateToken, async (req, res) => {
+  try {
+    const { lat, lng, radius } = req.query;
+
+    if (!lat || !lng) {
+      return res.status(400).json({
+        message: "lat and lng query parameters are required"
+      });
+    }
+
+    const quests = await getQuestsByArea(
+      parseFloat(lat),
+      parseFloat(lng),
+      radius ? parseFloat(radius) : 10
+    );
+
+    for (const quest of quests) {
+      const user = await getUserById(quest.author); 
+      
+      quest.authorId = quest.author;
+      quest.authorName = user?.username || "Unknown";
+    }
+
+    quests.forEach(q => {
+      const list = q.rsvpList || [];
+      q.joined = list.some(
+        id => id.toString() === req.user._id.toString()
+      );
+    });
+
+    res.json({ quests });
+  } catch (error) {
+    res.status(500).send("Error: " + error.message);
+  }
+});
+
 // Get a single quest by ID
 router.get("/:id", async (req, res) => {
   try {
@@ -98,7 +136,7 @@ router.put("/:id", authenticateToken, async (req, res) => {
     if (location !== undefined) updatedFields.location = location;
     if (date !== undefined) updatedFields.date = date;
 
-    const updatedQuest = await eventServices.updateQuest(id, updatedFields);
+    const updatedQuest = await questServices.updateQuest(id, updatedFields);
 
     res.status(200).json({ quest: updatedQuest });
 
@@ -183,18 +221,28 @@ router.put("/:id", authenticateToken, async (req, res) => {
 // Permanently delete a quest (moderator only)
 router.delete(
   "/:id",
-  authenticateModerator,
+  authenticateToken,
   async (req, res) => {
     try {
-      const quest = await deleteQuest(req.params.id);
+      const quest = await getQuestById(req.params.id);
       if (!quest) {
         return res
           .status(404)
           .json({ message: "Quest not found" });
       }
+
+      const isOwner = quest.author.toString() === req.user._id.toString();
+      const isModerator = req.user.permissions?.includes("moderator");
+
+      if (!isOwner && !isModerator) {
+        return res.status(403).json({message: "Unauthorized"});
+      }
+
+      const deleted = await deleteQuest(req.params.id);
+
       res
         .status(200)
-        .json({ message: "Quest deleted successfully", quest });
+        .json({ message: "Quest deleted successfully", quest: deleted });
     } catch (error) {
       res.status(500).send("Error: " + error.message);
     }
