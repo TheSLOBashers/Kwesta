@@ -80,7 +80,10 @@ async function authenticateDevice(username, device) {
 
       const found = [];
       for (let i = 0; i < user.devices.length; i++) {
-        if (user.devices[i].device == device && user.devices[i].allowed) {
+        if (
+          user.devices[i].device == device &&
+          user.devices[i].allowed
+        ) {
           found.push(user.devices[i]);
         }
       }
@@ -91,15 +94,22 @@ async function authenticateDevice(username, device) {
 
       return found.length;
     })
-    .catch((error) => {
-      throw Error(error.message)
-    })
+    .catch(error => {
+      throw Error(error.message);
+    });
 }
 
 async function getAllNonModeratorUsers() {
   return await User.find({
     permissions: { $ne: "moderator" }
   }).select("-password");
+}
+
+// Public view: only expose username and points for non-moderator users
+async function getPublicUsers() {
+  return await User.find({
+    permissions: { $ne: "moderator" }
+  }).select("username points");
 }
 
 async function banUser(userId) {
@@ -158,52 +168,91 @@ async function addPoints(userId, amount = 10) {
 }
 
 async function getDevices(username) {
-  return getUserByUsername(username)
-    .then((user) => {
-      if (!user) {
-        throw Error("No user found.")
-      }
-      return user.devices;
-    });
+  return getUserByUsername(username).then(user => {
+    if (!user) {
+      throw Error("No user found.");
+    }
+    return user.devices;
+  });
 }
 
 async function getDevice(username, device) {
-  return User.find({ username: username, "devices.device": device });
+  return User.find({
+    username: username,
+    "devices.device": device
+  });
 }
 
-async function addDevice(username, device, device_brand = null, device_designName = null, device_deviceName = null, device_deviceYearClass = null, device_deviceType = null) {
+async function addDevice(
+  username,
+  device,
+  device_brand = null,
+  device_designName = null,
+  device_deviceName = null,
+  device_deviceYearClass = null,
+  device_deviceType = null
+) {
   return User.findOneAndUpdate(
     { username: username },
-    { $addToSet: { devices: { device: device, allowed: true, device_brand, device_designName, device_deviceName, device_deviceYearClass, device_deviceType } } },
+    {
+      $addToSet: {
+        devices: {
+          device: device,
+          allowed: true,
+          device_brand,
+          device_designName,
+          device_deviceName,
+          device_deviceYearClass,
+          device_deviceType
+        }
+      }
+    }
   );
 }
 
-async function addDeviceIfNotAlready(username, device, device_brand = null, device_designName = null, device_deviceName = null, device_deviceYearClass = null, device_deviceType = null) {
-  return getDevice(username, device)
-    .then((devices) => {
-      if (devices.length <= 0) {
-        return addDevice(username, device, device_brand, device_designName, device_deviceName, device_deviceYearClass, device_deviceType)
-      }
-      return device;
-    });
+async function addDeviceIfNotAlready(
+  username,
+  device,
+  device_brand = null,
+  device_designName = null,
+  device_deviceName = null,
+  device_deviceYearClass = null,
+  device_deviceType = null
+) {
+  return getDevice(username, device).then(devices => {
+    if (devices.length <= 0) {
+      return addDevice(
+        username,
+        device,
+        device_brand,
+        device_designName,
+        device_deviceName,
+        device_deviceYearClass,
+        device_deviceType
+      );
+    }
+    return device;
+  });
 }
 
 async function blockDevice(username, device) {
-  return User.findOneAndUpdate({ username: username, "devices.device": device },
+  return User.findOneAndUpdate(
+    { username: username, "devices.device": device },
     { $set: { "devices.$.allowed": false } },
-    { new: true })
-    .then((user) => {
+    { new: true }
+  )
+    .then(user => {
       if (!user) {
-        throw Error("No user / device found.")
+        throw Error("No user / device found.");
       }
       return user;
     })
-    .catch((error) => {
+    .catch(error => {
       throw Error(error.message);
-    })
+    });
 }
 
-const getUserById = async (id) => {
+const getUserById = async id => {
   try {
     return await User.findById(id).select("username");
   } catch (err) {
@@ -216,6 +265,7 @@ export default {
   authenticateUser,
   createNewUser,
   getAllNonModeratorUsers,
+  getPublicUsers,
   getUserByUsername,
   banUser,
   unbanUser,

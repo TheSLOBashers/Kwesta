@@ -9,6 +9,7 @@ const {
   authenticateUser,
   createNewUser,
   getAllNonModeratorUsers,
+  getPublicUsers,
   getUserByUsername,
   banUser,
   unbanUser,
@@ -45,10 +46,10 @@ router.post("/", async (req, res) => {
   }
 });
 
-// Fetch users as moderator
-router.get("/", authenticateModerator, async (req, res) => {
+// Fetch public users: only username and points are exposed to everyone
+router.get("/", async (req, res) => {
   try {
-    const users_list = await getAllNonModeratorUsers();
+    const users_list = await getPublicUsers();
     return res.status(200).json({ users_list });
   } catch (error) {
     return res.status(500).send("Internal Server Error");
@@ -144,7 +145,7 @@ router.get("/me/posts", authenticateToken, async (req, res) => {
 
     const authorName = user?.username || "Unknown";
 
-    const clean = (item) => {
+    const clean = item => {
       const obj = item.toObject ? item.toObject() : item;
 
       return {
@@ -159,14 +160,14 @@ router.get("/me/posts", authenticateToken, async (req, res) => {
         description: obj.description ?? null,
 
         likes: obj.likes ?? 0,
-        flag: obj.flag ?? 0,
+        flag: obj.flag ?? 0
       };
     };
 
     res.json({
       comments: comments.map(clean),
       events: events.map(clean),
-      quests: quests.map(clean),
+      quests: quests.map(clean)
     });
   } catch (error) {
     console.error("GET /me/posts error:", error);
@@ -174,51 +175,54 @@ router.get("/me/posts", authenticateToken, async (req, res) => {
   }
 });
 
-router.get("/me/joinedPosts", authenticateToken, async (req, res) => {
-  try {
-    const userId = req.user._id;
+router.get(
+  "/me/joinedPosts",
+  authenticateToken,
+  async (req, res) => {
+    try {
+      const userId = req.user._id;
 
-    const [events, quests] = await Promise.all([
-      eventServices.getEventsUserJoined(userId),
-      questServices.getQuestsUserJoined(userId),
-    ]);
+      const [events, quests] = await Promise.all([
+        eventServices.getEventsUserJoined(userId),
+        questServices.getQuestsUserJoined(userId)
+      ]);
 
-    const clean = async (item) => {
-      const obj = item.toObject ? item.toObject() : item;
+      const clean = async item => {
+        const obj = item.toObject ? item.toObject() : item;
 
-      const user = await getUserById(obj.author);
+        const user = await getUserById(obj.author);
 
-      return {
-        id: obj._id.toString(),
-        type: obj.description ? "event" : "quest",
+        return {
+          id: obj._id.toString(),
+          type: obj.description ? "event" : "quest",
 
-        authorId: obj.author?.toString?.() ?? obj.author,
-        authorName: user?.username || "Unknown",
+          authorId: obj.author?.toString?.() ?? obj.author,
+          authorName: user?.username || "Unknown",
 
-        date: obj.date ?? obj.createdAt,
-        location: obj.location,
+          date: obj.date ?? obj.createdAt,
+          location: obj.location,
 
-        description: obj.description ?? null,
+          description: obj.description ?? null,
 
-        joined: true,
-        likes: obj.likes ?? 0,
-        flag: obj.flag ?? 0,
+          joined: true,
+          likes: obj.likes ?? 0,
+          flag: obj.flag ?? 0
+        };
       };
-    };
 
-    const cleanEvents = await Promise.all(events.map(clean));
-    const cleanQuests = await Promise.all(quests.map(clean));
+      const cleanEvents = await Promise.all(events.map(clean));
+      const cleanQuests = await Promise.all(quests.map(clean));
 
-    res.json({
-      events: cleanEvents,
-      quests: cleanQuests,
-    });
-
-  } catch (error) {
-    console.error("GET /me/joinedPosts error:", error);
-    res.status(500).json({ error: error.message });
+      res.json({
+        events: cleanEvents,
+        quests: cleanQuests
+      });
+    } catch (error) {
+      console.error("GET /me/joinedPosts error:", error);
+      res.status(500).json({ error: error.message });
+    }
   }
-});
+);
 
 export default router;
 
