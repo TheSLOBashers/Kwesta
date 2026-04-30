@@ -19,7 +19,8 @@ const {
   upgradeToModerator,
   getUserById,
   giveBadge,
-  removeBadge
+  removeBadge,
+  purchaseBadge
 } = user_services;
 
 import commentServices from "../models/comment-services.js";
