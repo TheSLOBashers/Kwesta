@@ -263,6 +263,49 @@ router.post(
   }
 );
 
+router.post(
+  "/me/badges/purchase",
+  authenticateToken,
+  async (req, res) => {
+    try {
+      const userId = req.user._id;
+      const { badgeName, cost } = req.body;
+
+      if (!badgeName || cost === undefined) {
+        return res.status(400).json({
+          message: "badgeName and cost are required"
+        });
+      }
+
+      const updatedUser = await purchaseBadge(
+        userId,
+        String(badgeName),
+        Number(cost)
+      );
+
+      return res.status(200).json({
+        message: "Badge purchased successfully",
+        points: updatedUser.points || 0,
+        badges: updatedUser.badges || []
+      });
+    } catch (error) {
+      if (error.message === "Insufficient funds") {
+        return res.status(400).json({ message: error.message });
+      }
+
+      if (error.message === "Badge already owned") {
+        return res.status(400).json({ message: error.message });
+      }
+
+      if (error.message === "User not found") {
+        return res.status(404).json({ message: error.message });
+      }
+
+      return res.status(500).json({ error: error.message });
+    }
+  }
+);
+
 router.get(
   "/me/joinedPosts",
   authenticateToken,

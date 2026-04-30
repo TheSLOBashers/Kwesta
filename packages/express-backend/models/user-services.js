@@ -278,6 +278,39 @@ async function removeBadge(userId, badgeTitle) {
   );
 }
 
+async function purchaseBadge(userId, badgeName, cost) {
+  if (!badgeName || typeof badgeName !== "string") {
+    throw new Error("Invalid badge name");
+  }
+
+  const parsedCost = Number(cost);
+
+  if (!Number.isFinite(parsedCost) || parsedCost <= 0) {
+    throw new Error("Invalid badge cost");
+  }
+
+  const user = await User.findById(userId);
+
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  if ((user.points || 0) < parsedCost) {
+    throw new Error("Insufficient points");
+  }
+
+  if ((user.badges || []).includes(badgeName.trim())) {
+    throw new Error("Badge already owned");
+  }
+
+  user.points -= Math.round(parsedCost);
+  user.badges.push(badgeName.trim());
+
+  await user.save();
+
+  return user;
+}
+
 export default {
   authenticateUser,
   createNewUser,
@@ -297,7 +330,8 @@ export default {
   blockDevice,
   getDevices,
   giveBadge,
-  removeBadge
+  removeBadge,
+  purchaseBadge
 };
 
 /*
