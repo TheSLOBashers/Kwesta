@@ -23,6 +23,7 @@ const {
 import commentServices from "../models/comment-services.js";
 import eventServices from "../models/event-services.js";
 import questServices from "../models/quest-services.js";
+import redemptionServices from "../models/redemption-services.js";
 
 // routes
 
@@ -174,6 +175,45 @@ router.get("/me/posts", authenticateToken, async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
+// Get my point redemptions history
+router.get(
+  "/me/redemptions",
+  authenticateToken,
+  async (req, res) => {
+    try {
+      const userId = req.user._id;
+      const limit = req.query.limit
+        ? parseInt(req.query.limit)
+        : undefined;
+      const skip = req.query.skip
+        ? parseInt(req.query.skip)
+        : undefined;
+
+      const redemptions = await redemptionServices.getRedemptionsByUser(
+        userId,
+        {
+          limit,
+          skip
+        }
+      );
+
+      // map to a simple JSON shape
+      const entries = redemptions.map(r => ({
+        id: r._id?.toString?.() ?? r._id,
+        rewardName: r.rewardName,
+        pointsRedeemed: r.pointsRedeemed,
+        redeemedAt: r.redeemedAt ?? r.createdAt,
+        status: r.status
+      }));
+
+      return res.status(200).json(entries);
+    } catch (error) {
+      console.error("GET /me/redemptions error:", error);
+      return res.status(500).json({ error: error.message });
+    }
+  }
+);
 
 router.get(
   "/me/joinedPosts",
