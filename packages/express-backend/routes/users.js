@@ -215,6 +215,51 @@ router.get(
   }
 );
 
+router.post(
+  "/me/redemptions",
+  authenticateToken,
+  async (req, res) => {
+    try {
+      const userId = req.user._id;
+      const { rewardName, pointsRedeemed } = req.body;
+
+      if (!rewardName || pointsRedeemed === undefined) {
+        return res.status(400).json({
+          message: "rewardName and pointsRedeemed are required"
+        });
+      }
+
+      const parsedPoints = Number(pointsRedeemed);
+
+      if (!Number.isFinite(parsedPoints) || parsedPoints <= 0) {
+        return res.status(400).json({
+          message: "pointsRedeemed must be a positive number"
+        });
+      }
+
+      const redemption = await redemptionServices.createRedemption(
+        {
+          user: userId,
+          rewardName: String(rewardName),
+          pointsRedeemed: Math.abs(Math.round(parsedPoints))
+        }
+      );
+
+      return res.status(201).json({
+        id: redemption._id?.toString?.() ?? redemption._id,
+        rewardName: redemption.rewardName,
+        pointsRedeemed: redemption.pointsRedeemed,
+        redeemedAt:
+          redemption.redeemedAt ?? redemption.createdAt,
+        status: redemption.status
+      });
+    } catch (error) {
+      console.error("POST /me/redemptions error:", error);
+      return res.status(500).json({ error: error.message });
+    }
+  }
+);
+
 router.get(
   "/me/joinedPosts",
   authenticateToken,
