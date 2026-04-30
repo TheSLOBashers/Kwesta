@@ -17,7 +17,9 @@ const {
   addUserFlag,
   removeUserFlag,
   upgradeToModerator,
-  getUserById
+  getUserById,
+  giveBadge,
+  removeBadge
 } = user_services;
 
 import commentServices from "../models/comment-services.js";
@@ -69,7 +71,8 @@ router.get("/me", authenticateToken, async (req, res) => {
     return res.status(200).json({
       username: user.username,
       points: user.points || 0,
-      permissions: user.permissions
+      permissions: user.permissions,
+      badges: user.badges || []
     });
   } catch (error) {
     return res.status(500).send("Internal Server Error");

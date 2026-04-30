@@ -32,7 +32,12 @@ const UserSchema = new mongoose.Schema(
         device_deviceYearClass: { type: String, null: true },
         device_deviceType: { type: String, null: true }
       }
-    ]
+    ],
+    badges:
+    {
+      type: [String],
+      default: []
+    }
   },
   {
     timestamps: true

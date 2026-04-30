@@ -261,6 +261,23 @@ const getUserById = async id => {
   }
 };
 
+// ---------- User badge code ----------
+async function giveBadge(userId, badgeTitle) {
+  return User.findByIdAndUpdate(
+    userId,
+    { $addToSet: { badges: badgeTitle } },
+    { new: true }
+  );
+}
+
+async function removeBadge(userId, badgeTitle) {
+  return User.findByIdAndUpdate(
+    userId,
+    { $pull: { badges: badgeTitle } },
+    { new: true }
+  );
+}
+
 export default {
   authenticateUser,
   createNewUser,
@@ -278,7 +295,9 @@ export default {
   authenticateDevice,
   addDeviceIfNotAlready,
   blockDevice,
-  getDevices
+  getDevices,
+  giveBadge,
+  removeBadge
 };
 
 /*
