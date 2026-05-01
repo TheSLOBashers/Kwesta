@@ -12,6 +12,7 @@ import { default as comments } from "./routes/comments.js";
 import { default as quests } from "./routes/quests.js";
 import { default as events } from "./routes/events.js";
 import { default as auth } from "./routes/auth.js";
+import { default as statistics } from "./routes/statistics.js";
 
 // App setup
 dotenv.config();
@@ -50,6 +51,7 @@ app.use("/comments", comments);
 app.use("/quests", quests);
 app.use("/events", events);
 app.use("/auth", auth);
+app.use("/statistics", statistics);
 
 // Run app
 app.listen(port, () => {
