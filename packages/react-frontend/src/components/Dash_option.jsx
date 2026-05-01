@@ -7,6 +7,13 @@ function Dash_option(props) { // props.title, props.options = [{text: "option1",
     navigate(link);
   }
 
+  const cardStyle = {
+    background: "#ffffff",
+    borderRadius: "16px",
+    margin: "20px",
+    boxShadow: "0 8px 25px rgba(0,0,0,0.06)"
+  };
+
   const styles = {
     dash_option: {
       display: "flex",
@@ -38,7 +45,7 @@ function Dash_option(props) { // props.title, props.options = [{text: "option1",
     },
     button: {
       width: "100%",
-      padding: "0.5rem",
+      padding: "1rem",
       border: "none",
       background: "white",
       color: "#8b8b8b",
@@ -55,12 +62,13 @@ function Dash_option(props) { // props.title, props.options = [{text: "option1",
   }
 
   return (
-    <div style = {styles.dash_option} key={`${props.title}-dash-option`}>
-      <h4 key={`${props.title}-dash-option-title`} style={styles.title}>
+    <div style={cardStyle} key={`${props.title}-dash-option`}>
+      <h6 key={`${props.title}-dash-option-title`} style={{ fontWeight: "600", color: "#0f172a", padding: "10px", marginTop: "0.5em" }}>
         {props.title}
-      </h4>
+      </h6>
+
       {props.options.map((option, i) => {
-        return (<div key={`${option}-${i}-hr`} style = {styles.item}><hr style={styles.hr} key={`${option}-${i}-hr`} /><button key={`${option}-${i}-b`} style={styles.button} onClick={() => navigateFunction(option.link)}>{option.text}</button></div>)
+        return (<div key={`${option}-${i}-hr`} style={styles.item}><hr style={styles.hr} key={`${option}-${i}-hr`} /><button key={`${option}-${i}-b`} style={styles.button} onClick={() => navigateFunction(option.link)}>{option.text}</button></div>)
       })}
 
     </div>);

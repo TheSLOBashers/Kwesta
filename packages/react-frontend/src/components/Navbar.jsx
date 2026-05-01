@@ -29,9 +29,18 @@ function NavBar() {
                         </li>
                     </ul>
                 </div>
+
+                <div style={styles.item}>
+                    <h5 style={styles.title}>Moderation</h5>
+                    <ul style={styles.list}>
+                        <li>
+                            <Link style={styles.link} to="/moderation/Portal">Portal</Link>
+                        </li>
+                    </ul>
+                </div>
             </div>
             <p style={styles.text}>© 2026 Slo Bashers - All rights reserved</p>
-            <p style={styles.text}>A project started by students at Cal POly SLO!</p>
+            <p style={styles.text}>A project started by students at Cal Poly SLO!</p>
         </nav>
     );
 }

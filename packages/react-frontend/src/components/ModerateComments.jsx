@@ -9,7 +9,7 @@ import { Container, Row, Col, Form, Button } from "react-bootstrap";
 
 function ModerateComments() {
   const searchOptions = [
-    { value: "author", label: "Author", type: "text" },
+    { value: "username", label: "Author", type: "text" },
     { value: "startDate", label: "Start Date", type: "date" },
     { value: "endDate", label: "End Date", type: "date" },
     { value: "minFlags", label: "Min Flags", type: "number" },
@@ -42,7 +42,7 @@ function ModerateComments() {
         <Row className="mb-4">
           <Col>
             <h1 style={{ fontWeight: "700", color: "#0f172a" }}>
-              Moderation Portal
+              Comment Moderation Portal
             </h1>
             <p style={{ color: "#64748b" }}>
               Review, filter, and manage user comments

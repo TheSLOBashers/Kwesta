@@ -19,6 +19,7 @@ import AddQuest from "./components/AddQuest";
 import AddComment from "./components/ModerationAddComment";
 import AboutPage from "./components/AboutPage";
 import EntryPage from "./components/EntryPage";
+import MonitorDBNetworkRequests from "./components/Monitor_db_net_requests";
 
 function MyApp() {
   const [user, setUser] = useState(
@@ -74,6 +75,10 @@ function MyApp() {
             <Route
               path="/moderation/add-comment"
               element={<AddComment />}
+            />
+            <Route
+              path="/monitoring/db-network-requests"
+              element={<MonitorDBNetworkRequests />}
             />
           </Route>
           <Route path="/About" element={<AboutPage />} />

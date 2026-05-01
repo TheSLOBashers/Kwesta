@@ -1,19 +1,18 @@
 import backend from "./backend";
 
-const moderationFetchQuests = async (setError, setIsLoading, searchParams) => {
+const monitoringFetchDBData = async (setError, setIsLoading, analyticName) => {
   try {
 
     setIsLoading(true);
 
     const response = await fetch(
-      `${backend}/quests/search`,
+      `${backend}/statistics/mdb/${analyticName}`,
       {
-        method: "POST", // Specify the method
+        method: "GET", // Specify the method
         headers: {
           "Content-Type": "application/json", // Indicate the content type
           "Authorization": `Bearer ${localStorage.getItem("authToken")}`
-        },
-        body: JSON.stringify(searchParams) // Convert the search parameters to JSON
+        }
       }
     );
 
@@ -33,4 +32,4 @@ const moderationFetchQuests = async (setError, setIsLoading, searchParams) => {
   }
 };
 
-export default moderationFetchQuests;
+export default monitoringFetchDBData;
