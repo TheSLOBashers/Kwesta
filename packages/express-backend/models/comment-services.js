@@ -1,5 +1,5 @@
 import Comment from "./comment.js";
-const User = require("./User"); // make sure this is imported
+import User from "./user.js"; // make sure this is imported
 
 function createComment(commentData) {
   const newComment = new Comment(commentData);
