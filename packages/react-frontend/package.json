@@ -16,6 +16,7 @@
     "@testing-library/user-event": "^14.6.1",
     "leaflet": "^1.9.4",
     "react": "^19.2.0",
+    "react-bootstrap": "^2.10.10",
     "react-dom": "^19.2.0",
     "react-leaflet": "^5.0.0",
     "react-loader-spinner": "^8.0.2",
@@ -42,7 +43,9 @@
     "vite": "^7.2.4"
   },
   "jest": {
-    "setupFiles": ["<rootDir>/jest.setup.js"],
+    "setupFiles": [
+      "<rootDir>/jest.setup.js"
+    ],
     "testEnvironment": "jest-environment-jsdom"
   },
   "babel": {

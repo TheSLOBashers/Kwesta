@@ -8,50 +8,28 @@ import Login from "./components/Login";
 import Signup from "./components/Signup";
 import loginCall from "./APICalls/loginCall";
 import signupCall from "./APICalls/signupCall";
-import getUserPointsCall from "./APICalls/getUserPointsCall";
-import Protected from "./components/Protected";
-import ProtectedRoute from "./components/PrivateRoute";
 import AuthenticationRoute from "./components/AuthenticationRoute";
 import ModerationRoute from "./components/ModerationRoute";
 import ModerationPortal from "./components/ModerationPortal";
 import ModerateUsers from "./components/ModerateUsers";
 import ModerateComments from "./components/ModerateComments";
 import ModerateQuests from "./components/ModerateQuests";
-import UserFeed from "./components/UserFeed";
 import AddModerator from "./components/AddModerator";
 import AddQuest from "./components/AddQuest";
-import MapPage from "./components/MapPage";
-import About from "./components/AboutPage";
 import AddComment from "./components/ModerationAddComment";
 import AboutPage from "./components/AboutPage";
+import EntryPage from "./components/EntryPage";
 
 function MyApp() {
   const [user, setUser] = useState(
     () => localStorage.getItem("username") || null
   );
-  const [userPoints, setUserPoints] = useState(0);
-
-  const refreshUserPoints = async () => {
-    const authToken = localStorage.getItem("authToken");
-
-    if (!authToken) {
-      setUserPoints(0);
-      return;
-    }
-
-    const points = await getUserPointsCall();
-    setUserPoints(points);
-  };
-
-  useEffect(() => {
-    refreshUserPoints();
-  }, [user]);
 
   return (
-    <div className="container">
-      <TopBar userPoints={userPoints} />
+    // <TopBar userPoints={userPoints} />
+    <div className="top-container">
 
-      <main style={{ paddingTop: "70px" }}>
+      <main>
         <Routes>
           <Route element={<AuthenticationRoute />}>
             <Route
@@ -66,27 +44,6 @@ function MyApp() {
             <Route
               path="/Signup"
               element={<Signup handleSubmit={signupCall} />}
-            />
-          </Route>
-          <Route element={<ProtectedRoute />}>
-            <Route
-              path="/"
-              element={
-                <UserFeed
-                  user={user}
-                  onPointsChanged={refreshUserPoints}
-                />
-              }
-            />
-            <Route path="/Protected" element={<Protected />} />
-            <Route
-              path="/UserFeed"
-              element={
-                <UserFeed
-                  user={user}
-                  onPointsChanged={refreshUserPoints}
-                />
-              }
             />
           </Route>
           <Route element={<ModerationRoute />}>
@@ -119,8 +76,8 @@ function MyApp() {
               element={<AddComment />}
             />
           </Route>
-          <Route path="/map" element={<MapPage />} />
           <Route path="/About" element={<AboutPage />} />
+          <Route path="/" element={<EntryPage />} />
         </Routes>
       </main>
 
