@@ -1,8 +1,10 @@
 import cron from 'node-cron';
 import {addDBAnalytics} from './models/DBAnalytics-services.js';
-import getClusterUsageStats from './third_party_API_calls/mongo_usage.js';
+import mongoUsage from './third_party_API_calls/mongo_usage.js';
 import mongoose from "mongoose";
 import dotenv from "dotenv";
+
+const { getClusterUsageStats, getClusterUsageTypes } = mongoUsage;
 
 console.log("Starting DB monitoring scheduler...");
 dotenv.config();
@@ -18,8 +20,8 @@ mongoose
   .then(() => console.log("Connected DB:", mongoose.connection.name))
   .catch(error => console.log(error));
 
-cron.schedule('*/5 * * * *', () => {
-  console.log('Task running every 5 minutes');
+cron.schedule('0 0 * * *', () => {
+  console.log('Task running every day at midnight');
   getClusterUsageStats().then((stats) => {
     console.log("Fetched cluster usage stats:", stats);
     stats.forEach(set => { 

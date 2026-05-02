@@ -75,4 +75,63 @@ async function getAggregatedAnalytics(analyticName) {
   ]);
 }
 
-export { saveDBAnalytics, addDBAnalytics, getDBAnalytics, getAggregatedAnalytics };
+async function getAggregatedAnalyticsInRange(analyticName, startDate, endDate) {
+  return DBAnalytics.aggregate([
+    // Match analytic
+    {
+      $match: { analytic: analyticName }
+    },
+
+    // Break apart the data array
+    {
+      $unwind: "$data"
+    },
+
+    // Filter by date range
+    {
+      $match: {
+        "data.timeStamp": {
+          $gte: new Date(startDate),
+          $lte: new Date(endDate)
+        }
+      }
+    },
+
+    // Bucket into 10-minute windows (MongoDB 5.0+)
+    {
+      $addFields: {
+        bucket: {
+          $dateTrunc: {
+            date: "$data.timeStamp",
+            unit: "minute",
+            binSize: 10
+          }
+        }
+      }
+    },
+
+    // Group and sum
+    {
+      $group: {
+        _id: "$bucket",
+        totalValue: { $sum: "$data.value" }
+      }
+    },
+
+    // Format output
+    {
+      $project: {
+        _id: 0,
+        timeStamp: "$_id",
+        value: "$totalValue"
+      }
+    },
+
+    // Sort chronologically
+    {
+      $sort: { timeStamp: 1 }
+    }
+  ]);
+}
+
+export { saveDBAnalytics, addDBAnalytics, getDBAnalytics, getAggregatedAnalytics, getAggregatedAnalyticsInRange };

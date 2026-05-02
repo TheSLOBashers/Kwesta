@@ -3,13 +3,32 @@ import {
   authenticateToken,
   authenticateModerator
 } from "./auth.js";
-import {getAggregatedAnalytics} from '../models/DBAnalytics-services.js';
+import {getAggregatedAnalytics, getAggregatedAnalyticsInRange} from '../models/DBAnalytics-services.js';
 
 const router = express.Router();
 
-router.get("/mdb/NETWORK_NUM_REQUESTS", authenticateModerator, async (req, res) => {
+router.post("/mdb/:id", authenticateModerator, async (req, res) => {
   try {
-    const measurements = await getAggregatedAnalytics("NETWORK_NUM_REQUESTS");
+
+    const analyticName = req.params.id;
+    const startDate = req.body.startDate;
+    const endDate = req.body.endDate;
+
+    console.log(`Received request for analytic ${analyticName} with startDate=${startDate} and endDate=${endDate}`);
+
+    let measurements;
+    if (startDate && endDate) {
+      measurements = await getAggregatedAnalyticsInRange(analyticName, startDate, endDate);
+    } else if (startDate) {
+      measurements = await getAggregatedAnalyticsInRange(analyticName, startDate, new Date());
+    } else if (endDate) {
+      measurements = await getAggregatedAnalyticsInRange(analyticName, new Date('2026-01-01T00:00:00Z'), endDate);
+    } else {
+      measurements = await getAggregatedAnalytics(analyticName);
+    }
+
+    // filter out measurements with null timestamps or values
+    measurements = measurements.filter(m => m.timeStamp && m.value !== null);
 
     res.json({ measurements });
   } catch (error) {
