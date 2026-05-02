@@ -1,18 +1,20 @@
 import backend from "./backend";
 
-const monitoringFetchDBData = async (setError, setIsLoading, analyticName) => {
+const monitoringFetchDBData = async (setError, setIsLoading, analyticName, searchParams = null) => {
   try {
 
+    console.log("running...")
     setIsLoading(true);
 
     const response = await fetch(
       `${backend}/statistics/mdb/${analyticName}`,
       {
-        method: "GET", // Specify the method
+        method: "POST", // Specify the method
         headers: {
           "Content-Type": "application/json", // Indicate the content type
           "Authorization": `Bearer ${localStorage.getItem("authToken")}`
-        }
+        },
+        body: JSON.stringify(searchParams) // Convert the search parameters to JSON
       }
     );
 

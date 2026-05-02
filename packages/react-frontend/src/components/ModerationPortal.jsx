@@ -2,6 +2,7 @@
 import PortalButton from "./PortalButton";
 import Dash_option from "./Dash_option";
 import { Container, Row, Col, Form, Button } from "react-bootstrap";
+import BackendStatusCard from "./BackendStatusCard";
 
 function ModerationPortal() {
 
@@ -25,7 +26,15 @@ function ModerationPortal() {
             <Dash_option title={"Manage users"} options={[{ text: "Moderate users", link: "/moderation/users" }]} width={"90%"}></Dash_option>
             <Dash_option title={"Manage comments"} options={[{ text: "Moderate comments", link: "/moderation/comments" }, { text: "Add Comment", link: "/moderation/add-comment" }]} width={"90%"}></Dash_option>
             <Dash_option title={"Manage quests"} options={[{ text: "Moderate quests", link: "/moderation/quests" }, { text: "Add Quest", link: "/moderation/add-quest" }]} width={"90%"}></Dash_option>
-            <Dash_option title={"Monitor DB Network Requests"} options={[{ text: "View Network Requests", link: "/monitoring/db-network-requests" }]} width={"90%"}></Dash_option>
+            <Dash_option title={"Monitor DB Network Requests"} options={[
+              { text: "View Network Requests", link: "/monitoring/db-network-requests" }, 
+              { text: "View Operation Counter Commands", link: "/monitoring/OPCOUNTER_CMD" },
+              { text: "View Operation Counter Update", link: "/monitoring/db-opcounter-update" },
+              { text: "View Operation Counter Delete", link: "/monitoring/db-opcounter-delete" },
+              { text: "View Operation Counter Insert", link: "/monitoring/db-opcounter-insert" },
+              { text: "View DB Connections", link: "/monitoring/db-connections"}
+            ]} width={"90%"}></Dash_option>
+            <BackendStatusCard width={"90%"}></BackendStatusCard>
         </Row>
 
       </Container>
@@ -33,6 +42,12 @@ function ModerationPortal() {
 
   );
 }
+
+/*
+{ text: "View FTS Process CPU Kernel", link: "/monitoring/FTS_PROCESS_CPU_KERNEL" }, 
+              { text: "View FTS Process Resident Memory", link: "/monitoring/FTS_PROCESS_RESIDENT_MEMORY" }, 
+              { text: "View FTS Disk Usage", link: "/monitoring/FTS_DISK_USAGE" }, 
+               */
 
 /*
 <div style={{ display: "flex", flexDirection: "column", gap: "20px", position: "sticky", top: "24px" }}>

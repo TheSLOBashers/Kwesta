@@ -25,7 +25,7 @@ const AddQuest = () => {
     }
 
     return (
-        <div>
+        <div style={{ padding: "20px" }}>
             <h1>Add Quest</h1>
             <p>Add a new quest on this page.</p>
             <form onSubmit={(e) => {

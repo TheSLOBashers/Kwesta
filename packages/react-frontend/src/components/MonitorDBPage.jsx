@@ -9,7 +9,7 @@ import {
     YAxis, CartesianGrid, Tooltip
 } from 'recharts';
 
-function MonitorDBNetworkRequests() {
+function MonitorDBPage(props) { // props.title, props.description, props.analyticName, props.chartTitle
     const searchOptions = [
         { value: "startDate", label: "Start Date", type: "date" },
         { value: "endDate", label: "End Date", type: "date" },
@@ -22,7 +22,7 @@ function MonitorDBNetworkRequests() {
 
     useEffect(() => {
         console.log(JSON.stringify(searchParams));
-        monitoringFetchDBData(setError, setIsLoading, "NETWORK_NUM_REQUESTS", searchParams)
+        monitoringFetchDBData(setError, setIsLoading, props.analyticName, searchParams)
             .then((json) => setData(json.measurements.map((dataPoint) => ({
                 timestamp: new Date(dataPoint.timeStamp).getTime(), // Convert timestamp to Date object
                 value: dataPoint.value
@@ -51,10 +51,10 @@ function MonitorDBNetworkRequests() {
                 <Row className="mb-4">
                     <Col>
                         <h1 style={{ fontWeight: "700", color: "#0f172a" }}>
-                            Monitor DB Network Requests
+                            {props.title}
                         </h1>
                         <p style={{ color: "#64748b" }}>
-                            Review and filter database network requests
+                            {props.description}
                         </p>
                     </Col>
                 </Row>
@@ -65,7 +65,7 @@ function MonitorDBNetworkRequests() {
                     <div style={{ flex: 2 }}>
                         <div style={{ ...cardStyle, height: "100%" }}>
                             <h5 style={{ fontWeight: "600", marginBottom: "16px", color: "#0f172a" }}>
-                                Network Requests
+                                {props.chartTitle}
                             </h5>
 
                             {isLoading ? (
@@ -155,4 +155,4 @@ function MonitorDBNetworkRequests() {
     );
 }
 
-export default MonitorDBNetworkRequests;
+export default MonitorDBPage;

@@ -3,7 +3,6 @@ function TableHeader() {
   return (
     <thead>
       <tr>
-        <th>ID</th>
         <th>Author</th>
         <th>Date</th>
         <th>Time</th>
@@ -49,7 +48,6 @@ function TableBody(props) {
   const rows = props.questsData.map((row, index) => {
     return (
       <tr key={index}>
-        <td>{row._id}</td>
         <td>{row.author}</td>
         <td>{row.date}</td>
         <td>{row.time}</td>
