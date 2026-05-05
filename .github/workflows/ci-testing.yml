@@ -27,5 +27,5 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
     - run: npm ci
-    - run: npm run -w express-backend lint
+    - run: npm run lint
     - run: npm -w express-backend test
