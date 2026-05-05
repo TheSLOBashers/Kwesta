@@ -1,6 +1,10 @@
 module.exports = [
   {
-    ignores: ["node_modules/**"],
+    ignores: [
+      "node_modules/**",
+      "packages/react-frontend/**",
+      "packages/expo-mobile/**",
+    ],
   },
   {
     files: ["packages/express-backend/**/*.js"],
