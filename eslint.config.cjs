@@ -3,12 +3,12 @@ module.exports = [
         files: ["**/*.js"],
         ignores: ["node_modules/**"],
         languageOptions: {
-        ecmaVersion: "latest",
-        sourceType: "commonjs",
+            ecmaVersion: "latest",
+            sourceType: "module",
         },
         rules: {
-        "no-unused-vars": "warn",
-        "no-undef": "error",
+            "no-unused-vars": "warn",
+            "no-undef": "error",
         },
     },
 ];
