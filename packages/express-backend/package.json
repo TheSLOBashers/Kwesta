@@ -7,7 +7,7 @@
   "type": "module",
   "main": "backend.js",
   "scripts": {
-    "test": "node --test \"tests/**/*.test.js\"",
+    "test": "node --test tests",
     "dev": "npx nodemon backend.js",
     "start": "node backend.js"
   },
