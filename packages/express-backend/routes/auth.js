@@ -162,9 +162,37 @@ function authenticateModerator(req, res, next) {
   });
 }
 
+function authenticateAdmin(req, res, next) {
+  const authHeader = req.headers.authorization;
+  const token = authHeader && authHeader.split(' ')[1];
+  if (token == null) return res.sendStatus(401);
+
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+    if (err) return res.sendStatus(403);
+
+    req.user = user;
+
+    getUserByUsername(req.user.username)
+      .then(foundUser => {
+        if (!foundUser) {
+          return res.status(401).json({ message: "User not found" });
+        }
+        else if (foundUser.permissions !== "admin") {
+          return res.status(401).json({ message: "User not admin" });
+        }
+        req.user._id = foundUser._id;
+        next();
+      })
+      .catch(() => {
+        return res.status(500).send("Internal Server Error");
+      });
+  });
+}
+
 export default router;
 
 export {
   authenticateToken,
-  authenticateModerator
+  authenticateModerator,
+  authenticateAdmin
 };

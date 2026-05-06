@@ -1,13 +1,14 @@
 import express from "express";
 import {
   authenticateToken,
-  authenticateModerator
+  authenticateModerator,
+  authenticateAdmin
 } from "./auth.js";
 import {getAggregatedAnalytics, getAggregatedAnalyticsInRange} from '../models/DBAnalytics-services.js';
 
 const router = express.Router();
 
-router.post("/mdb/:id", authenticateModerator, async (req, res) => {
+router.post("/mdb/:id", authenticateAdmin, async (req, res) => {
   try {
 
     const analyticName = req.params.id;
