@@ -5,6 +5,8 @@ import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
+import { register } from 'prom-client';
+import promBundle from "express-prom-bundle";
 
 // Routes
 import { default as users } from "./routes/users.js";
@@ -20,6 +22,21 @@ const app = express();
 const port = 8000;
 app.use(cors());
 app.use(express.json());
+//collectDefaultMetrics(); -- don't need this since promBundle already collects default metrics
+
+// Prometheus metrics middleware
+
+const metricsMiddleware = promBundle({
+    includeMethod: true, 
+    includePath: true,
+    includeStatusCode: true,
+    normalizePath: true, // Converts /user/123 to /user/#val
+    promClient: {
+        collectDefaultMetrics: {
+            timeout: 1000
+        }
+    }
+});
 
 // Mongo setup
 mongoose.set("debug", true);
@@ -32,6 +49,8 @@ mongoose
   .then(() => console.log("Connected DB:", mongoose.connection.name))
   .catch(error => console.log(error));
 
+// Use Prometheus middleware
+app.use(metricsMiddleware);
 // Error handling middleware for JSON parsing errors
 app.use((err, req, res, next) => {
   if (err instanceof SyntaxError && err.status === 400) {
@@ -43,6 +62,12 @@ app.use((err, req, res, next) => {
 // Basic endpoint
 app.get("/", (req, res) => {
   res.send("Hello World!");
+});
+
+// Metrics endpoint
+app.get('/metrics', async (req, res) => {
+  res.set('Content-Type', register.contentType);
+  res.end(await register.metrics());
 });
 
 // Backend routing
