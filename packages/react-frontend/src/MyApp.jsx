@@ -13,6 +13,7 @@ import ModerationRoute from "./components/ModerationRoute";
 import ModerationPortal from "./components/ModerationPortal";
 import ModerateUsers from "./components/ModerateUsers";
 import ModerateComments from "./components/ModerateComments";
+import ModerateEvents from "./components/ModerateEvents";
 import ModerateQuests from "./components/ModerateQuests";
 import AddModerator from "./components/AddModerator";
 import AddQuest from "./components/AddQuest";
@@ -20,7 +21,9 @@ import AddComment from "./components/ModerationAddComment";
 import AboutPage from "./components/AboutPage";
 import EntryPage from "./components/EntryPage";
 import MonitorDBNetworkRequests from "./components/Monitor_db_net_requests";
-import MonitorDBPage from "./components/MonitorDBPage"
+import MonitorDBPage from "./components/MonitorDBPage";
+import BackendMonitoring from "./components/BackendMonitoring";
+import MonitoringPortal from "./components/MonitoringPortal";
 
 function MyApp() {
   const [user, setUser] = useState(
@@ -62,6 +65,10 @@ function MyApp() {
               element={<ModerateComments />}
             />
             <Route
+              path="/moderation/events"
+              element={<ModerateEvents />}
+            />
+            <Route
               path="/moderation/quests"
               element={<ModerateQuests />}
             />
@@ -76,6 +83,10 @@ function MyApp() {
             <Route
               path="/moderation/add-comment"
               element={<AddComment />}
+            />
+            <Route
+              path="/monitoring/Portal"
+              element={<MonitoringPortal />}
             />
             <Route
               path="/monitoring/db-network-requests"
@@ -125,6 +136,9 @@ function MyApp() {
               path="/monitoring/OPCOUNTER_CMD"
               element={<MonitorDBPage title="Monitor DB Operation Counter Command" description="Review and filter database operation counter commands" analyticName="OPCOUNTER_CMD" chartTitle="Operation Counter Commands" />}
             />
+            <Route
+              path="/monitoring/Grafana"
+              element={<BackendMonitoring />} />
           </Route>
           <Route path="/About" element={<AboutPage />} />
           <Route path="/" element={<EntryPage />} />

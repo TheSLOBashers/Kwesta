@@ -25,23 +25,15 @@ function ModerationPortal() {
         <Row>
             <Dash_option title={"Manage users"} options={[{ text: "Moderate users", link: "/moderation/users" }]} width={"90%"}></Dash_option>
             <Dash_option title={"Manage comments"} options={[{ text: "Moderate comments", link: "/moderation/comments" }, { text: "Add Comment", link: "/moderation/add-comment" }]} width={"90%"}></Dash_option>
+            <Dash_option title={"Manage events"} options={[{ text: "Moderate events", link: "/moderation/events" }]} width={"90%"}></Dash_option>
             <Dash_option title={"Manage quests"} options={[{ text: "Moderate quests", link: "/moderation/quests" }, { text: "Add Quest", link: "/moderation/add-quest" }]} width={"90%"}></Dash_option>
-            <Dash_option title={"Monitor DB Network Requests"} options={[
-              { text: "View Network Requests", link: "/monitoring/db-network-requests" }, 
-              { text: "View Operation Counter Commands", link: "/monitoring/OPCOUNTER_CMD" },
-              { text: "View Operation Counter Update", link: "/monitoring/db-opcounter-update" },
-              { text: "View Operation Counter Delete", link: "/monitoring/db-opcounter-delete" },
-              { text: "View Operation Counter Insert", link: "/monitoring/db-opcounter-insert" },
-              { text: "View DB Connections", link: "/monitoring/db-connections"}
-            ]} width={"90%"}></Dash_option>
-            <BackendStatusCard width={"90%"}></BackendStatusCard>
         </Row>
 
       </Container>
     </div>
 
   );
-}
+} // monitoring/Grafana
 
 /*
 { text: "View FTS Process CPU Kernel", link: "/monitoring/FTS_PROCESS_CPU_KERNEL" }, 

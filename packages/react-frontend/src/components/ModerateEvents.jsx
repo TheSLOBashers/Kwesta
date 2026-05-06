@@ -1,32 +1,67 @@
-import ModerateCommentsTable from "./ModerateCommentsTable";
+import ModerateEventsTable from "./ModerateEventsTable";
 import { useState, useEffect } from "react";
-import moderationFetchComments from "../APICalls/moderationFetchComments";
+import moderationFetchEvents from "../APICalls/moderationFetchEvents";
 import { ThreeDots } from "react-loader-spinner";
 import Search from "./Search";
-import removeComment from "../APICalls/removeComment";
-import unremoveComment from "../APICalls/unremoveComment";
+import removeEvent from "../APICalls/removeEvent";
+import unremoveEvent from "../APICalls/unremoveEvent";
 import { Container, Row, Col, Form, Button } from "react-bootstrap";
 import BackButton from "./BackButton";
 
-function ModerateComments() {
+function ModerateEvents() {
+  const options = [
+    { value: "_id", label: "ID", type: "string" },
+    { value: "author", label: "Author", type: "string" },
+    { value: "date", label: "Date", type: "date" },
+    { value: "time", label: "Time", type: "string" },
+    {
+      value: "description",
+      label: "Description",
+      type: "string"
+    },
+    { value: "flag", label: "Flag", type: "number" }
+  ];
+
   const searchOptions = [
-    { value: "username", label: "Author", type: "text" },
-    { value: "startDate", label: "Start Date", type: "date" },
-    { value: "endDate", label: "End Date", type: "date" },
-    { value: "minFlags", label: "Min Flags", type: "number" },
-    { value: "maxFlags", label: "Max Flags", type: "number" }
+    {
+      value: "author",
+      label: "Author",
+      type: "text"
+    },
+    {
+      value: "startDate",
+      label: "Start Date",
+      type: "date"
+    },
+    {
+      value: "endDate",
+      label: "End Date",
+      type: "date"
+    },
+    {
+      value: "createdAfter",
+      label: "Created After",
+      type: "date"
+    },
+    {
+      value: "createdBefore",
+      label: "Created Before",
+      type: "date"
+    }
   ];
 
   const [searchParams, setSearchParams] = useState({});
-  const [comments, setComments] = useState([]);
+  const [events, setEvents] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    moderationFetchComments(setError, setIsLoading, searchParams)
-      .then((json) => setComments(json["comments"]))
-      .catch((error) => console.log(error));
+    moderationFetchEvents(setError, setIsLoading, searchParams)
+      .then((json) => setEvents(json["events"]))
+      .catch((error) => {
+        console.log(error);
+      });
   }, [searchParams]);
 
   const cardStyle = {
@@ -39,16 +74,15 @@ function ModerateComments() {
   return (
     <div style={{ background: "#f1f5f9", minHeight: "100vh", padding: "32px" }}>
       <Container fluid>
-
         {/* HEADER */}
         <Row className="mb-4">
           <Col>
             <BackButton />
             <h1 style={{ fontWeight: "700", color: "#0f172a", marginTop: "16px" }}>
-              Comment Moderation Portal
+              Event Moderation Portal
             </h1>
             <p style={{ color: "#64748b" }}>
-              Review, filter, and manage user comments
+              Review, filter, and manage user events
             </p>
           </Col>
         </Row>
@@ -59,7 +93,7 @@ function ModerateComments() {
           <div style={{ flex: 2 }}>
             <div style={{ ...cardStyle, height: "100%" }}>
               <h5 style={{ fontWeight: "600", marginBottom: "16px", color: "#0f172a" }}>
-                Comments
+                Events
               </h5>
 
               {isLoading ? (
@@ -67,11 +101,11 @@ function ModerateComments() {
                   <ThreeDots height="60" width="60" color="#0ea5e9" visible />
                 </div>
               ) : (
-                <ModerateCommentsTable
-                  commentsData={searchResults.length ? searchResults : comments}
-                  setComments={setComments}
-                  removeComment={removeComment}
-                  unremoveComment={unremoveComment}
+                <ModerateEventsTable
+                  eventsData={searchResults.length ? searchResults : events}
+                  setEvents={setEvents}
+                  removeEvent={removeEvent}
+                  unremoveEvent={unremoveEvent}
                 />
               )}
             </div>
@@ -88,15 +122,9 @@ function ModerateComments() {
                 </h6>
 
                 <Search
-                  options={[
-                    { value: "_id", label: "ID", type: "string" },
-                    { value: "author", label: "Author", type: "string" },
-                    { value: "comment", label: "Comment", type: "string" },
-                    { value: "flag", label: "Flag", type: "number" },
-                    { value: "date", label: "Date", type: "date" }
-                  ]}
+                  options={options}
                   setSearchResults={setSearchResults}
-                  items={comments}
+                  items={events}
                 />
               </div>
 
@@ -164,4 +192,4 @@ function ModerateComments() {
   );
 }
 
-export default ModerateComments;
+export default ModerateEvents;

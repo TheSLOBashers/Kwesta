@@ -6,6 +6,7 @@ import Search from "./Search";
 import removeQuest from "../APICalls/removeQuest";
 import unremoveQuest from "../APICalls/unremoveQuest";
 import { Container, Row, Col, Form, Button } from "react-bootstrap";
+import BackButton from "./BackButton";
 
 function ModerateQuests() {
   const options = [
@@ -77,7 +78,8 @@ function ModerateQuests() {
         {/* HEADER */}
         <Row className="mb-4">
           <Col>
-            <h1 style={{ fontWeight: "700", color: "#0f172a" }}>
+            <BackButton />
+            <h1 style={{ fontWeight: "700", color: "#0f172a", marginTop: "16px" }}>
               Quest Moderation Portal
             </h1>
             <p style={{ color: "#64748b" }}>

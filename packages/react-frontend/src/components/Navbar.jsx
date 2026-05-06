@@ -38,12 +38,21 @@ function NavBar() {
                         </li>
                     </ul>
                 </div>
+
+                <div style={styles.item}>
+                    <h5 style={styles.title}>Monitoring</h5>
+                    <ul style={styles.list}>
+                        <li>
+                            <Link style={styles.link} to="/monitoring/Portal">Portal</Link>
+                        </li>
+                    </ul>
+                </div>
             </div>
             <p style={styles.text}>© 2026 Slo Bashers - All rights reserved</p>
             <p style={styles.text}>A project started by students at Cal Poly SLO!</p>
         </nav>
     );
-}
+} 
 
 const styles = {
     links: {
@@ -60,7 +69,7 @@ const styles = {
         margin: "0 0rem",
     },
     item: {
-        margin: "0 7em",
+        margin: "0 3em",
         
         flex: 1,
     },
