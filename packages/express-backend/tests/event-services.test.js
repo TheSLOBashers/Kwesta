@@ -14,7 +14,6 @@ describe("event-services", () => {
     const eventData = {
       author: "507f1f77bcf86cd799439011",
       date: "2026-03-20",
-      time: "18:00",
       description: "Club meeting",
       location: { lat: 35.28, lng: -120.66 }
     };
@@ -25,7 +24,6 @@ describe("event-services", () => {
       savedEvent = {
         author: String(this.author),
         date: this.date,
-        time: this.time,
         description: this.description,
         location: this.location.toObject()
       };
@@ -101,7 +99,7 @@ describe("event-services", () => {
     assert.deepEqual(result, { _id: "event-4" });
     assert.deepEqual(updateMock.mock.calls[0].arguments, [
       "event-4",
-      { description: "Updated event" },
+      { $set: { description: "Updated event" } },
       { new: true }
     ]);
   });
