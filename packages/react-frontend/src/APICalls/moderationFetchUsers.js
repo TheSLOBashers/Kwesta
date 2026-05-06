@@ -6,7 +6,7 @@ const moderationFetchUsers = async (setError, setIsLoading) => {
     setIsLoading(true);
 
     const response = await fetch(
-      `${backend}/users/`,
+      `${backend}/users/mod-view`,
       {
         method: "GET", // Specify the method
         headers: {
