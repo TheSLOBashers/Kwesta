@@ -51,7 +51,7 @@ router.post("/", async (req, res) => {
 });
 
 // Fetch public users: only username and points are exposed to everyone
-router.get("/", async (req, res) => {
+router.get("/", authenticateModerator, async (req, res) => {
   try {
     const users_list = await getPublicUsers();
     return res.status(200).json({ users_list });
