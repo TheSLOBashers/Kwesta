@@ -40,8 +40,11 @@ const loginCall = async (
       throw new Error(`Error: ${response.status}`);
     }
 
-    if (json.permissions && json.permissions === "moderator") {
+    if (json.permissions && (json.permissions === "moderator" || json.permissions === "admin")) {
       localStorage.setItem("moderator", true);
+      if (json.permissions === "admin") {
+        localStorage.setItem("admin", true);
+      }
     }
     localStorage.setItem("authToken", json.token);
     setError("");

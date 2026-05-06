@@ -24,7 +24,7 @@ function ModerationPortal() {
 
         <Row>
             <Dash_option title={"Manage users"} options={[{ text: "Moderate users", link: "/moderation/users" }]} width={"90%"}></Dash_option>
-            <Dash_option title={"Manage comments"} options={[{ text: "Moderate comments", link: "/moderation/comments" }, { text: "Add Comment", link: "/moderation/add-comment" }]} width={"90%"}></Dash_option>
+            <Dash_option title={"Manage comments"} options={[{ text: "Moderate comments", link: "/moderation/comments" }]} width={"90%"}></Dash_option>
             <Dash_option title={"Manage events"} options={[{ text: "Moderate events", link: "/moderation/events" }]} width={"90%"}></Dash_option>
             <Dash_option title={"Manage quests"} options={[{ text: "Moderate quests", link: "/moderation/quests" }, { text: "Add Quest", link: "/moderation/add-quest" }]} width={"90%"}></Dash_option>
         </Row>

@@ -48,6 +48,21 @@ function ModerateQuests() {
       value: "createdBefore",
       label: "Created Before",
       type: "date"
+    },
+    {
+      value: "lat",
+      label: "Latitude",
+      type: "number"
+    },
+    {
+      value: "lng",
+      label: "Longitude",
+      type: "number"
+    },
+    {
+      value: "radius",
+      label: "Radius",
+      type: "number"
     }
   ];
 

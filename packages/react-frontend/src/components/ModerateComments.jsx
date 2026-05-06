@@ -14,7 +14,22 @@ function ModerateComments() {
     { value: "startDate", label: "Start Date", type: "date" },
     { value: "endDate", label: "End Date", type: "date" },
     { value: "minFlags", label: "Min Flags", type: "number" },
-    { value: "maxFlags", label: "Max Flags", type: "number" }
+    { value: "maxFlags", label: "Max Flags", type: "number" },
+    {
+      value: "lat",
+      label: "Latitude",
+      type: "number"
+    },
+    {
+      value: "lng",
+      label: "Longitude",
+      type: "number"
+    },
+    {
+      value: "radius",
+      label: "Radius",
+      type: "number"
+    }
   ];
 
   const [searchParams, setSearchParams] = useState({});

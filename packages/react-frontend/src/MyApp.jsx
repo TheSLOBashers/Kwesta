@@ -24,17 +24,34 @@ import MonitorDBNetworkRequests from "./components/Monitor_db_net_requests";
 import MonitorDBPage from "./components/MonitorDBPage";
 import BackendMonitoring from "./components/BackendMonitoring";
 import MonitoringPortal from "./components/MonitoringPortal";
+import MonitoringRoute from "./components/MonitoringRoute";
 
 function MyApp() {
   const [user, setUser] = useState(
     () => localStorage.getItem("username") || null
   );
 
+  function Logout() {
+    const authToken = localStorage.getItem("authToken");
+    return (<>
+      {authToken &&
+        <button style={{margin: "0", borderRadius:"0"}} onClick={() => {
+          localStorage.removeItem("authToken");
+          localStorage.removeItem("moderator");
+          localStorage.removeItem("admin");
+          window.location.href = "/Login";
+        }}>
+          Logout
+        </button>}
+    </>);
+  }
+
   return (
     // <TopBar userPoints={userPoints} />
     <div className="top-container">
 
       <main>
+        <Logout />
         <Routes>
           <Route element={<AuthenticationRoute />}>
             <Route
@@ -84,6 +101,8 @@ function MyApp() {
               path="/moderation/add-comment"
               element={<AddComment />}
             />
+          </Route>
+          <Route element={<MonitoringRoute />}>
             <Route
               path="/monitoring/Portal"
               element={<MonitoringPortal />}

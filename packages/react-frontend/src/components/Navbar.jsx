@@ -2,6 +2,9 @@
 import { Link } from "react-router-dom";
 
 function NavBar() {
+
+    const authToken = localStorage.getItem("authToken");
+
     return (
         <nav style={styles.nav}>
             <h1 style={styles.title}>Kwesta</h1>
@@ -48,6 +51,7 @@ function NavBar() {
                     </ul>
                 </div>
             </div>
+            
             <p style={styles.text}>© 2026 Slo Bashers - All rights reserved</p>
             <p style={styles.text}>A project started by students at Cal Poly SLO!</p>
         </nav>
