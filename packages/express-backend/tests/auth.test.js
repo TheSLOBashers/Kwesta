@@ -16,6 +16,8 @@ import dotenv from "dotenv";
 dotenv.config();
 const saltRounds = 10;
 
+process.env.JWT_SECRET = "test-secret";
+
 afterEach(() => {
   mock.restoreAll();
 });
