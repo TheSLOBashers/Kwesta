@@ -1,10 +1,10 @@
 import DigestFetch from "digest-fetch";
 
-const publicKey = "gcfumcur";
-const privateKey = "031324c3-19d4-43d8-a4a9-3b370bd3061c";
-const groupId = "698949b0e17f342871ca3174";
-const clusterName = "kwesta";
-const processId = "atlas-oj5dcs-shard-00-02.x3kde7x.mongodb.net:27017";
+const publicKey = process.env.MONGO_PUBLIC_KEY;
+const privateKey = process.env.MONGO_PRIVATE_KEY;
+const groupId = process.env.MONGO_GROUP_ID;
+const clusterName = process.env.MONGO_CLUSTER_NAME;
+const processId = process.env.MONGO_PROCESS_ID;
 
 const client = new DigestFetch(
   publicKey,
@@ -81,4 +81,33 @@ async function getClusterUsageStats() {
   return data.measurements;
 }
 
-export default { getClusterUsageStats, getClusterUsageTypes };
+async function getClusterUsageStats_5d() {
+  const url =
+    `https://cloud.mongodb.com/api/atlas/v1.0/groups/${groupId}` +
+    `/processes/${processId}/measurements` +
+    `?granularity=PT5M&period=P5D` +
+    `&m=NETWORK_NUM_REQUESTS` +
+    `&m=CONNECTIONS` +
+    `&m=OPCOUNTER_CMD` +
+    `&m=OPCOUNTER_QUERY` +
+    `&m=OPCOUNTER_UPDATE` +
+    `&m=OPCOUNTER_DELETE` +
+    `&m=OPCOUNTER_INSERT` +
+    `&m=LOGICAL_SIZE` +
+    `&m=FTS_PROCESS_RESIDENT_MEMORY` +
+    `&m=FTS_PROCESS_VIRTUAL_MEMORY` +
+    `&m=FTS_DISK_USAGE` +
+    `&m=FTS_PROCESS_CPU_KERNEL`;
+
+  const res = await client.fetch(url);
+
+  if (!res.ok) {
+    throw new Error(`HTTP ${res.status}: ${await res.text()}`);
+  }
+
+  const data = await res.json();
+
+  return data.measurements;
+}
+
+export default { getClusterUsageStats, getClusterUsageTypes, getClusterUsageStats_5d };
