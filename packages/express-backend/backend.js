@@ -52,8 +52,6 @@ app.use("/events", events);
 app.use("/auth", auth);
 
 // Run app
-app.listen(port, () => {
-  console.log(
-    `Example app listening at http://localhost:${port}`
-  );
+app.listen(process.env.PORT || port, () => {
+  console.log("REST API is listening.");
 });
