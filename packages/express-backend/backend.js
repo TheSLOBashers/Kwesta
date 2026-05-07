@@ -41,7 +41,7 @@ app.use((err, req, res, next) => {
 
 // Basic endpoint
 app.get("/", (req, res) => {
-  res.send("Hello World!");
+  res.send("Hello World! :)");
 });
 
 // Backend routing
