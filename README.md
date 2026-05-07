@@ -3,6 +3,9 @@
 ExpoGo Frontend Repo:
 https://github.com/TheSLOBashers/Kwesta-mobile
 
+Azure Deployment:
+https://portal.azure.com/?Microsoft_Azure_Education_correlationId=6950e8e3-a10a-4116-824a-0380d150bdf0&Microsoft_Azure_Education_newA4E=true&Microsoft_Azure_Education_asoSubGuid=d3580a58-bb30-4a61-9a70-d50ee59ba525&feature.tokencaching=true&feature.internalgraphapiversion=true#@cpslo.onmicrosoft.com/resource/subscriptions/d3580a58-bb30-4a61-9a70-d50ee59ba525/resourcegroups/Kwesta_group/providers/Microsoft.Web/sites/Kwesta/appServices
+
 Style Guide:
 https://www.npmjs.com/package/prettier-airbnb-config
 
