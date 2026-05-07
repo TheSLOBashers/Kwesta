@@ -192,7 +192,7 @@ describe("user-services", () => {
 
     assert.deepEqual(result, expectedUsers);
     assert.deepEqual(findMock.mock.calls[0].arguments, [
-      { permissions: { $ne: "moderator" } }
+      { permissions: { $nin: ["moderator", "admin"] } }
     ]);
     assert.deepEqual(calls, [
       { method: "select", args: ["-password"] }
