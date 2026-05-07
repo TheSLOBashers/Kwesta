@@ -23,24 +23,17 @@ jobs:
         with:
           node-version: '24.x'
 
-      - name: npm install, build
-        working-directory: packages/express-backend
+      - name: npm install, build, and test
         run: |
-          npm install --workspaces=false
+          npm install
           npm run build --if-present
-      
-      - name: Run tests
-        working-directory: packages/express-backend
-        env:
-          ACCESS_TOKEN_SECRET: test-secret
-          JWT_SECRET: test-secret
-        run: npm test
+          npm run test --if-present
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: node-app
-          path: packages/express-backend
+          path: .
 
   deploy:
     runs-on: ubuntu-latest
@@ -58,9 +51,9 @@ jobs:
       - name: Login to Azure
         uses: azure/login@v2
         with:
-          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_2E45FEAAB18E4FB9A10A78A05413157F }}
-          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_4FC5B15E36E6463CA54E7BB8CE9791F0 }}
-          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_352A4AC4330D4320AD4F8F3E389CB427 }}
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID_3FA0431F90B249FDA0096BB9C1342D62 }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID_45EEF0FEB049418395DFF0ABA16ED156 }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID_6BBE7F5B0FA643BC9C7051560A4D0AF1 }}
 
       - name: 'Deploy to Azure Web App'
         id: deploy-to-webapp
