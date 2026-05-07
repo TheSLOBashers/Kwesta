@@ -44,6 +44,8 @@ router.post("/", async (req, res) => {
       return res.status(409).json({ message: error.message });
     } else if (error.message === "Email already exists") {
       return res.status(409).json({ message: error.message });
+    } else if (error.message.includes("email: Invalid email")) {
+      return res.status(400).json({ message: error.message });
     } else {
       return res.status(500).send("Internal Server Error");
     }

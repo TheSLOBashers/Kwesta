@@ -19,16 +19,16 @@ const signupCall = async (
       }
     );
 
-    const json = await response.json();
+    const text = await response.json().then((data) => data.message || "No message in response");
     if (!response.ok) {
       if (
-        json.message === "Username already exists" ||
-        json.message === "Email already exists"
+        text === "Username already exists" ||
+        text === "Email already exists"
       ) {
-        setError(json.message);
-        throw new Error(`${json.message}`);
+        setError(text);
+        throw new Error(`${text}`);
       }
-      throw new Error(`Error: ${response.status}`);
+      throw new Error(`${text}`);
     }
     setError("");
   } catch (error) {
