@@ -105,38 +105,44 @@ router.get('/devices', authenticateToken, async (req, res) => {
 });
 
 // middleware
-async function authenticateToken(req, res, next) {
+function authenticateToken(req, res, next) {
   const authHeader = req.headers.authorization;
   const token = authHeader && authHeader.split(' ')[1];
-  if (!token) return res.sendStatus(401);
+  if (token == null) return res.sendStatus(401);
 
-  try {
-    const user = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+    if (err) return res.sendStatus(403);
+
     req.user = user;
 
-    const foundUser = await getUserByUsername(user.username);
-    if (!foundUser) {
-      return res.status(401).json({ message: "User not found" });
-    }
-
-    if (user.device) {
-      await authenticateDevice(req.user.username, user.device);
-    }
-
-    req.user._id = foundUser._id;
-    next();
-  } catch (err) {
-    return res.sendStatus(403);
-  }
+    getUserByUsername(req.user.username)
+      .then(foundUser => {
+        if (!foundUser) {
+          return res.status(401).json({ message: "User not found" });
+        }
+        authenticateDevice(req.user.username, user.device)
+          .then(() => {
+            req.user._id = foundUser._id;
+            next();
+          })
+          .catch(() => {
+            return res.status(500).send("Device blocked.");
+          })
+      })
+      .catch(() => {
+        return res.status(500).send("Internal Server Error");
+      });
+  });
 }
 
-async function authenticateModerator(req, res, next) {
+function authenticateModerator(req, res, next) {
   const authHeader = req.headers.authorization;
-  const token = authHeader && authHeader.split(" ")[1];
-  if (!token) return res.sendStatus(401);
+  const token = authHeader && authHeader.split(' ')[1];
+  if (token == null) return res.sendStatus(401);
 
-  try {
-    const user = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, user) => {
+    if (err) return res.sendStatus(403);
+
     req.user = user;
 
     getUserByUsername(req.user.username)
