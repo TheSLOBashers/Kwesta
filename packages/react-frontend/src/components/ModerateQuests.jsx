@@ -7,6 +7,7 @@ import removeQuest from "../APICalls/removeQuest";
 import unremoveQuest from "../APICalls/unremoveQuest";
 import { Container, Row, Col, Form, Button } from "react-bootstrap";
 import BackButton from "./BackButton";
+import LocationPicker from "./LocationPicker";
 
 function ModerateQuests() {
   const options = [
@@ -173,6 +174,8 @@ function ModerateQuests() {
                       />
                     </Form.Group>
                   ))}
+
+                  <LocationPicker clickedLocation={ {lat: searchParams.lat || 0, lng: searchParams.lng || 0} } setClickedLocation={(lat, lng) => setSearchParams({ ...searchParams, lat: lat, lng: lng })} />
 
                   <Button
                     style={{

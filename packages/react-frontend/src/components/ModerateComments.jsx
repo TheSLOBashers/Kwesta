@@ -7,6 +7,7 @@ import removeComment from "../APICalls/removeComment";
 import unremoveComment from "../APICalls/unremoveComment";
 import { Container, Row, Col, Form, Button } from "react-bootstrap";
 import BackButton from "./BackButton";
+import LocationPicker from "./LocationPicker";
 
 function ModerateComments() {
   const searchOptions = [
@@ -144,6 +145,8 @@ function ModerateComments() {
                       />
                     </Form.Group>
                   ))}
+
+                  <LocationPicker clickedLocation={ {lat: searchParams.lat || 0, lng: searchParams.lng || 0} } setClickedLocation={(lat, lng) => setSearchParams({ ...searchParams, lat: lat, lng: lng })} />
 
                   <Button
                     style={{

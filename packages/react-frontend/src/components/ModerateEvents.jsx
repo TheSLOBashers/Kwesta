@@ -7,6 +7,7 @@ import removeEvent from "../APICalls/removeEvent";
 import unremoveEvent from "../APICalls/unremoveEvent";
 import { Container, Row, Col, Form, Button } from "react-bootstrap";
 import BackButton from "./BackButton";
+import LocationPicker from "./LocationPicker";
 
 function ModerateEvents() {
   const options = [
@@ -77,6 +78,7 @@ function ModerateEvents() {
       .catch((error) => {
         console.log(error);
       });
+    console.log("Search Params:", searchParams);
   }, [searchParams]);
 
   const cardStyle = {
@@ -172,6 +174,8 @@ function ModerateEvents() {
                       />
                     </Form.Group>
                   ))}
+
+                  <LocationPicker clickedLocation={ {lat: searchParams.lat || 0, lng: searchParams.lng || 0} } setClickedLocation={(lat, lng) => setSearchParams({ ...searchParams, lat: lat, lng: lng })} />
 
                   <Button
                     style={{
