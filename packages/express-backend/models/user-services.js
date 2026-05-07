@@ -101,14 +101,14 @@ async function authenticateDevice(username, device) {
 
 async function getAllNonModeratorUsers() {
   return await User.find({
-    permissions: { $ne: "moderator" }
+    permissions: { $nin: ['moderator', 'admin'] }
   }).select("-password");
 }
 
 // Public view: only expose username and points for non-moderator users
 async function getPublicUsers() {
   return await User.find({
-    permissions: { $ne: "moderator" }
+    permissions: { $nin: ['moderator', 'admin'] }
   }).select("username points");
 }
 

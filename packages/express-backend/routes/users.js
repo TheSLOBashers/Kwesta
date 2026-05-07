@@ -44,6 +44,8 @@ router.post("/", async (req, res) => {
       return res.status(409).json({ message: error.message });
     } else if (error.message === "Email already exists") {
       return res.status(409).json({ message: error.message });
+    } else if (error.message.includes("email: Invalid email")) {
+      return res.status(400).json({ message: error.message });
     } else {
       return res.status(500).send("Internal Server Error");
     }
@@ -54,6 +56,16 @@ router.post("/", async (req, res) => {
 router.get("/", async (req, res) => {
   try {
     const users_list = await getPublicUsers();
+    return res.status(200).json({ users_list });
+  } catch (error) {
+    return res.status(500).send("Internal Server Error");
+  }
+});
+
+// Fetch public users: only username and points are exposed to everyone
+router.get("/mod-view", authenticateModerator, async (req, res) => {
+  try {
+    const users_list = await getAllNonModeratorUsers();
     return res.status(200).json({ users_list });
   } catch (error) {
     return res.status(500).send("Internal Server Error");

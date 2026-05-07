@@ -1,10 +1,8 @@
-import backend from "./backend";
-
-async function removeComment(index) {
+async function removeEvent(index) {
     try {
 
     const response = await fetch(
-      `${backend}/comments/remove/${index}`,
+      `http://localhost:8000/events/remove/${index}`,
       {
         method: "PUT", // Specify the method
         headers: {
@@ -26,4 +24,4 @@ async function removeComment(index) {
   } 
 }
 
-export default removeComment;
+export default removeEvent;

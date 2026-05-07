@@ -1,10 +1,12 @@
+import backend from "./backend";
+
 const moderationFetchComments = async (setError, setIsLoading, searchParams) => {
   try {
 
     setIsLoading(true);
 
     const response = await fetch(
-      "http://localhost:8000/comments/search",
+      `${backend}/comments/search`,
       {
         method: "POST", // Specify the method
         headers: {

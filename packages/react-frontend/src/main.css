@@ -45,14 +45,26 @@ html {
  * Remove the margin in all browsers.
  */
 body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
   margin: 0;
+  padding: 0;
 }
 
 /**
  * Render the `main` element consistently in IE.
  */
 main {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  min-height: 1px;
+  flex: 1;
+}
+
+div {
+  display: flex;
+  flex-direction: column;
 }
 
 /**
@@ -406,6 +418,15 @@ body {
 }
 :root {
   color-scheme: light dark;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
 
 p,
@@ -607,6 +628,15 @@ dd {
 
 .medium-container {
   max-width: 1000px;
+}
+
+.top-container {
+  padding: 0;
+  margin: 0;
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
 
 .content-section {

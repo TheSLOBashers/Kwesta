@@ -1,3 +1,5 @@
+import backend from "./backend";
+
 const loginCall = async (
   username,
   password,
@@ -8,13 +10,21 @@ const loginCall = async (
     setIsLoading(true);
 
     const response = await fetch(
-      "http://localhost:8000/auth/login",
+      `${backend}/auth/login`,
       {
         method: "POST", // Specify the method
         headers: {
           "Content-Type": "application/json" // Indicate the content type
         },
-        body: JSON.stringify({ username, password }) // Convert the data to a JSON string
+        body: JSON.stringify({
+          username, 
+          password, 
+          device_brand: "admin_portal",
+          device_designName: "admin_portal",
+          device_deviceName: "admin_portal",
+          device_deviceYearClass: "admin_portal",
+          device_deviceType: "admin_portal"
+        }) // Convert the data to a JSON string
       }
     );
 
@@ -30,15 +40,18 @@ const loginCall = async (
       throw new Error(`Error: ${response.status}`);
     }
 
-    if (json.permissions && json.permissions === "moderator") {
+    if (json.permissions && (json.permissions === "moderator" || json.permissions === "admin")) {
       localStorage.setItem("moderator", true);
+      if (json.permissions === "admin") {
+        localStorage.setItem("admin", true);
+      }
     }
     localStorage.setItem("authToken", json.token);
     setError("");
   } catch (error) {
     setError(
       error.message ||
-        "Unable to connect. Is the server running?"
+      "Unable to connect. Is the server running?"
     );
     throw new Error(`Error: ${error.message}`);
   } finally {

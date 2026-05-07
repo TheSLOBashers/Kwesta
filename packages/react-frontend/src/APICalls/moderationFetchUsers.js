@@ -1,10 +1,12 @@
+import backend from "./backend";
+
 const moderationFetchUsers = async (setError, setIsLoading) => {
   try {
 
     setIsLoading(true);
 
     const response = await fetch(
-      "http://localhost:8000/users/",
+      `${backend}/users/mod-view`,
       {
         method: "GET", // Specify the method
         headers: {

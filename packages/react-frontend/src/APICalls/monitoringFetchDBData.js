@@ -1,12 +1,13 @@
 import backend from "./backend";
 
-const moderationFetchQuests = async (setError, setIsLoading, searchParams) => {
+const monitoringFetchDBData = async (setError, setIsLoading, analyticName, searchParams = null) => {
   try {
 
+    console.log("running...")
     setIsLoading(true);
 
     const response = await fetch(
-      `${backend}/quests/search`,
+      `${backend}/statistics/mdb/${analyticName}`,
       {
         method: "POST", // Specify the method
         headers: {
@@ -33,4 +34,4 @@ const moderationFetchQuests = async (setError, setIsLoading, searchParams) => {
   }
 };
 
-export default moderationFetchQuests;
+export default monitoringFetchDBData;

@@ -1,11 +1,12 @@
 import mongoose from "mongoose";
+import validator from "validator";
 const { Schema } = mongoose;
 
 const UserSchema = new mongoose.Schema(
   {
     username: { type: String, required: true, unique: true },
     password: { type: String, required: true },
-    email: { type: String, required: true, unique: true },
+    email: { type: String, required: true, unique: true, validate: [validator.isEmail, "Invalid email"] },
     permissions: {
       type: String,
       required: true,

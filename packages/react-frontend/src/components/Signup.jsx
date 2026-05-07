@@ -57,7 +57,7 @@ function Signup(props) {
   }
 
   return (
-    <div>
+    <div style={styles.page}>
       <h1 style={styles.title}>Signup</h1>
       <p style={styles.text}>Here is where you would signup</p>
       <div>
@@ -112,6 +112,13 @@ function Signup(props) {
 }
 
 const styles = {
+  page: {
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        flex: 1
+    },
   title: {
     fontFamily: "Cocogoose",
   },
