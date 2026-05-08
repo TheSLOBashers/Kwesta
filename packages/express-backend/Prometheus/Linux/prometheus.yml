@@ -1,11 +1,3 @@
-global:
-  scrape_interval: 60s
-remote_write:
-  - url: https://prometheus-prod-67-prod-us-west-0.grafana.net/api/prom/push
-    basic_auth:
-      username: ${GRAFANA_USERNAME}
-      password: ${GRAFANA_PASSWORD}
-scrape_configs:
-  - job_name: node
-    static_configs:
-      - targets: ["kwesta-fafrb3hxcrdhe2cu.westus3-01.azurewebsites.net"]
+version https://git-lfs.github.com/spec/v1
+oid sha256:2c81e9fa73bdbc84ea34229b2a1a512134f1b2ecc5f52f53df1fe9d2f30bbcf3
+size 348
