@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { afterEach, describe, it, mock } from "node:test";
+import { afterEach, before, describe, it, mock } from "node:test";
 
 import User from "../models/user.js";
 import userServices from "../models/user-services.js";
@@ -103,6 +103,8 @@ describe("auth", () => {
     assert.strictEqual(response.token, token);
     assert.strictEqual(response.permissions, "moderator");
   });
+
+
 
   /*
   it("Testing JWT authorization for regular users", async () => {
