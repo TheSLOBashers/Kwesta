@@ -1,3 +1,5 @@
+import backend from "./backend.js";
+
 const signupCall = async (
   username,
   email,
@@ -9,7 +11,7 @@ const signupCall = async (
     setIsLoading(true);
 
     const response = await fetch(
-      "http://localhost:8000/users/",
+      `${backend}/users/`,
       {
         method: "POST", // Specify the method
         headers: {
