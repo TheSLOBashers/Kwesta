@@ -112,7 +112,7 @@ describe("app", () => {
 
   it("Testing quests endpoint", async () => {
     const request = supertest(app);
-    const response = await request.get("/quests/6a04050d04cf70b39fc8dd35");
+    const response = await request.get("/quests/6a040be3bf5a78bf0e401ac7");
     assert.strictEqual(response.status, 200);
     assert.strictEqual(response.body.quest.description, "test-data");
     assert.strictEqual(response.body.quest.location.lat, 0);
