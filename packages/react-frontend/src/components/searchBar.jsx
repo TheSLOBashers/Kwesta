@@ -15,7 +15,7 @@ function SearchBar(props) {
     const timeout = setTimeout(() => {
       let results = [...props.items]; // avoid mutating props
 
-      // 🔎 FILTER
+      // FILTER
       if (searchTerm.trim() !== "") {
         results = results.filter((item) => {
           const value = item[props.searchColumn];

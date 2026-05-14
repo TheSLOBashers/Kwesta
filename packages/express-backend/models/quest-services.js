@@ -197,12 +197,12 @@ async function searchQuests(filters = {}) {
   ) {
     const radiusInDegrees = filters.radius / 111; // Approximate conversion
     query["location.lat"] = {
-      $gte: filters.lat - radiusInDegrees,
-      $lte: filters.lat + radiusInDegrees
+      $gte: Number(filters.lat) - radiusInDegrees,
+      $lte: Number(filters.lat) + radiusInDegrees
     };
     query["location.lng"] = {
-      $gte: filters.lng - radiusInDegrees,
-      $lte: filters.lng + radiusInDegrees
+      $gte: Number(filters.lng) - radiusInDegrees,
+      $lte: Number(filters.lng) + radiusInDegrees
     };
   }
 

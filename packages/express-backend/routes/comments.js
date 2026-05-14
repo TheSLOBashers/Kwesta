@@ -193,6 +193,7 @@ router.post(
     try {
       const filters = {
         author: req.body.author,
+        username: req.body.username,
         startDate: req.body.startDate,
         endDate: req.body.endDate,
         minFlags: req.body.minFlags,

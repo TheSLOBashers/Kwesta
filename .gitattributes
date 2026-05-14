@@ -1,0 +1,2 @@
+*.exe filter=lfs diff=lfs merge=lfs -text
+packages/express-backend/Prometheus/Linux/* filter=lfs diff=lfs merge=lfs -text

@@ -1,8 +1,10 @@
+import backend from "./backend";
+
 async function unremoveComment(index) {
     try {
 
     const response = await fetch(
-      `http://localhost:8000/comments/unremove/${index}`,
+      `${backend}/comments/unremove/${index}`,
       {
         method: "PUT", // Specify the method
         headers: {

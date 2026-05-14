@@ -1,3 +1,5 @@
+import backend from "./backend.js";
+
 const signupCall = async (
   username,
   email,
@@ -9,7 +11,7 @@ const signupCall = async (
     setIsLoading(true);
 
     const response = await fetch(
-      "http://localhost:8000/users/",
+      `${backend}/users/`,
       {
         method: "POST", // Specify the method
         headers: {
@@ -19,16 +21,16 @@ const signupCall = async (
       }
     );
 
-    const json = await response.json();
+    const text = await response.json().then((data) => data.message || "No message in response");
     if (!response.ok) {
       if (
-        json.message === "Username already exists" ||
-        json.message === "Email already exists"
+        text === "Username already exists" ||
+        text === "Email already exists"
       ) {
-        setError(json.message);
-        throw new Error(`${json.message}`);
+        setError(text);
+        throw new Error(`${text}`);
       }
-      throw new Error(`Error: ${response.status}`);
+      throw new Error(`${text}`);
     }
     setError("");
   } catch (error) {

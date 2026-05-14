@@ -101,14 +101,14 @@ async function authenticateDevice(username, device) {
 
 async function getAllNonModeratorUsers() {
   return await User.find({
-    permissions: { $ne: "moderator" }
+    permissions: { $nin: ['moderator', 'admin'] }
   }).select("-password");
 }
 
 // Public view: only expose username and points for non-moderator users
 async function getPublicUsers() {
   return await User.find({
-    permissions: { $ne: "moderator" }
+    permissions: { $nin: ['moderator', 'admin'] }
   }).select("username points");
 }
 
@@ -322,6 +322,56 @@ const getUserById = async id => {
   }
 };
 
+// ---------- User badge code ----------
+async function giveBadge(userId, badgeTitle) {
+  return User.findByIdAndUpdate(
+    userId,
+    { $addToSet: { badges: badgeTitle } },
+    { new: true }
+  );
+}
+
+async function removeBadge(userId, badgeTitle) {
+  return User.findByIdAndUpdate(
+    userId,
+    { $pull: { badges: badgeTitle } },
+    { new: true }
+  );
+}
+
+async function purchaseBadge(userId, badgeName, cost) {
+  if (!badgeName || typeof badgeName !== "string") {
+    throw new Error("Invalid badge name");
+  }
+
+  const parsedCost = Number(cost);
+
+  if (!Number.isFinite(parsedCost) || parsedCost <= 0) {
+    throw new Error("Invalid badge cost");
+  }
+
+  const user = await User.findById(userId);
+
+  if (!user) {
+    throw new Error("User not found");
+  }
+
+  if ((user.points || 0) < parsedCost) {
+    throw new Error("Insufficient points");
+  }
+
+  if ((user.badges || []).includes(badgeName.trim())) {
+    throw new Error("Badge already owned");
+  }
+
+  user.points -= Math.round(parsedCost);
+  user.badges.push(badgeName.trim());
+
+  await user.save();
+
+  return user;
+}
+
 export default {
   authenticateUser,
   createNewUser,
@@ -342,7 +392,10 @@ export default {
   authenticateDevice,
   addDeviceIfNotAlready,
   blockDevice,
-  getDevices
+  getDevices,
+  giveBadge,
+  removeBadge,
+  purchaseBadge
 };
 
 /*

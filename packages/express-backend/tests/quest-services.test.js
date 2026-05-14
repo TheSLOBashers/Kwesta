@@ -14,7 +14,6 @@ describe("quest-services", () => {
     const questData = {
       author: "507f1f77bcf86cd799439011",
       date: "2026-03-15",
-      time: "09:00",
       description: "Beach cleanup",
       location: { lat: 35.1, lng: -120.6 }
     };
@@ -24,7 +23,6 @@ describe("quest-services", () => {
       savedQuest = {
         author: String(this.author),
         date: this.date,
-        time: this.time,
         description: this.description,
         location: this.location.toObject()
       };
@@ -90,7 +88,7 @@ describe("quest-services", () => {
     });
     assert.deepEqual(updateMock.mock.calls[0].arguments, [
       "quest-4",
-      { description: "Updated" },
+      { $set: { description: "Updated" } },
       { new: true }
     ]);
   });

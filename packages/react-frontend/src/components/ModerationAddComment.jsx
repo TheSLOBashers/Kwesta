@@ -16,7 +16,7 @@ const AddComment = () => {
     }
 
     return (
-        <div>
+        <div style={{ padding: "20px" }}>
             <h1>Add Comment</h1>
             <p>Add a new comment on this page.</p>
             <form onSubmit={(e) => {

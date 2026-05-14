@@ -1,10 +1,12 @@
+import backend from "./backend";
+
 const moderationFetchQuests = async (setError, setIsLoading, searchParams) => {
   try {
 
     setIsLoading(true);
 
     const response = await fetch(
-      "http://localhost:8000/quests/search",
+      `${backend}/quests/search`,
       {
         method: "POST", // Specify the method
         headers: {

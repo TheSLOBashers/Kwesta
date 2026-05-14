@@ -72,7 +72,7 @@ describe("comment-services", () => {
     const expectedComments = [{ _id: "comment-2" }];
     const { builder, calls } = createQueryBuilder(
       expectedComments,
-      "sort"
+      "lean"
     );
     const findMock = mock.method(
       Comment,
@@ -104,7 +104,8 @@ describe("comment-services", () => {
     ]);
     assert.deepEqual(calls, [
       { method: "populate", args: ["author", "username"] },
-      { method: "sort", args: [{ createdAt: -1 }] }
+      { method: "sort", args: [{ createdAt: -1 }] },
+      { method: "lean", args: [] }
     ]);
   });
 

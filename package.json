@@ -18,6 +18,7 @@
     "packages/*"
   ],
   "devDependencies": {
+    "eslint": "^9.39.4",
     "nodemon": "^3.1.11"
   },
   "dependencies": {

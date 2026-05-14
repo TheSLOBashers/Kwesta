@@ -1,4 +1,5 @@
 import Comment from "./comment.js";
+import User from "./user.js"; // make sure this is imported
 
 function createComment(commentData) {
   const newComment = new Comment(commentData);
@@ -121,16 +122,33 @@ export async function getCommentsByAuthor(userId) {
  * @param {string} filters.sortOrder - Sort order (asc, desc)
  * @param {number} filters.limit - Maximum number of results
  * @param {number} filters.skip - Number of results to skip (pagination)
+ * @param {string} filters.username - Filter by username
  */
 async function searchComments(filters = {}) {
   const query = {};
 
-  // Filter by author
+  // Filter by author ID
   if (filters.author) {
     query.author = filters.author;
   }
 
-  // Filter by date range
+  // NEW: Filter by username
+  if (filters.username) {
+    const users = await User.find({
+      username: { $regex: filters.username, $options: "i" }
+    }).select("_id");
+
+    const userIds = users.map((u) => u._id);
+
+    // If no users match, force empty result
+    if (userIds.length === 0) {
+      return [];
+    }
+
+    query.author = { $in: userIds };
+  }
+
+  // Date range
   if (filters.startDate || filters.endDate) {
     query.createdAt = {};
     if (filters.startDate) {
@@ -141,11 +159,8 @@ async function searchComments(filters = {}) {
     }
   }
 
-  // Filter by flag count
-  if (
-    filters.minFlags !== undefined ||
-    filters.maxFlags !== undefined
-  ) {
+  // Flags
+  if (filters.minFlags !== undefined || filters.maxFlags !== undefined) {
     query.flag = {};
     if (filters.minFlags !== undefined) {
       query.flag.$gte = filters.minFlags;
@@ -155,12 +170,12 @@ async function searchComments(filters = {}) {
     }
   }
 
-  // Filter by removed status
+  // Removed
   if (filters.removed !== undefined) {
     query.removed = filters.removed;
   }
 
-  // Search text in comment content
+  // Comment text
   if (filters.searchText) {
     query.comment = {
       $regex: filters.searchText,
@@ -168,29 +183,28 @@ async function searchComments(filters = {}) {
     };
   }
 
-  // Location-based filtering (within radius)
+  // Location
   if (
     filters.lat !== undefined &&
     filters.lng !== undefined &&
     filters.radius
   ) {
-    const radiusInDegrees = filters.radius / 111; // Approximate conversion
+    const radiusInDegrees = filters.radius / 111;
     query["location.lat"] = {
-      $gte: filters.lat - radiusInDegrees,
-      $lte: filters.lat + radiusInDegrees
+      $gte: Number(filters.lat) - radiusInDegrees,
+      $lte: Number(filters.lat) + radiusInDegrees
     };
     query["location.lng"] = {
-      $gte: filters.lng - radiusInDegrees,
-      $lte: filters.lng + radiusInDegrees
+      $gte: Number(filters.lng) - radiusInDegrees,
+      $lte: Number(filters.lng) + radiusInDegrees
     };
   }
 
-  // Build sort options
+  // Sorting
   const sortField = filters.sortBy || "createdAt";
   const sortOrder = filters.sortOrder === "asc" ? 1 : -1;
   const sort = { [sortField]: sortOrder };
 
-  // Build query with pagination
   let queryBuilder = Comment.find(query)
     .populate("author", "username")
     .sort(sort);

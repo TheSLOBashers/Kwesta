@@ -20,7 +20,10 @@ const {
   addUserFlag,
   removeUserFlag,
   upgradeToModerator,
-  getUserById
+  getUserById,
+  giveBadge,
+  removeBadge,
+  purchaseBadge
 } = user_services;
 
 import commentServices from "../models/comment-services.js";
@@ -44,6 +47,8 @@ router.post("/", async (req, res) => {
       return res.status(409).json({ message: error.message });
     } else if (error.message === "Email already exists") {
       return res.status(409).json({ message: error.message });
+    } else if (error.message.includes("email: Invalid email")) {
+      return res.status(400).json({ message: error.message });
     } else {
       return res.status(500).send("Internal Server Error");
     }
@@ -54,6 +59,16 @@ router.post("/", async (req, res) => {
 router.get("/", async (req, res) => {
   try {
     const users_list = await getPublicUsers();
+    return res.status(200).json({ users_list });
+  } catch (error) {
+    return res.status(500).send("Internal Server Error");
+  }
+});
+
+// Fetch public users: only username and points are exposed to everyone
+router.get("/mod-view", authenticateModerator, async (req, res) => {
+  try {
+    const users_list = await getAllNonModeratorUsers();
     return res.status(200).json({ users_list });
   } catch (error) {
     return res.status(500).send("Internal Server Error");
@@ -73,6 +88,7 @@ router.get("/me", authenticateToken, async (req, res) => {
       username: user.username,
       points: user.points || 0,
       permissions: user.permissions,
+      badges: user.badges || [],
       followers: user.followers ?? [],
       following: user.following ?? [],
       followersCount: user.followers?.length ?? 0,
@@ -342,6 +358,49 @@ router.post(
       });
     } catch (error) {
       console.error("POST /me/redemptions error:", error);
+      return res.status(500).json({ error: error.message });
+    }
+  }
+);
+
+router.post(
+  "/me/badges/purchase",
+  authenticateToken,
+  async (req, res) => {
+    try {
+      const userId = req.user._id;
+      const { badgeName, cost } = req.body;
+
+      if (!badgeName || cost === undefined) {
+        return res.status(400).json({
+          message: "badgeName and cost are required"
+        });
+      }
+
+      const updatedUser = await purchaseBadge(
+        userId,
+        String(badgeName),
+        Number(cost)
+      );
+
+      return res.status(200).json({
+        message: "Badge purchased successfully",
+        points: updatedUser.points || 0,
+        badges: updatedUser.badges || []
+      });
+    } catch (error) {
+      if (error.message === "Insufficient funds") {
+        return res.status(400).json({ message: error.message });
+      }
+
+      if (error.message === "Badge already owned") {
+        return res.status(400).json({ message: error.message });
+      }
+
+      if (error.message === "User not found") {
+        return res.status(404).json({ message: error.message });
+      }
+
       return res.status(500).json({ error: error.message });
     }
   }

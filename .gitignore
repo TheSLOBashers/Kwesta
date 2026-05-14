@@ -1,3 +1,5 @@
 node_modules/
 packages/express-backend/.env
 Temp
+packages/express-backend/Prometheus/prometheus.yml
+packages/express-backend/Prometheus/data/
