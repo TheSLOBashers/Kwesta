@@ -339,4 +339,107 @@ describe("user-services", () => {
       { new: true }
     ]);
   });
+
+  it("getUserProfile selects social profile fields and populates users", async () => {
+    const expectedUser = {
+      _id: "user-14",
+      username: "khush",
+      followers: [],
+      following: []
+    };
+    const calls = [];
+    const builder = {
+      select(...args) {
+        calls.push({ method: "select", args });
+        return builder;
+      },
+      populate(...args) {
+        calls.push({ method: "populate", args });
+        return calls.length === 3 ? expectedUser : builder;
+      }
+    };
+    const findByIdMock = mock.method(
+      User,
+      "findById",
+      () => builder
+    );
+
+    const result = await userServices.getUserProfile("user-14");
+
+    assert.deepEqual(result, expectedUser);
+    assert.deepEqual(findByIdMock.mock.calls[0].arguments, [
+      "user-14"
+    ]);
+    assert.deepEqual(calls, [
+      {
+        method: "select",
+        args: ["username points permissions followers following"]
+      },
+      { method: "populate", args: ["followers", "username points"] },
+      { method: "populate", args: ["following", "username points"] }
+    ]);
+  });
+
+  it("followUser adds the target to following and current user to followers", async () => {
+    mock.method(User, "findById", async () => ({
+      _id: "target-user"
+    }));
+    const updateMock = mock.method(
+      User,
+      "findByIdAndUpdate",
+      async userId => ({ _id: userId })
+    );
+
+    const result = await userServices.followUser(
+      "current-user",
+      "target-user"
+    );
+
+    assert.deepEqual(result, { _id: "current-user" });
+    assert.deepEqual(updateMock.mock.calls[0].arguments, [
+      "current-user",
+      { $addToSet: { following: "target-user" } },
+      { new: true }
+    ]);
+    assert.deepEqual(updateMock.mock.calls[1].arguments, [
+      "target-user",
+      { $addToSet: { followers: "current-user" } },
+      { new: true }
+    ]);
+  });
+
+  it("followUser rejects attempts to follow yourself", async () => {
+    await assert.rejects(
+      () => userServices.followUser("same-user", "same-user"),
+      /Users cannot follow themselves/
+    );
+  });
+
+  it("unfollowUser removes the target from following and current user from followers", async () => {
+    mock.method(User, "findById", async () => ({
+      _id: "target-user"
+    }));
+    const updateMock = mock.method(
+      User,
+      "findByIdAndUpdate",
+      async userId => ({ _id: userId })
+    );
+
+    const result = await userServices.unfollowUser(
+      "current-user",
+      "target-user"
+    );
+
+    assert.deepEqual(result, { _id: "current-user" });
+    assert.deepEqual(updateMock.mock.calls[0].arguments, [
+      "current-user",
+      { $pull: { following: "target-user" } },
+      { new: true }
+    ]);
+    assert.deepEqual(updateMock.mock.calls[1].arguments, [
+      "target-user",
+      { $pull: { followers: "current-user" } },
+      { new: true }
+    ]);
+  });
 });

@@ -10,6 +10,9 @@ const {
   createNewUser,
   getAllNonModeratorUsers,
   getPublicUsers,
+  getUserProfile,
+  followUser,
+  unfollowUser,
   getUserByUsername,
   banUser,
   unbanUser,
@@ -59,7 +62,7 @@ router.get("/", async (req, res) => {
 
 router.get("/me", authenticateToken, async (req, res) => {
   try {
-    const user = await getUserByUsername(req.user.username);
+    const user = await getUserProfile(req.user._id);
     if (!user) {
       return res
         .status(404)
@@ -69,12 +72,96 @@ router.get("/me", authenticateToken, async (req, res) => {
     return res.status(200).json({
       username: user.username,
       points: user.points || 0,
-      permissions: user.permissions
+      permissions: user.permissions,
+      followers: user.followers ?? [],
+      following: user.following ?? [],
+      followersCount: user.followers?.length ?? 0,
+      followingCount: user.following?.length ?? 0
     });
   } catch (error) {
     return res.status(500).send("Internal Server Error");
   }
 });
+
+router.get("/me/followers", authenticateToken, async (req, res) => {
+  try {
+    const user = await getUserProfile(req.user._id);
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({ message: "User not found" });
+    }
+
+    return res.status(200).json({ followers: user.followers ?? [] });
+  } catch (error) {
+    return res.status(500).send("Internal Server Error");
+  }
+});
+
+router.get("/me/following", authenticateToken, async (req, res) => {
+  try {
+    const user = await getUserProfile(req.user._id);
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({ message: "User not found" });
+    }
+
+    return res.status(200).json({ following: user.following ?? [] });
+  } catch (error) {
+    return res.status(500).send("Internal Server Error");
+  }
+});
+
+router.put("/me/following/:id", authenticateToken, async (req, res) => {
+  try {
+    await followUser(req.user._id, req.params.id);
+    const user = await getUserProfile(req.user._id);
+
+    return res.status(200).json({
+      following: user?.following ?? [],
+      followingCount: user?.following?.length ?? 0
+    });
+  } catch (error) {
+    if (error.message === "Users cannot follow themselves") {
+      return res.status(400).json({ message: error.message });
+    }
+
+    if (error.message === "User not found") {
+      return res.status(404).json({ message: error.message });
+    }
+
+    return res.status(500).send("Internal Server Error");
+  }
+});
+
+router.delete(
+  "/me/following/:id",
+  authenticateToken,
+  async (req, res) => {
+    try {
+      await unfollowUser(req.user._id, req.params.id);
+      const user = await getUserProfile(req.user._id);
+
+      return res.status(200).json({
+        following: user?.following ?? [],
+        followingCount: user?.following?.length ?? 0
+      });
+    } catch (error) {
+      if (error.message === "Users cannot unfollow themselves") {
+        return res.status(400).json({ message: error.message });
+      }
+
+      if (error.message === "User not found") {
+        return res.status(404).json({ message: error.message });
+      }
+
+      return res.status(500).send("Internal Server Error");
+    }
+  }
+);
 
 // Ban a user
 router.put(
