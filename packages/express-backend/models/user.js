@@ -18,6 +18,18 @@ const UserSchema = new mongoose.Schema(
         user: { type: Schema.Types.ObjectId, ref: "users_list" }
       }
     ],
+    followers: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "User"
+      }
+    ],
+    following: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "User"
+      }
+    ],
     flagList: [
       {
         comment: { type: Schema.Types.ObjectId, ref: "Comment" }

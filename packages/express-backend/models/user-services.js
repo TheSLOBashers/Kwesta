@@ -112,6 +112,67 @@ async function getPublicUsers() {
   }).select("username points");
 }
 
+async function getUserProfile(userId) {
+  return User.findById(userId)
+    .select("username points permissions followers following")
+    .populate("followers", "username points")
+    .populate("following", "username points");
+}
+
+async function followUser(currentUserId, targetUserId) {
+  if (currentUserId.toString() === targetUserId.toString()) {
+    throw new Error("Users cannot follow themselves");
+  }
+
+  const targetUser = await User.findById(targetUserId);
+
+  if (!targetUser) {
+    throw new Error("User not found");
+  }
+
+  const [currentUser] = await Promise.all([
+    User.findByIdAndUpdate(
+      currentUserId,
+      { $addToSet: { following: targetUserId } },
+      { new: true }
+    ),
+    User.findByIdAndUpdate(
+      targetUserId,
+      { $addToSet: { followers: currentUserId } },
+      { new: true }
+    )
+  ]);
+
+  return currentUser;
+}
+
+async function unfollowUser(currentUserId, targetUserId) {
+  if (currentUserId.toString() === targetUserId.toString()) {
+    throw new Error("Users cannot unfollow themselves");
+  }
+
+  const targetUser = await User.findById(targetUserId);
+
+  if (!targetUser) {
+    throw new Error("User not found");
+  }
+
+  const [currentUser] = await Promise.all([
+    User.findByIdAndUpdate(
+      currentUserId,
+      { $pull: { following: targetUserId } },
+      { new: true }
+    ),
+    User.findByIdAndUpdate(
+      targetUserId,
+      { $pull: { followers: currentUserId } },
+      { new: true }
+    )
+  ]);
+
+  return currentUser;
+}
+
 async function banUser(userId) {
   return User.findByIdAndUpdate(
     userId,
@@ -316,6 +377,9 @@ export default {
   createNewUser,
   getAllNonModeratorUsers,
   getPublicUsers,
+  getUserProfile,
+  followUser,
+  unfollowUser,
   getUserByUsername,
   banUser,
   unbanUser,
