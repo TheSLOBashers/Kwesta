@@ -114,7 +114,7 @@ async function getPublicUsers() {
 
 async function getUserProfile(userId) {
   return User.findById(userId)
-    .select("username points permissions followers following")
+    .select("username points permissions badges followers following")
     .populate("followers", "username points")
     .populate("following", "username points");
 }
