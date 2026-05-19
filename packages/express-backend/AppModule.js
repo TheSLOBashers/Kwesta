@@ -25,7 +25,7 @@ app.use(express.json());
 //collectDefaultMetrics(); -- don't need this since promBundle already collects default metrics
 
 // Prometheus metrics middleware
-
+ 
 const metricsMiddleware = promBundle({
     includeMethod: true,
     includePath: true,
