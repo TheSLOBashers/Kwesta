@@ -12,7 +12,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 beforeEach(async () => {
-  await connectToMongo("test"); 
+  await connectToMongo(process.env.MONGO_URI); 
 });
 
 afterEach(async () => {
