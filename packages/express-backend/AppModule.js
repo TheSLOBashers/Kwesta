@@ -43,12 +43,12 @@ mongoose.set("debug", true);
 const mongoUri =
     process.env.MONGO_URI ? process.env.MONGO_URI : "mongodb://localhost:27017/KWESTA";
 
-async function connectToMongo() {
+async function connectToMongo(uri = mongoUri) {
     // if not connected, connect and return the connection promise
     if (mongoose.connection.readyState === 0) {
         return mongoose
-            .connect(mongoUri)
-            .then(() => console.log(`MongoDB connected at ${mongoUri}!`))
+            .connect(uri)
+            .then(() => console.log(`MongoDB connected at ${uri}!`))
             .then(() => console.log("Connected DB:", mongoose.connection.name))
             .catch(error => console.log(error));
     } else {

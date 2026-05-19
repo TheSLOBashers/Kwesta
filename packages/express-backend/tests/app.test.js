@@ -1,4 +1,4 @@
-/*
+
 import assert from "node:assert/strict";
 import { afterEach, describe, it, mock, beforeEach } from "node:test";
 //import appModule from "../backend.js";
@@ -8,9 +8,11 @@ import { afterEach, describe, it, mock, beforeEach } from "node:test";
 import appModule from "../AppModule.js";
 import supertest from "supertest";
 const {app, connectToMongo, disconnectFromMongo} = appModule;
+import dotenv from "dotenv";
+dotenv.config();
 
 beforeEach(async () => {
-  await connectToMongo(); 
+  await connectToMongo(process.env.MONGO_URI); 
 });
 
 afterEach(async () => {
@@ -122,4 +124,3 @@ describe("app", () => {
   });
 
 });
-*/
