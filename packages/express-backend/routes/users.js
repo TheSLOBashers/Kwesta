@@ -30,6 +30,7 @@ import commentServices from "../models/comment-services.js";
 import eventServices from "../models/event-services.js";
 import questServices from "../models/quest-services.js";
 import redemptionServices from "../models/redemption-services.js";
+import Badge from "../models/badges.js";
 
 // routes
 
@@ -391,18 +392,26 @@ router.post(
   async (req, res) => {
     try {
       const userId = req.user._id;
-      const { badgeName, cost } = req.body;
+      const { badgeName } = req.body;
 
-      if (!badgeName || cost === undefined) {
+      if (!badgeName) {
         return res.status(400).json({
-          message: "badgeName and cost are required"
+          message: "badgeName is required"
+        });
+      }
+
+      const badgeCost = await Badge.findOne({ name: badgeName }).select("cost");
+
+      if (!badgeCost) {
+        return res.status(404).json({
+          message: "Badge not found"
         });
       }
 
       const updatedUser = await purchaseBadge(
         userId,
         String(badgeName),
-        Number(cost)
+        Number(badgeCost.cost)
       );
 
       return res.status(200).json({
