@@ -1,6 +1,7 @@
 import mongoose from "mongoose";
 import validator from "validator";
 const { Schema } = mongoose;
+import { Buffer } from "buffer";
 
 const BadgeSchema = new mongoose.Schema(
   {
