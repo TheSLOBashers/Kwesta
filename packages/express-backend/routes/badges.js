@@ -26,7 +26,7 @@ router.post("/upload/:name/:cost", upload.single("image"), async (req, res) => {
   }
 });
 
-router.get(":name", async (req, res) => {
+router.get("/:name", async (req, res) => {
   try {
     const badge = await Badge.findOne({ name: req.params.name });
     if (!badge) {
