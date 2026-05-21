@@ -38,7 +38,7 @@ function getEventsByArea(lat, lng, radius = 10) {
     .lean();
 }
 
-export async function getEventsSinceNearby(sinceDate, lat, lng, radius = 10) {
+async function getEventsSinceNearby(sinceDate, lat, lng, radius = 10) {
   const radiusInDegrees = radius / 111;
 
   return Event.find({
@@ -282,6 +282,7 @@ export default {
   createEvent,
   getEvents,
   getEventsByArea,
+  getEventsSinceNearby,
   getEventById,
   deleteEvent,
   removeEvent,

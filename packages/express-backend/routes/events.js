@@ -12,6 +12,7 @@ const {
   createEvent,
   getEvents,
   getEventsByArea,
+  getEventsSinceNearby,
   getEventById,
   updateEvent,
   deleteEvent,

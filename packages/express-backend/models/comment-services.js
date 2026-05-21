@@ -1,4 +1,5 @@
 import Comment from "./comment.js";
+import { getEventsSinceNearby } from "./event-services.js";
 import User from "./user.js"; // make sure this is imported
 
 function createComment(commentData) {
@@ -37,7 +38,7 @@ function getCommentsByArea(lat, lng, radius = 5) {
     .lean();
 }
 
-export async function getCommentsSinceNearby(sinceDate, lat, lng, radius = 5) {
+async function getCommentsSinceNearby(sinceDate, lat, lng, radius = 5) {
   const radiusInDegrees = radius / 111;
 
   return Comment.find({
@@ -267,6 +268,7 @@ export default {
   createComment,
   getComments,
   getCommentsByArea,
+  getCommentsSinceNearby,
   getCommentById,
   deleteComment,
   removeComment,

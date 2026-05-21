@@ -36,7 +36,7 @@ function getQuestsByArea(lat, lng, radius = 10) {
     .lean();
 }
 
-export async function getQuestsSinceNearby(sinceDate, lat, lng, radius = 10) {
+async function getQuestsSinceNearby(sinceDate, lat, lng, radius = 10) {
   const radiusInDegrees = radius / 111;
 
   return Quest.find({
@@ -282,6 +282,7 @@ export default {
   createQuest,
   getQuests,
   getQuestsByArea,
+  getQuestsSinceNearby,
   getQuestById,
   deleteQuest,
   removeQuest,

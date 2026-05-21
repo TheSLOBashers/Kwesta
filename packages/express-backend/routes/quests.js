@@ -12,6 +12,7 @@ const {
   createQuest,
   getQuests,
   getQuestsByArea,
+  getQuestsSinceNearby,
   getQuestById,
   updateQuest,
   deleteQuest,
