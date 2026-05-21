@@ -1,5 +1,4 @@
 import Comment from "./comment.js";
-import { getEventsSinceNearby } from "./event-services.js";
 import User from "./user.js"; // make sure this is imported
 
 function createComment(commentData) {
