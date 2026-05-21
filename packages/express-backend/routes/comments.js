@@ -118,6 +118,10 @@ router.get("/area", authenticateToken, async (req, res) => {
       });
     }
 
+    console.log("SINCE RAW:", since);
+    console.log("SINCE PARSED:", new Date(since));
+    console.log("IS VALID:", !isNaN(new Date(since).getTime()));
+
     const parsedLat = parseFloat(lat);
     const parsedLng = parseFloat(lng);
     const parsedRadius = radius ? parseFloat(radius) : 1;
