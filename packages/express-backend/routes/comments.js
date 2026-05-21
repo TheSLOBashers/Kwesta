@@ -170,6 +170,107 @@ router.get("/area", authenticateToken, async (req, res) => {
   }
 });
 
+// fetches based on immediate location
+router.get("/area/snapshot", authenticateToken, async (req, res) => {
+  try {
+    const { lat, lng, radius } = req.query;
+
+    if (!lat || !lng) {
+      return res.status(400).json({
+        message: "lat and lng query parameters are required"
+      });
+    }
+
+    const parsedLat = parseFloat(lat);
+    const parsedLng = parseFloat(lng);
+    const parsedRadius = radius ? parseFloat(radius) : 1;
+
+    const comments = await getCommentsByArea(
+      parsedLat,
+      parsedLng,
+      parsedRadius
+    );
+
+    for (const comment of comments) {
+      const user = await getUserById(comment.author);
+      comment.authorId = comment.author;
+      comment.authorName = user?.username || "Unknown";
+    }
+
+    const flags = (await getUserFlags(req.user._id)) ?? [];
+    const safeFlags = flags.filter(Boolean);
+
+    comments.forEach((comment) => {
+      comment.likedByUser = (comment.likedBy || []).some(
+        (likedUserId) =>
+          likedUserId.toString() === req.user._id.toString()
+      );
+
+      comment.flaggedByUser = safeFlags.some(
+        (flaggedComment) =>
+          flaggedComment._id.toString() === comment._id.toString()
+      );
+
+      delete comment.likedBy;
+    });
+
+    res.json({ comments });
+  } catch (error) {
+    res.status(500).send("Error: " + error.message);
+  }
+});
+
+// fetches new comment updates
+router.get("/area/updates", authenticateToken, async (req, res) => {
+  try {
+    const { lat, lng, radius, since } = req.query;
+
+    if (!lat || !lng || !since) {
+      return res.status(400).json({
+        message: "lat, lng, and since are required"
+      });
+    }
+
+    const parsedLat = parseFloat(lat);
+    const parsedLng = parseFloat(lng);
+    const parsedRadius = radius ? parseFloat(radius) : 1;
+
+    const comments = await commentServices.getCommentsSinceNearby(
+      new Date(since),
+      parsedLat,
+      parsedLng,
+      parsedRadius
+    );
+
+    for (const comment of comments) {
+      const user = await getUserById(comment.author);
+      comment.authorId = comment.author;
+      comment.authorName = user?.username || "Unknown";
+    }
+
+    const flags = (await getUserFlags(req.user._id)) ?? [];
+    const safeFlags = flags.filter(Boolean);
+
+    comments.forEach((comment) => {
+      comment.likedByUser = (comment.likedBy || []).some(
+        (likedUserId) =>
+          likedUserId.toString() === req.user._id.toString()
+      );
+
+      comment.flaggedByUser = safeFlags.some(
+        (flaggedComment) =>
+          flaggedComment._id.toString() === comment._id.toString()
+      );
+
+      delete comment.likedBy;
+    });
+
+    res.json({ comments });
+  } catch (error) {
+    res.status(500).send("Error: " + error.message);
+  }
+});
+
 // Get a single comment by ID
 router.get("/:id", async (req, res) => {
   try {
