@@ -69,7 +69,7 @@ router.get("/", authenticateToken, async (req, res) => {
 // Get events by area
 router.get("/area", authenticateToken, async (req, res) => {
   try {
-    const { lat, lng, radius } = req.query;
+    const { lat, lng, radius, since } = req.query;
 
     if (!lat || !lng) {
       return res.status(400).json({
@@ -77,15 +77,30 @@ router.get("/area", authenticateToken, async (req, res) => {
       });
     }
 
-    const events = await getEventsByArea(
-      parseFloat(lat),
-      parseFloat(lng),
-      radius ? parseFloat(radius) : 10
-    );
+    const parsedLat = parseFloat(lat);
+    const parsedLng = parseFloat(lng);
+    const parsedRadius = radius ? parseFloat(radius) : 10;
+
+    let events;
+
+    if (since) {
+      events = await eventServices.getEventsSinceNearby(
+        new Date(since),
+        parsedLat,
+        parsedLng,
+        parsedRadius
+      );
+    } else {
+      events = await getEventsByArea(
+        parsedLat,
+        parsedLng,
+        parsedRadius
+      );
+    }
 
     for (const event of events) {
-      const user = await getUserById(event.author); 
-      
+      const user = await getUserById(event.author);
+
       event.authorId = event.author;
       event.authorName = user?.username || "Unknown";
     }

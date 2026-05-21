@@ -64,11 +64,21 @@ router.post("/", authenticateToken, async (req, res) => {
 
 router.get("/", authenticateToken, async (req, res) => {
   try {
-    const comments = await getComments();
+    const { since } = req.query;
+
+    let comments;
+
+    if (since) {
+      comments = await commentServices.getCommentsSince(
+        new Date(since)
+      );
+    } else {
+      comments = await getComments();
+    }
 
     for (const comment of comments) {
-      const user = await getUserById(comment.author); 
-      
+      const user = await getUserById(comment.author);
+
       comment.authorId = comment.author;
       comment.authorName = user?.username || "Unknown";
     }
@@ -81,6 +91,7 @@ router.get("/", authenticateToken, async (req, res) => {
         (likedUserId) =>
           likedUserId.toString() === req.user._id.toString()
       );
+
       comment.flaggedByUser = safeFlags.some(
         (flaggedComment) =>
           flaggedComment._id.toString() === comment._id.toString()
@@ -88,7 +99,8 @@ router.get("/", authenticateToken, async (req, res) => {
 
       delete comment.likedBy;
     });
-    res.json({ comments: comments });
+
+    res.json({ comments });
   } catch (error) {
     console.error("GET /comments FAILED:", error);
     res.status(500).json({ error: error.message });
@@ -98,7 +110,7 @@ router.get("/", authenticateToken, async (req, res) => {
 // Get comments by area (for users to see comments about a location)
 router.get("/area", authenticateToken, async (req, res) => {
   try {
-    const { lat, lng, radius } = req.query;
+    const { lat, lng, radius, since } = req.query;
 
     if (!lat || !lng) {
       return res.status(400).json({
@@ -106,11 +118,27 @@ router.get("/area", authenticateToken, async (req, res) => {
       });
     }
 
-    const comments = await getCommentsByArea(
-      parseFloat(lat),
-      parseFloat(lng),
-      radius ? parseFloat(radius) : 1
-    );
+    const parsedLat = parseFloat(lat);
+    const parsedLng = parseFloat(lng);
+    const parsedRadius = radius ? parseFloat(radius) : 1;
+
+    let comments;
+
+    if (since) {
+      comments = await commentServices.getCommentsSinceNearby(
+        new Date(since),
+        parsedLat,
+        parsedLng,
+        parsedRadius
+      );
+    } else {
+      comments = await getCommentsByArea(
+        parsedLat,
+        parsedLng,
+        parsedRadius
+      );
+    }
+
     for (const comment of comments) {
       const user = await getUserById(comment.author);
 

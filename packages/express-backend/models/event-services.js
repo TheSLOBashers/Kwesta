@@ -38,6 +38,26 @@ function getEventsByArea(lat, lng, radius = 10) {
     .lean();
 }
 
+export async function getEventsSinceNearby(sinceDate, lat, lng, radius = 10) {
+  const radiusInDegrees = radius / 111;
+
+  return Event.find({
+    removed: false,
+    createdAt: { $gt: sinceDate },
+    "location.lat": {
+      $gte: lat - radiusInDegrees,
+      $lte: lat + radiusInDegrees
+    },
+    "location.lng": {
+      $gte: lng - radiusInDegrees,
+      $lte: lng + radiusInDegrees
+    }
+  })
+    .populate("author", "username")
+    .sort({ createdAt: 1 })
+    .lean();
+}
+
 function getEventById(eventId) {
   return Event.findById(eventId);
 }

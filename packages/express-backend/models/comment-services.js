@@ -37,6 +37,26 @@ function getCommentsByArea(lat, lng, radius = 5) {
     .lean();
 }
 
+export async function getCommentsSinceNearby(sinceDate, lat, lng, radius = 5) {
+  const radiusInDegrees = radius / 111;
+
+  return Comment.find({
+    removed: false,
+    createdAt: { $gt: sinceDate },
+    "location.lat": {
+      $gte: lat - radiusInDegrees,
+      $lte: lat + radiusInDegrees
+    },
+    "location.lng": {
+      $gte: lng - radiusInDegrees,
+      $lte: lng + radiusInDegrees
+    }
+  })
+    .populate("author", "username")
+    .sort({ createdAt: 1 })
+    .lean();
+}
+
 function getCommentById(commentId) {
   return Comment.findById(commentId).populate(
     "author",
@@ -104,6 +124,12 @@ async function updateComment(id, updatedFields) {
 
 export async function getCommentsByAuthor(userId) {
   return Comment.find({ author: userId }).sort({ createdAt: -1 });
+}
+
+export async function getCommentsSince(sinceDate) {
+  return Comment.find({
+    createdAt: { $gt: sinceDate }
+  }).sort({ createdAt: 1 });
 }
 
 /**
