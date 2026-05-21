@@ -42,7 +42,7 @@ export async function getCommentsSinceNearby(sinceDate, lat, lng, radius = 5) {
 
   return Comment.find({
     removed: false,
-    //createdAt: { $gt: sinceDate },
+    createdAt: { $gt: sinceDate },
     "location.lat": {
       $gte: lat - radiusInDegrees,
       $lte: lat + radiusInDegrees

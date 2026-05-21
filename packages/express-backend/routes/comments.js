@@ -110,17 +110,18 @@ router.get("/", authenticateToken, async (req, res) => {
 // Get comments by area (for users to see comments about a location)
 router.get("/area", authenticateToken, async (req, res) => {
   try {
+    console.log("running /area route");
     const { lat, lng, radius, since } = req.query;
+
+    console.log("SINCE RAW:", since);
+    console.log("SINCE PARSED:", new Date(since));
+    console.log("IS VALID:", !isNaN(new Date(since).getTime()));
 
     if (!lat || !lng) {
       return res.status(400).json({
         message: "lat and lng query parameters are required"
       });
     }
-
-    console.log("SINCE RAW:", since);
-    console.log("SINCE PARSED:", new Date(since));
-    console.log("IS VALID:", !isNaN(new Date(since).getTime()));
 
     const parsedLat = parseFloat(lat);
     const parsedLng = parseFloat(lng);
