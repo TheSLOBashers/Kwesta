@@ -51,4 +51,18 @@ router.get("/:username", async (req, res) => {
   }
 });
 
+router.delete("/:username", async (req, res) => {
+  try {
+    const deleted = await ProfilePhoto.findOneAndDelete({ username: req.params.username });
+    if (!deleted) {
+      return res.status(404).json({ error: "Profile photo not found" });
+    }
+
+    res.status(204).send();
+  } catch (error) {
+    console.error("Error deleting profile photo:", error);
+    res.status(500).json({ error: "Unable to delete profile photo" });
+  }
+});
+
 export default router;
