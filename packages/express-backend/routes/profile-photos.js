@@ -1,6 +1,6 @@
 import express from "express";
 import multer from "multer";
-import ProfilePhoto from "../models/user-profile.js";
+import ProfilePhoto from "../models/profile-photo.js";
 
 const router = express.Router();
 
