@@ -18,13 +18,21 @@ router.post("/", upload.single("image"), async (req, res) => {
       return res.status(400).json({ error: "Missing image file" });
     }
 
-    const profilePhoto = await ProfilePhoto.create({
-      username: req.body.username,
-      filename: req.file.originalname,
-      contentType: req.file.mimetype,
-      image: req.file.buffer,
-      size: req.file.size
-    });
+    const profilePhoto = await ProfilePhoto.findOneAndUpdate(
+      { username: req.body.username },
+      {
+        username: req.body.username,
+        filename: req.file.originalname,
+        contentType: req.file.mimetype,
+        image: req.file.buffer,
+        size: req.file.size,
+        createdAt: new Date(),
+      },
+      {
+        upsert: true,
+        new: true,
+      }
+    );
 
     res.status(201).json({ id: profilePhoto._id });
   } catch (error) {
