@@ -9,7 +9,7 @@ const upload = multer({ dest: "uploads/" });
 
 router.get("/store", async (req, res) => {
   try { // Only return badges that are not flagged as unavailable in the store, not just badges with showInStore set to true, but also badges that don't have showInStore set at all (for backwards compatibility)
-    const badges = await Badge.find({ showInStore: { $ne: false } }, "name cost");
+    const badges = await Badge.find({ showInStore: { $ne: false } }, "name cost description");
     res.json(badges);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -63,7 +63,7 @@ router.get("/description/:name", async (req, res) => {
 
 router.get("/", async (req, res) => {
   try {
-    const badges = await Badge.find({}, "name cost");
+    const badges = await Badge.find({}, "name cost description");
     res.json(badges);
   } catch (err) {
     res.status(500).json({ error: err.message });
