@@ -36,6 +36,26 @@ function getQuestsByArea(lat, lng, radius = 10) {
     .lean();
 }
 
+async function getQuestsSinceNearby(sinceDate, lat, lng, radius = 10) {
+  const radiusInDegrees = radius / 111;
+
+  return Quest.find({
+    removed: false,
+    createdAt: { $gt: sinceDate },
+    "location.lat": {
+      $gte: lat - radiusInDegrees,
+      $lte: lat + radiusInDegrees
+    },
+    "location.lng": {
+      $gte: lng - radiusInDegrees,
+      $lte: lng + radiusInDegrees
+    }
+  })
+    .populate("author", "username")
+    .sort({ createdAt: 1 })
+    .lean();
+}
+
 function getQuestById(questId) {
   return Quest.findById(questId);
 }
@@ -262,6 +282,7 @@ export default {
   createQuest,
   getQuests,
   getQuestsByArea,
+  getQuestsSinceNearby,
   getQuestById,
   deleteQuest,
   removeQuest,

@@ -16,6 +16,7 @@ import { default as events } from "./routes/events.js";
 import { default as auth } from "./routes/auth.js";
 import { default as statistics } from "./routes/statistics.js";
 import { default as badges } from "./routes/badges.js";
+import { default as profilePhotos } from "./routes/profile-photos.js";
 
 // App setup
 dotenv.config();
@@ -97,6 +98,7 @@ app.use("/events", events);
 app.use("/auth", auth);
 app.use("/statistics", statistics);
 app.use("/badges", badges);
+app.use("/profile-photos", profilePhotos);
 
 function start() {
     app.listen(process.env.PORT || port, () => {

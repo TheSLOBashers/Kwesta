@@ -64,6 +64,20 @@ describe("app", () => {
     assert.ok(response_login.body.permissions);
   });
 
+  it("Testing profile-photos GET returns 404 for missing username", async () => {
+    const request = supertest(app);
+    const response = await request.get("/profile-photos/nonexistent-user");
+    assert.strictEqual(response.status, 404);
+    assert.strictEqual(response.body.error, "Profile photo not found");
+  });
+
+  it("Testing profile-photos POST rejects missing image", async () => {
+    const request = supertest(app);
+    const response = await request.post("/profile-photos/").field("username", "test-user");
+    assert.strictEqual(response.status, 400);
+    assert.strictEqual(response.body.error, "Missing image file");
+  });
+
   it("Testing comments endpoint - admin", async () => {
     const request = supertest(app);
     const response = await request.get("/comments/6a04096d04cf70b39fc8dd3d");

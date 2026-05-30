@@ -12,6 +12,7 @@ const {
   createQuest,
   getQuests,
   getQuestsByArea,
+  getQuestsSinceNearby,
   getQuestById,
   updateQuest,
   deleteQuest,
@@ -66,7 +67,7 @@ router.get("/", authenticateToken, async (req, res) => {
 // Get quests by area
 router.get("/area", authenticateToken, async (req, res) => {
   try {
-    const { lat, lng, radius } = req.query;
+    const { lat, lng, radius, since } = req.query;
 
     if (!lat || !lng) {
       return res.status(400).json({
@@ -74,15 +75,30 @@ router.get("/area", authenticateToken, async (req, res) => {
       });
     }
 
-    const quests = await getQuestsByArea(
-      parseFloat(lat),
-      parseFloat(lng),
-      radius ? parseFloat(radius) : 10
-    );
+    const parsedLat = parseFloat(lat);
+    const parsedLng = parseFloat(lng);
+    const parsedRadius = radius ? parseFloat(radius) : 10;
+
+    let quests;
+
+    if (since) {
+      quests = await questServices.getQuestsSinceNearby(
+        new Date(since),
+        parsedLat,
+        parsedLng,
+        parsedRadius
+      );
+    } else {
+      quests = await getQuestsByArea(
+        parsedLat,
+        parsedLng,
+        parsedRadius
+      );
+    }
 
     for (const quest of quests) {
-      const user = await getUserById(quest.author); 
-      
+      const user = await getUserById(quest.author);
+
       quest.authorId = quest.author;
       quest.authorName = user?.username || "Unknown";
     }

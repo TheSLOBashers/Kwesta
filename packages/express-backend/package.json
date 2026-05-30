@@ -9,7 +9,8 @@
   "scripts": {
     "test": "node --test",
     "dev": "npx nodemon backend.js",
-    "start": "node backend.js"
+    "start": "node backend.js",
+    "test:acceptance": "cucumber-js features/**/*.feature --import features/step_definitions/**/*.js"
   },
   "dependencies": {
     "bcrypt": "^6.0.0",
@@ -26,6 +27,7 @@
     "validator": "^13.15.35"
   },
   "devDependencies": {
+    "@cucumber/cucumber": "^12.9.0",
     "mockingoose": "^3.0.0",
     "supertest": "^7.2.2"
   }
