@@ -8,7 +8,8 @@ const BadgeSchema = new mongoose.Schema(
     name: { type: String, required: true, unique: true },
     cost: { type: Number, required: true },
     contentType: { type: String, required: true },
-    icon: { type: Buffer, required: true }
+    icon: { type: Buffer, required: true },
+    description: { type: String, required: false }
   },
   {
     timestamps: true

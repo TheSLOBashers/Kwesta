@@ -7,13 +7,14 @@ const router = express.Router();
 
 const upload = multer({ dest: "uploads/" });
 
-router.post("/upload/:name/:cost", upload.single("image"), async (req, res) => {
+router.post("/upload/:name/:cost/:description", upload.single("image"), async (req, res) => {
   try {
     const badge = new Badge({
       name: req.params.name,
       cost: parseInt(req.params.cost),
       contentType: req.file.mimetype,
-      icon: fs.readFileSync(req.file.path)
+      icon: fs.readFileSync(req.file.path),
+      description: req.params.description
     });
 
     await badge.save();
@@ -34,6 +35,18 @@ router.get("/:name", async (req, res) => {
     }
     res.set("Content-Type", badge.contentType);
     res.send(badge.icon);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.get("/description/:name", async (req, res) => {
+  try {
+    const badge = await Badge.findOne({ name: req.params.name });
+    if (!badge) {
+      return res.status(404).send("Not found");
+    }
+    res.json({ description: badge.description });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
