@@ -23,7 +23,8 @@ const {
   getUserById,
   giveBadge,
   removeBadge,
-  purchaseBadge
+  purchaseBadge,
+  getUserBadges
 } = user_services;
 
 import commentServices from "../models/comment-services.js";
@@ -103,6 +104,29 @@ router.get("/me", authenticateToken, async (req, res) => {
     return res.status(500).send("Internal Server Error");
   }
 });
+
+router.get(
+  "/me/badges",
+  authenticateToken,
+  async (req, res) => {
+    try {
+      const userBadges = await getUserBadges(req.user._id);
+
+      if (!userBadges) {
+        return res
+          .status(404)
+          .json({ message: "User not found" });
+      }
+
+      return res
+        .status(200)
+        .json({ badges: userBadges ?? [] });
+    } catch (error) {
+      console.log("msg: " + error.message);
+      return res.status(500).send("Internal Server Error");
+    }
+  }
+);
 
 router.get(
   "/me/followers",

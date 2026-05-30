@@ -1,5 +1,6 @@
 import User from "./user.js";
 import bcrypt from "bcrypt";
+import Badge from "./badges.js";
 
 // constant values
 const saltRounds = 10;
@@ -372,6 +373,22 @@ async function purchaseBadge(userId, badgeName, cost) {
   return user;
 }
 
+// get user badges and merge with badge descriptions
+async function getUserBadges(userId) {
+  const user = await User.findById(userId);
+
+  if (!user) {
+    throw new Error("User not found");
+  } else if (!user.badges || user.badges.length === 0) {
+    return [];
+  } else {
+    const badgeDetails = await Badge.find({
+      name: { $in: user.badges }
+    }).select("name description cost");   
+    return badgeDetails;
+  }
+}
+
 export default {
   authenticateUser,
   createNewUser,
@@ -395,7 +412,8 @@ export default {
   getDevices,
   giveBadge,
   removeBadge,
-  purchaseBadge
+  purchaseBadge,
+  getUserBadges
 };
 
 /*
