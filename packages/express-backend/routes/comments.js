@@ -17,7 +17,8 @@ const {
   removeUserFlag,
   upgradeToModerator,
   addPoints,
-  getUserById
+  getUserById,
+  giveBadge
 } = user_services;
 
 const router = express.Router();
@@ -57,6 +58,7 @@ router.post("/", authenticateToken, async (req, res) => {
       location
     });
     await addPoints(req.user._id, 10);
+    await giveBadge(req.user._id, "Commenter").catch((err) => {});
     res.status(201).json({ comment: createdComment });
   } catch (error) {
     return res.status(500).send("Error: " + error.message);

@@ -9,7 +9,8 @@ const BadgeSchema = new mongoose.Schema(
     cost: { type: Number, required: true },
     contentType: { type: String, required: true },
     icon: { type: Buffer, required: true },
-    description: { type: String, required: false }
+    description: { type: String, required: false },
+    showInStore: { type: Boolean, default: true }
   },
   {
     timestamps: true

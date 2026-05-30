@@ -356,6 +356,7 @@ router.post(
           .json({ message: "Event not found" });
       }
       await addPoints(req.user._id, 10);
+      await giveBadge(req.user._id, "Eventer").catch((err) => {});
       res.status(200).json({ event });
     } catch (error) {
       res.status(500).send("Error: " + error.message);

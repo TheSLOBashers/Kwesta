@@ -43,6 +43,7 @@ router.post("/", async (req, res) => {
 
   try {
     const user = await createNewUser(username, email, password);
+    await giveBadge(user._id, "kwester").catch((err) => {});
     res.status(201).json(user);
   } catch (error) {
     if (error.message === "Username already exists") {

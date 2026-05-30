@@ -16,7 +16,8 @@ const {
   authenticateDevice,
   addDeviceIfNotAlready,
   blockDevice,
-  getDevices
+  getDevices,
+  giveBadge
 } = user_services;
 dotenv.config();
 const router = express.Router();
@@ -70,6 +71,7 @@ router.post('/login', async (req, res) => {
     response = { token, permissions: "admin" }
   }
 
+  await giveBadge(user._id, "kwester").catch((err) => {});
   res.json(response);
 });
 
