@@ -464,6 +464,7 @@ router.post(
 router.get("/username/:username", async (req, res) => {
   try {
     const user = await getUserByUsername(req.params.username);
+    const badges = await getUserBadges(user._id);
 
     if (!user) {
       return res
@@ -474,7 +475,7 @@ router.get("/username/:username", async (req, res) => {
     res.json({
       username: user.username,
       points: user.points,
-      badges: user.badges,
+      badges: badges || [],
       followers: user.followers,
       following: user.following
     });
