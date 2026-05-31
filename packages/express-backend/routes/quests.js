@@ -375,6 +375,7 @@ router.post(
           .status(404)
           .json({ message: "Quest not found" });
       }
+      await addPoints(req.user._id, -10);
       res.status(200).json({ quest });
     } catch (error) {
       res.status(500).send("Error: " + error.message);

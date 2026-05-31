@@ -37,7 +37,21 @@ router.post("/", authenticateToken, async (req, res) => {
       time,
       location
     });
-    await addPoints(req.user._id, 10);
+
+    const THIRTY_MIN = 30 * 60 * 1000;
+    const now = Date.now();
+
+    const recentEvents = await Event.find({
+      author: req.user._id,
+      createdAt: { $gte: new Date(now - THIRTY_MIN) }
+    });
+
+    const REWARD_LIMIT = 3;
+
+    if (recentEvents.length < REWARD_LIMIT) {
+      await addPoints(req.user._id, 10);
+    }
+
     res.status(201).json(event);
   } catch (error) {
     return res.status(500).send("Error: " + error.message);
@@ -379,6 +393,8 @@ router.post(
           .status(404)
           .json({ message: "Event not found" });
       }
+
+      await addPoints(req.user._id, -10);
       res.status(200).json({ event });
     } catch (error) {
       res.status(500).send("Error: " + error.message);

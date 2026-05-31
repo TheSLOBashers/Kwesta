@@ -57,8 +57,22 @@ router.post("/", authenticateToken, async (req, res) => {
       comment,
       location
     });
-    await addPoints(req.user._id, 10);
-    await giveBadge(req.user._id, "Commenter").catch((err) => {});
+    
+    const THIRTY_MIN = 30 * 60 * 1000;
+    const now = Date.now();
+
+    const recentComments = await Comment.find({
+      author: req.user._id,
+      createdAt: { $gte: new Date(now - THIRTY_MIN) }
+    });
+
+    const REWARD_LIMIT = 3;
+
+    if (recentComments.length < REWARD_LIMIT) {
+      await addPoints(req.user._id, 10);
+      await giveBadge(req.user._id, "Commenter").catch(() => {});
+    }
+
     res.status(201).json({ comment: createdComment });
   } catch (error) {
     return res.status(500).send("Error: " + error.message);
@@ -513,7 +527,7 @@ router.put("/like/:id", authenticateToken, async (req, res) => {
     }
 
     const comment = await likeComment(id, req.user._id);
-    await addPoints(req.user._id, 10);
+    await addPoints(existingComment.author, 10);
     res.status(200).json({ comment });
   } catch (error) {
     return res.status(500).send("Internal Server Error");
