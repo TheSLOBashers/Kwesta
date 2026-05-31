@@ -41,10 +41,12 @@ router.post("/", authenticateToken, async (req, res) => {
     const THIRTY_MIN = 30 * 60 * 1000;
     const now = Date.now();
 
-    const recentEvents = await Event.find({
-      author: req.user._id,
-      createdAt: { $gte: new Date(now - THIRTY_MIN) }
-    });
+    const allEvents = await getEvents();
+
+    const recentEvents = allEvents.filter(e =>
+      e.author.toString() === req.user._id.toString() &&
+      new Date(e.createdAt) >= new Date(now - THIRTY_MIN)
+    );
 
     const REWARD_LIMIT = 3;
 

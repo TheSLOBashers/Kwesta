@@ -61,10 +61,12 @@ router.post("/", authenticateToken, async (req, res) => {
     const THIRTY_MIN = 30 * 60 * 1000;
     const now = Date.now();
 
-    const recentComments = await Comment.find({
-      author: req.user._id,
-      createdAt: { $gte: new Date(now - THIRTY_MIN) }
-    });
+    const allComments = await getComments();
+
+    const recentComments = allComments.filter(c =>
+      c.author.toString() === req.user._id.toString() &&
+      new Date(c.createdAt) >= new Date(now - THIRTY_MIN)
+    );
 
     const REWARD_LIMIT = 3;
 
