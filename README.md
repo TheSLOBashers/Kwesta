@@ -32,6 +32,7 @@ Class Diagram:
 https://docs.google.com/presentation/d/1dmzq3xeTC0SYu1JxJ3COm338a2zMQutCBzLJ3dsb2Kk/edit?usp=sharing
 
 Video Demos:
+
 Fetching/Moving Demo:
 https://drive.google.com/file/d/1dsyasGvmEdiVQqBIgejliJTX-MH2ar79/view?usp=sharing 
 
