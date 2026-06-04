@@ -14,6 +14,10 @@ https://portal.azure.com/?Microsoft_Azure_Education_correlationId=6950e8e3-a10a-
 
 No Frontend Deployment (We run on Expo Go currently so cannot deploy on Azure)
 
+CI/CD: Integration and deployment are automatic, simply merge to main to deploy to Azure backend. 
+
+Testing: For backend testing, run 'npm test' in the express-backend directory. For frontend testing, run the same command at the root.
+
 Style Guide:
 https://www.npmjs.com/package/prettier-airbnb-config
 
