@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { setTimeout as wait } from "node:timers/promises";
 import { afterEach, describe, it, mock } from "node:test";
 
 import User from "../models/user.js";
@@ -38,7 +39,7 @@ function createToken(payload = {}) {
 }
 
 async function waitForMiddleware() {
-  await new Promise(resolve => setImmediate(resolve));
+  await wait(0);
 }
 
 function createMockResponse() {
@@ -87,7 +88,7 @@ describe("auth", () => {
       username: "testuser",
       password: hashedPassword
     };
-    const findOneMock = mock.method(
+    mock.method(
       User,
       "findOne",
       async () => expectedUser
@@ -128,7 +129,7 @@ describe("auth", () => {
       password: hashedPassword,
       permissions: "moderator"
     };
-    const findOneMock = mock.method(
+    mock.method(
       User,
       "findOne",
       async () => expectedUser
@@ -173,7 +174,7 @@ describe("auth", () => {
       username: "testuser",
       password: hashedPassword,
     };
-    const findOneMock = mock.method(
+    mock.method(
       User,
       "findOne",
       async () => expectedUser
@@ -240,7 +241,7 @@ describe("auth", () => {
       password: hashedPassword,
       permissions: "moderator"
     };
-    const findOneMock = mock.method(
+    mock.method(
       User,
       "findOne",
       async () => expectedUser
