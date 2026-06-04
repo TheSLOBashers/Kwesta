@@ -1,6 +1,10 @@
 # Kwesta
 
+Backend CI:
 [![CI Testing](https://github.com/TheSLOBashers/Kwesta/actions/workflows/ci-testing.yml/badge.svg)](https://github.com/TheSLOBashers/Kwesta/actions/workflows/ci-testing.yml)
+
+Frontend CI:
+[![CI Testing](https://github.com/TheSLOBashers/Kwesta-mobile/actions/workflows/ci-testing.yml/badge.svg)](https://github.com/TheSLOBashers/Kwesta-mobile/actions/workflows/ci-testing.yml)
 
 ExpoGo Frontend Repo:
 https://github.com/TheSLOBashers/Kwesta-mobile
