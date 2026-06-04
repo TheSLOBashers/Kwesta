@@ -2,7 +2,10 @@ import assert from "node:assert/strict";
 import { afterEach, describe, it, mock } from "node:test";
 
 import Comment from "../models/comment.js";
-import commentServices from "../models/comment-services.js";
+import User from "../models/user.js";
+import commentServices, {
+  getCommentsSince
+} from "../models/comment-services.js";
 import { createQueryBuilder } from "./helpers/query-builder.js";
 
 afterEach(() => {
@@ -105,6 +108,49 @@ describe("comment-services", () => {
     assert.deepEqual(calls, [
       { method: "populate", args: ["author", "username"] },
       { method: "sort", args: [{ createdAt: -1 }] },
+      { method: "lean", args: [] }
+    ]);
+  });
+
+  it("getCommentsSinceNearby builds a recent nearby query", async () => {
+    const expectedComments = [{ _id: "comment-nearby" }];
+    const { builder, calls } = createQueryBuilder(
+      expectedComments,
+      "lean"
+    );
+    const findMock = mock.method(
+      Comment,
+      "find",
+      () => builder
+    );
+    const sinceDate = new Date("2026-03-01T00:00:00.000Z");
+
+    const result = await commentServices.getCommentsSinceNearby(
+      sinceDate,
+      35,
+      -120,
+      8
+    );
+    const radiusInDegrees = 8 / 111;
+
+    assert.deepEqual(result, expectedComments);
+    assert.deepEqual(findMock.mock.calls[0].arguments, [
+      {
+        removed: false,
+        createdAt: { $gt: sinceDate },
+        "location.lat": {
+          $gte: 35 - radiusInDegrees,
+          $lte: 35 + radiusInDegrees
+        },
+        "location.lng": {
+          $gte: -120 - radiusInDegrees,
+          $lte: -120 + radiusInDegrees
+        }
+      }
+    ]);
+    assert.deepEqual(calls, [
+      { method: "populate", args: ["author", "username"] },
+      { method: "sort", args: [{ createdAt: 1 }] },
       { method: "lean", args: [] }
     ]);
   });
@@ -248,6 +294,76 @@ describe("comment-services", () => {
     ]);
   });
 
+  it("updateComment applies updated fields with new:true", async () => {
+    const updatedComment = { _id: "comment-update" };
+    const updateMock = mock.method(
+      Comment,
+      "findByIdAndUpdate",
+      async () => updatedComment
+    );
+
+    const result = await commentServices.updateComment(
+      "comment-update",
+      { comment: "Updated" }
+    );
+
+    assert.deepEqual(result, updatedComment);
+    assert.deepEqual(updateMock.mock.calls[0].arguments, [
+      "comment-update",
+      { $set: { comment: "Updated" } },
+      { new: true }
+    ]);
+  });
+
+  it("getCommentsByAuthor sorts an author's comments newest first", async () => {
+    const expectedComments = [{ _id: "comment-author" }];
+    const { builder, calls } = createQueryBuilder(
+      expectedComments,
+      "sort"
+    );
+    const findMock = mock.method(
+      Comment,
+      "find",
+      () => builder
+    );
+
+    const result = await commentServices.getCommentsByAuthor(
+      "user-author"
+    );
+
+    assert.deepEqual(result, expectedComments);
+    assert.deepEqual(findMock.mock.calls[0].arguments, [
+      { author: "user-author" }
+    ]);
+    assert.deepEqual(calls, [
+      { method: "sort", args: [{ createdAt: -1 }] }
+    ]);
+  });
+
+  it("getCommentsSince sorts newer comments oldest first", async () => {
+    const expectedComments = [{ _id: "comment-since" }];
+    const { builder, calls } = createQueryBuilder(
+      expectedComments,
+      "sort"
+    );
+    const findMock = mock.method(
+      Comment,
+      "find",
+      () => builder
+    );
+    const sinceDate = new Date("2026-03-01T00:00:00.000Z");
+
+    const result = await getCommentsSince(sinceDate);
+
+    assert.deepEqual(result, expectedComments);
+    assert.deepEqual(findMock.mock.calls[0].arguments, [
+      { createdAt: { $gt: sinceDate } }
+    ]);
+    assert.deepEqual(calls, [
+      { method: "sort", args: [{ createdAt: 1 }] }
+    ]);
+  });
+
   it("searchComments builds a filtered query with pagination and sorting", async () => {
     const expectedComments = [{ _id: "comment-10" }];
     const { builder, calls } = createQueryBuilder(
@@ -339,6 +455,59 @@ describe("comment-services", () => {
       { method: "sort", args: [{ createdAt: -1 }] },
       { method: "exec", args: [] }
     ]);
+  });
+
+  it("searchComments filters by matching usernames", async () => {
+    const expectedComments = [{ _id: "comment-username" }];
+    const matchingUsers = [{ _id: "user-username" }];
+    const { builder: userBuilder, calls: userCalls } =
+      createQueryBuilder(matchingUsers, "select");
+    mock.method(User, "find", () => userBuilder);
+    const { builder, calls } = createQueryBuilder(
+      expectedComments,
+      "exec"
+    );
+    const findMock = mock.method(
+      Comment,
+      "find",
+      () => builder
+    );
+
+    const result = await commentServices.searchComments({
+      username: "khu"
+    });
+
+    assert.deepEqual(result, expectedComments);
+    assert.deepEqual(userCalls, [
+      { method: "select", args: ["_id"] }
+    ]);
+    assert.deepEqual(findMock.mock.calls[0].arguments, [
+      { author: { $in: ["user-username"] } }
+    ]);
+    assert.deepEqual(calls, [
+      { method: "populate", args: ["author", "username"] },
+      { method: "sort", args: [{ createdAt: -1 }] },
+      { method: "exec", args: [] }
+    ]);
+  });
+
+  it("searchComments returns an empty list when username has no matches", async () => {
+    const { builder } = createQueryBuilder([], "select");
+    mock.method(User, "find", () => builder);
+    const findMock = mock.method(
+      Comment,
+      "find",
+      () => {
+        throw new Error("Comment.find should not run");
+      }
+    );
+
+    const result = await commentServices.searchComments({
+      username: "missing"
+    });
+
+    assert.deepEqual(result, []);
+    assert.equal(findMock.mock.calls.length, 0);
   });
 
   it("getCommentStats aggregates totals and active count", async () => {

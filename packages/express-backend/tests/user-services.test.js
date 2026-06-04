@@ -4,6 +4,7 @@ import { afterEach, describe, it, mock } from "node:test";
 import bcrypt from "bcrypt";
 
 import User from "../models/user.js";
+import Badge from "../models/badges.js";
 import userServices from "../models/user-services.js";
 import { createQueryBuilder } from "./helpers/query-builder.js";
 
@@ -196,6 +197,27 @@ describe("user-services", () => {
     ]);
     assert.deepEqual(calls, [
       { method: "select", args: ["-password"] }
+    ]);
+  });
+
+  it("getPublicUsers exposes only username and points for non-moderators", async () => {
+    const expectedUsers = [
+      { _id: "user-public", username: "member", points: 20 }
+    ];
+    const { builder, calls } = createQueryBuilder(
+      expectedUsers,
+      "select"
+    );
+    const findMock = mock.method(User, "find", () => builder);
+
+    const result = await userServices.getPublicUsers();
+
+    assert.deepEqual(result, expectedUsers);
+    assert.deepEqual(findMock.mock.calls[0].arguments, [
+      { permissions: { $nin: ["moderator", "admin"] } }
+    ]);
+    assert.deepEqual(calls, [
+      { method: "select", args: ["username points"] }
     ]);
   });
 
@@ -415,6 +437,15 @@ describe("user-services", () => {
     );
   });
 
+  it("followUser rejects missing target users", async () => {
+    mock.method(User, "findById", async () => null);
+
+    await assert.rejects(
+      () => userServices.followUser("current-user", "missing-user"),
+      /User not found/
+    );
+  });
+
   it("unfollowUser removes the target from following and current user from followers", async () => {
     mock.method(User, "findById", async () => ({
       _id: "target-user"
@@ -441,5 +472,286 @@ describe("user-services", () => {
       { $pull: { followers: "current-user" } },
       { new: true }
     ]);
+  });
+
+  it("unfollowUser rejects attempts to unfollow yourself", async () => {
+    await assert.rejects(
+      () => userServices.unfollowUser("same-user", "same-user"),
+      /Users cannot unfollow themselves/
+    );
+  });
+
+  it("unfollowUser rejects missing target users", async () => {
+    mock.method(User, "findById", async () => null);
+
+    await assert.rejects(
+      () => userServices.unfollowUser("current-user", "missing-user"),
+      /User not found/
+    );
+  });
+
+  it("authenticateDevice returns permitted matching devices", async () => {
+    mock.method(User, "findOne", async () => ({
+      devices: [
+        { device: "ios:simulator", allowed: false },
+        { device: "android:emulator", allowed: true }
+      ]
+    }));
+
+    const result = await userServices.authenticateDevice(
+      "khush",
+      "android:emulator"
+    );
+
+    assert.equal(result, 1);
+  });
+
+  it("authenticateDevice rejects missing users and blocked devices", async () => {
+    mock.method(User, "findOne", async usernameQuery => {
+      if (usernameQuery.username === "ghost") {
+        return null;
+      }
+      return {
+        devices: [{ device: "android:emulator", allowed: false }]
+      };
+    });
+
+    await assert.rejects(
+      () => userServices.authenticateDevice("ghost", "android:emulator"),
+      /User not found/
+    );
+    await assert.rejects(
+      () => userServices.authenticateDevice("khush", "android:emulator"),
+      /Device not permitted/
+    );
+  });
+
+  it("getDevices returns user devices and rejects missing users", async () => {
+    mock.method(User, "findOne", async query => {
+      if (query.username === "khush") {
+        return { devices: [{ device: "android:emulator" }] };
+      }
+      return null;
+    });
+
+    const result = await userServices.getDevices("khush");
+
+    assert.deepEqual(result, [{ device: "android:emulator" }]);
+    await assert.rejects(
+      () => userServices.getDevices("ghost"),
+      /No user found/
+    );
+  });
+
+  it("addDeviceIfNotAlready adds unseen devices and returns existing devices unchanged", async () => {
+    const findMock = mock.method(User, "find", async query => {
+      if (query["devices.device"] === "known-device") {
+        return [{ _id: "user-device" }];
+      }
+      return [];
+    });
+    const updateMock = mock.method(
+      User,
+      "findOneAndUpdate",
+      async () => ({ _id: "user-device" })
+    );
+
+    const added = await userServices.addDeviceIfNotAlready(
+      "khush",
+      "new-device",
+      "brand",
+      "design",
+      "name",
+      2026,
+      "phone"
+    );
+    const existing = await userServices.addDeviceIfNotAlready(
+      "khush",
+      "known-device"
+    );
+
+    assert.deepEqual(added, { _id: "user-device" });
+    assert.equal(existing, "known-device");
+    assert.deepEqual(findMock.mock.calls[0].arguments, [
+      { username: "khush", "devices.device": "new-device" }
+    ]);
+    assert.deepEqual(updateMock.mock.calls[0].arguments, [
+      { username: "khush" },
+      {
+        $addToSet: {
+          devices: {
+            device: "new-device",
+            allowed: true,
+            device_brand: "brand",
+            device_designName: "design",
+            device_deviceName: "name",
+            device_deviceYearClass: 2026,
+            device_deviceType: "phone"
+          }
+        }
+      }
+    ]);
+  });
+
+  it("blockDevice blocks matching devices and rejects missing devices", async () => {
+    const blockedUser = { _id: "user-device", devices: [] };
+    const updateMock = mock.method(
+      User,
+      "findOneAndUpdate",
+      async query =>
+        query["devices.device"] === "known-device" ? blockedUser : null
+    );
+
+    const result = await userServices.blockDevice(
+      "khush",
+      "known-device"
+    );
+
+    assert.deepEqual(result, blockedUser);
+    assert.deepEqual(updateMock.mock.calls[0].arguments, [
+      { username: "khush", "devices.device": "known-device" },
+      { $set: { "devices.$.allowed": false } },
+      { new: true }
+    ]);
+    await assert.rejects(
+      () => userServices.blockDevice("khush", "missing-device"),
+      /No user \/ device found/
+    );
+  });
+
+  it("getUserById selects usernames and returns null on lookup errors", async () => {
+    const expectedUser = { _id: "user-15", username: "khush" };
+    const { builder, calls } = createQueryBuilder(
+      expectedUser,
+      "select"
+    );
+    mock.method(User, "findById", id => {
+      if (id === "bad-id") {
+        throw new Error("Cast failed");
+      }
+      return builder;
+    });
+    const consoleMock = mock.method(console, "error", () => {});
+
+    const result = await userServices.getUserById("user-15");
+    const failed = await userServices.getUserById("bad-id");
+
+    assert.deepEqual(result, expectedUser);
+    assert.equal(failed, null);
+    assert.deepEqual(calls, [
+      { method: "select", args: ["username"] }
+    ]);
+    assert.equal(consoleMock.mock.calls.length, 1);
+  });
+
+  it("giveBadge and removeBadge update badge ownership", async () => {
+    const updateMock = mock.method(
+      User,
+      "findByIdAndUpdate",
+      async (userId, update) => ({ _id: userId, update })
+    );
+
+    await userServices.giveBadge("user-16", "kwester");
+    await userServices.removeBadge("user-16", "kwester");
+
+    assert.deepEqual(updateMock.mock.calls[0].arguments, [
+      "user-16",
+      { $addToSet: { badges: "kwester" } },
+      { new: true }
+    ]);
+    assert.deepEqual(updateMock.mock.calls[1].arguments, [
+      "user-16",
+      { $pull: { badges: "kwester" } },
+      { new: true }
+    ]);
+  });
+
+  it("purchaseBadge spends rounded points and stores trimmed badge names", async () => {
+    const user = {
+      points: 50,
+      badges: [],
+      save: mock.fn(async () => user)
+    };
+    mock.method(User, "findById", async () => user);
+
+    const result = await userServices.purchaseBadge(
+      "user-17",
+      " explorer ",
+      12.4
+    );
+
+    assert.equal(result.points, 38);
+    assert.deepEqual(result.badges, ["explorer"]);
+    assert.equal(user.save.mock.calls.length, 1);
+  });
+
+  it("purchaseBadge validates inputs and user state", async () => {
+    await assert.rejects(
+      () => userServices.purchaseBadge("user-17", "", 10),
+      /Invalid badge name/
+    );
+    await assert.rejects(
+      () => userServices.purchaseBadge("user-17", "kwester", 0),
+      /Invalid badge cost/
+    );
+
+    mock.method(User, "findById", async userId => {
+      if (userId === "missing") {
+        return null;
+      }
+      if (userId === "poor") {
+        return { points: 1, badges: [] };
+      }
+      return { points: 50, badges: ["kwester"] };
+    });
+
+    await assert.rejects(
+      () => userServices.purchaseBadge("missing", "kwester", 10),
+      /User not found/
+    );
+    await assert.rejects(
+      () => userServices.purchaseBadge("poor", "kwester", 10),
+      /Insufficient points/
+    );
+    await assert.rejects(
+      () => userServices.purchaseBadge("owner", "kwester", 10),
+      /Badge already owned/
+    );
+  });
+
+  it("getUserBadges returns empty lists and badge details", async () => {
+    const badgeDetails = [
+      { name: "kwester", description: "First login", cost: 10 }
+    ];
+    mock.method(User, "findById", async userId => {
+      if (userId === "missing") {
+        return null;
+      }
+      if (userId === "empty") {
+        return { badges: [] };
+      }
+      return { badges: ["kwester"] };
+    });
+    const { builder, calls } = createQueryBuilder(
+      badgeDetails,
+      "select"
+    );
+    const badgeFindMock = mock.method(Badge, "find", () => builder);
+
+    const empty = await userServices.getUserBadges("empty");
+    const result = await userServices.getUserBadges("owner");
+
+    assert.deepEqual(empty, []);
+    assert.deepEqual(result, badgeDetails);
+    assert.deepEqual(badgeFindMock.mock.calls[0].arguments, [
+      { name: { $in: ["kwester"] } }
+    ]);
+    assert.deepEqual(calls, [
+      { method: "select", args: ["name description cost"] }
+    ]);
+    await assert.rejects(
+      () => userServices.getUserBadges("missing"),
+      /User not found/
+    );
   });
 });

@@ -69,6 +69,81 @@ describe("event-services", () => {
     );
   });
 
+  it("getEventsByArea builds a location query from the given radius", async () => {
+    const expectedEvents = [{ _id: "event-area" }];
+    const { builder, calls } = createQueryBuilder(
+      expectedEvents,
+      "lean"
+    );
+    const findMock = mock.method(Event, "find", () => builder);
+
+    const result = await eventServices.getEventsByArea(
+      35,
+      -120,
+      12
+    );
+    const radiusInDegrees = 12 / 111;
+
+    assert.deepEqual(result, expectedEvents);
+    assert.deepEqual(findMock.mock.calls[0].arguments, [
+      {
+        removed: false,
+        "location.lat": {
+          $gte: 35 - radiusInDegrees,
+          $lte: 35 + radiusInDegrees
+        },
+        "location.lng": {
+          $gte: -120 - radiusInDegrees,
+          $lte: -120 + radiusInDegrees
+        }
+      }
+    ]);
+    assert.deepEqual(calls, [
+      { method: "populate", args: ["author", "username"] },
+      { method: "sort", args: [{ createdAt: -1 }] },
+      { method: "lean", args: [] }
+    ]);
+  });
+
+  it("getEventsSinceNearby builds a recent nearby query", async () => {
+    const expectedEvents = [{ _id: "event-nearby" }];
+    const { builder, calls } = createQueryBuilder(
+      expectedEvents,
+      "lean"
+    );
+    const findMock = mock.method(Event, "find", () => builder);
+    const sinceDate = new Date("2026-03-01T00:00:00.000Z");
+
+    const result = await eventServices.getEventsSinceNearby(
+      sinceDate,
+      35,
+      -120,
+      9
+    );
+    const radiusInDegrees = 9 / 111;
+
+    assert.deepEqual(result, expectedEvents);
+    assert.deepEqual(findMock.mock.calls[0].arguments, [
+      {
+        removed: false,
+        createdAt: { $gt: sinceDate },
+        "location.lat": {
+          $gte: 35 - radiusInDegrees,
+          $lte: 35 + radiusInDegrees
+        },
+        "location.lng": {
+          $gte: -120 - radiusInDegrees,
+          $lte: -120 + radiusInDegrees
+        }
+      }
+    ]);
+    assert.deepEqual(calls, [
+      { method: "populate", args: ["author", "username"] },
+      { method: "sort", args: [{ createdAt: 1 }] },
+      { method: "lean", args: [] }
+    ]);
+  });
+
   it("getEventById looks up the event by id", async () => {
     const event = { _id: "event-3" };
     const findByIdMock = mock.method(
@@ -185,6 +260,45 @@ describe("event-services", () => {
       "event-9",
       { $inc: { flag: -1 } },
       { new: true }
+    ]);
+  });
+
+  it("getEventsByAuthor sorts an author's events newest first", async () => {
+    const expectedEvents = [{ _id: "event-author" }];
+    const { builder, calls } = createQueryBuilder(
+      expectedEvents,
+      "sort"
+    );
+    const findMock = mock.method(Event, "find", () => builder);
+
+    const result = await eventServices.getEventsByAuthor(
+      "user-author"
+    );
+
+    assert.deepEqual(result, expectedEvents);
+    assert.deepEqual(findMock.mock.calls[0].arguments, [
+      { author: "user-author" }
+    ]);
+    assert.deepEqual(calls, [
+      { method: "sort", args: [{ createdAt: -1 }] }
+    ]);
+  });
+
+  it("getEventsUserJoined finds events containing the user in the RSVP list", async () => {
+    const expectedEvents = [{ _id: "event-joined" }];
+    const findMock = mock.method(
+      Event,
+      "find",
+      async () => expectedEvents
+    );
+
+    const result = await eventServices.getEventsUserJoined(
+      "user-joined"
+    );
+
+    assert.deepEqual(result, expectedEvents);
+    assert.deepEqual(findMock.mock.calls[0].arguments, [
+      { rsvpList: "user-joined" }
     ]);
   });
 
@@ -330,5 +444,41 @@ describe("event-services", () => {
       countMock.mock.calls.map((call) => call.arguments),
       [[], [{ flag: { $gt: 0 } }], [{ removed: true }]]
     );
+  });
+
+  it("joinEvent and unjoinEvent update the RSVP list", async () => {
+    const updateMock = mock.method(
+      Event,
+      "findByIdAndUpdate",
+      async (eventId, update) => ({ _id: eventId, update })
+    );
+
+    const joined = await eventServices.joinEvent(
+      "event-rsvp",
+      "user-rsvp"
+    );
+    const unjoined = await eventServices.unjoinEvent(
+      "event-rsvp",
+      "user-rsvp"
+    );
+
+    assert.deepEqual(joined, {
+      _id: "event-rsvp",
+      update: { $addToSet: { rsvpList: "user-rsvp" } }
+    });
+    assert.deepEqual(unjoined, {
+      _id: "event-rsvp",
+      update: { $pull: { rsvpList: "user-rsvp" } }
+    });
+    assert.deepEqual(updateMock.mock.calls[0].arguments, [
+      "event-rsvp",
+      { $addToSet: { rsvpList: "user-rsvp" } },
+      { new: true }
+    ]);
+    assert.deepEqual(updateMock.mock.calls[1].arguments, [
+      "event-rsvp",
+      { $pull: { rsvpList: "user-rsvp" } },
+      { new: true }
+    ]);
   });
 });
