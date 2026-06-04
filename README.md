@@ -31,7 +31,20 @@ https://www.figma.com/design/vIJz5Ic5fPsytRZv2OmnAW/Kwesta-WireFrame?node-id=0-1
 Class Diagram:
 https://docs.google.com/presentation/d/1dmzq3xeTC0SYu1JxJ3COm338a2zMQutCBzLJ3dsb2Kk/edit?usp=sharing
 
-Project Review Slides:
+Video Demos:
+Fetching/Moving Demo:
+https://drive.google.com/file/d/1dsyasGvmEdiVQqBIgejliJTX-MH2ar79/view?usp=sharing 
+
+Badges and Store Demo:
+https://drive.google.com/file/d/1ZxzyYKJT_yc9P3tmW8qo6hKxthkR8-rj/view?usp=sharing 
+
+Posts/Interactivity Demo:
+https://drive.google.com/file/d/1RmSu-H56LaVpZpWhQZfC6_bIa-eyO3Rq/view?usp=sharing 
+
+Final Project Review Slides:
+https://docs.google.com/presentation/d/1v_WXARrZn30IfWm8PLPMiCVL1l0722yKmzE9NL2a7IU/edit?usp=sharing 
+
+Halfway Project Review Slides:
 https://docs.google.com/presentation/d/10wOHxZfP8yCFYVyZTwTtdKyZ9rbHlbcMGy1eXjpHqO0/edit?usp=sharing
 
 Code Coverage:
