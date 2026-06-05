@@ -52,42 +52,4 @@ https://docs.google.com/presentation/d/10wOHxZfP8yCFYVyZTwTtdKyZ9rbHlbcMGy1eXjpH
 
 Code Coverage:
 
-ℹ tests 120
-ℹ suites 9
-ℹ pass 120
-ℹ fail 0
-ℹ cancelled 0
-ℹ skipped 0
-ℹ todo 0
-ℹ duration_ms 2779.6765
-ℹ start of coverage report
-ℹ -------------------------------------------------------------------------------------------------------------
-ℹ file                                     | line % | branch % | funcs % | uncovered lines
-ℹ -------------------------------------------------------------------------------------------------------------
-ℹ models                                   |        |          |         | 
-ℹ  badges.js                               | 100.00 |   100.00 |  100.00 | 
-ℹ  comment-services.js                     | 100.00 |   100.00 |  100.00 | 
-ℹ  comment.js                              | 100.00 |   100.00 |  100.00 | 
-ℹ  event-services.js                       | 100.00 |   100.00 |  100.00 | 
-ℹ  event.js                                | 100.00 |   100.00 |  100.00 | 
-ℹ  quest-services.js                       |  85.95 |   100.00 |   82.35 | 20-37 39-57 111-115
-ℹ  quest.js                                | 100.00 |   100.00 |  100.00 | 
-ℹ  user-services.js                        |  98.95 |    97.65 |   97.37 | 22-26
-ℹ  user.js                                 | 100.00 |   100.00 |  100.00 | 
-ℹ routes                                   |        |          |         | 
-ℹ  auth.js                                 | 100.00 |   100.00 |   95.00 | 
-ℹ tests                                    |        |          |         | 
-ℹ  auth.test.js                            |  97.85 |    98.31 |   75.34 | 111-112 272-280 283 286-287 593 606
-ℹ  comment-services.test.js                |  99.63 |   100.00 |   97.67 | 501-502
-ℹ  event-services.test.js                  | 100.00 |   100.00 |  100.00 | 
-ℹ  helpers                                 |        |          |         | 
-ℹ   query-builder.js                       | 100.00 |   100.00 |  100.00 | 
-ℹ  mockingoose-comment-services.test.js    | 100.00 |   100.00 |  100.00 | 
-ℹ  mockingoose-event-services.test.js      |  98.48 |    90.91 |  100.00 | 27
-ℹ  mockingoose-quest-services.test.js      |  98.91 |    91.67 |  100.00 | 53
-ℹ  mockingoose-user-services.test.js       |  96.55 |    77.14 |  100.00 | 37-38 73 102 139 162
-ℹ  quest-services.test.js                  | 100.00 |   100.00 |  100.00 | 
-ℹ  user-services.test.js                   |  99.74 |    98.36 |  100.00 | 50 115
-ℹ -------------------------------------------------------------------------------------------------------------
-ℹ all files                                |  98.54 |    97.78 |   94.67 | 
-ℹ -------------------------------------------------------------------------------------------------------------
+<img width="782" height="680" alt="image" src="https://github.com/user-attachments/assets/aaf50e0c-8eaa-4fae-bb82-55a81f44cb96" />
