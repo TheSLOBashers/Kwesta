@@ -217,7 +217,7 @@ describe("user-services", () => {
       { permissions: { $nin: ["moderator", "admin"] } }
     ]);
     assert.deepEqual(calls, [
-      { method: "select", args: ["username points"] }
+      { method: "select", args: ["username points rankedPoints"] }
     ]);
   });
 

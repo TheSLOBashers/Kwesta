@@ -110,7 +110,7 @@ async function getAllNonModeratorUsers() {
 async function getPublicUsers() {
   return await User.find({
     permissions: { $nin: ['moderator', 'admin'] }
-  }).select("username points");
+  }).select("username points rankedPoints");
 }
 
 async function getUserProfile(userId) {
