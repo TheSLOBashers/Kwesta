@@ -94,6 +94,7 @@ router.get("/me", authenticateToken, async (req, res) => {
     return res.status(200).json({
       username: user.username,
       points: user.points || 0,
+      rankedPoints: user.rankedPoints || 0,
       permissions: user.permissions,
       badges: user.badges || [],
       followers: user.followers ?? [],
@@ -476,6 +477,7 @@ router.get("/username/:username", async (req, res) => {
     res.json({
       username: user.username,
       points: user.points,
+      rankedPoints: user.rankedPoints || 0,
       badges: badges || [],
       followers: user.followers,
       following: user.following

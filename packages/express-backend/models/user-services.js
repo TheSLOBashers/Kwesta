@@ -115,7 +115,7 @@ async function getPublicUsers() {
 
 async function getUserProfile(userId) {
   return User.findById(userId)
-    .select("username points permissions badges followers following")
+    .select("username points rankedPoints permissions badges followers following")
     .populate("followers", "username points")
     .populate("following", "username points");
 }
@@ -222,9 +222,10 @@ async function upgradeToModerator(userId) {
 }
 
 async function addPoints(userId, amount = 10) {
+  const rankedPointsIncrement = amount > 0 ? amount : 0;
   return User.findByIdAndUpdate(
     userId,
-    { $inc: { points: amount } },
+    { $inc: { points: amount, rankedPoints: rankedPointsIncrement } },
     { new: true }
   );
 }

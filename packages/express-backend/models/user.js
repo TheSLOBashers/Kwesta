@@ -13,6 +13,7 @@ const UserSchema = new mongoose.Schema(
       default: "regular"
     },
     points: { type: Number, default: 0 },
+    rankedPoints: { type: Number, default: 0 }, // Effectively an all-time points earning counter
     blockList: [
       {
         user: { type: Schema.Types.ObjectId, ref: "users_list" }

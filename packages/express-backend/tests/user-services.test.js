@@ -345,7 +345,7 @@ describe("user-services", () => {
     ]);
   });
 
-  it("addPoints increments the user's points by the requested amount", async () => {
+  it("addPoints increments the user's points and rankedPoints when the requested amount is positive", async () => {
     const updateMock = mock.method(
       User,
       "findByIdAndUpdate",
@@ -357,7 +357,24 @@ describe("user-services", () => {
     assert.deepEqual(result, { points: 30 });
     assert.deepEqual(updateMock.mock.calls[0].arguments, [
       "user-13",
-      { $inc: { points: 15 } },
+      { $inc: { points: 15, rankedPoints: 15 } },
+      { new: true }
+    ]);
+  });
+
+  it("addPoints does not decrement rankedPoints when subtracting points", async () => {
+    const updateMock = mock.method(
+      User,
+      "findByIdAndUpdate",
+      async () => ({ points: 20 })
+    );
+
+    const result = await userServices.addPoints("user-13", -10);
+
+    assert.deepEqual(result, { points: 20 });
+    assert.deepEqual(updateMock.mock.calls[0].arguments, [
+      "user-13",
+      { $inc: { points: -10, rankedPoints: 0 } },
       { new: true }
     ]);
   });
