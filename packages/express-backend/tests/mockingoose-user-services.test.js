@@ -9,7 +9,7 @@ import bcrypt from "bcrypt";
 describe('test mongoose User model', () => {
 
     it('getUserByUsername proxies to User.findOne', async () => {
-        const expectedUser = { _id: "69f13a139615c947306ab614", badges: [], username: "ex-1", blockList: [], followers: [], following: [], devices: [], flagList: [], permissions: 'regular', points: 3, };
+        const expectedUser = { _id: "69f13a139615c947306ab614", badges: [], username: "ex-1", blockList: [], followers: [], following: [], devices: [], flagList: [], permissions: 'regular', points: 3, rankedPoints: 0 };
 
         mockingoose(UserSchema).toReturn(expectedUser, 'findOne');
 
@@ -27,7 +27,7 @@ describe('test mongoose User model', () => {
             async password => `hashed:${password}`
         );
 
-        const expectedUser = { _id: "69f13a139615c947306ab614", badges: [], username: "ex-2", email: "ex-2@example.com", password: "hashed:secret", blockList: [], followers: [], following: [], devices: [], flagList: [], permissions: 'regular', points: 3, };
+        const expectedUser = { _id: "69f13a139615c947306ab614", badges: [], username: "ex-2", email: "ex-2@example.com", password: "hashed:secret", blockList: [], followers: [], following: [], devices: [], flagList: [], permissions: 'regular', points: 3, rankedPoints: 0 };
 
         const finderMock = (query) => {
             if (
@@ -61,7 +61,7 @@ describe('test mongoose User model', () => {
             async password => `hashed:${password}`
         );
 
-        const expectedUser = { _id: "69f13a139615c947306ab614", username: "ex-3", email: "ex-3@example.com", password: "hashed:secret", blockList: [], followers: [], following: [], devices: [], flagList: [], permissions: 'regular', points: 3, };
+        const expectedUser = { _id: "69f13a139615c947306ab614", username: "ex-3", email: "ex-3@example.com", password: "hashed:secret", blockList: [], followers: [], following: [], devices: [], flagList: [], permissions: 'regular', points: 3, rankedPoints: 0 };
 
         const finderMock = (query) => {
             if (
@@ -90,7 +90,7 @@ describe('test mongoose User model', () => {
 
     it("authenticateUser returns the user when the password matches", async () => {
 
-        const expectedUser = { _id: "69f13a139615c947306ab614", badges: [], username: "ex-4", email: "ex-4@example.com", password: "hashed:secret", blockList: [], followers: [], following: [], devices: [], flagList: [], permissions: 'regular', points: 3, };
+        const expectedUser = { _id: "69f13a139615c947306ab614", badges: [], username: "ex-4", email: "ex-4@example.com", password: "hashed:secret", blockList: [], followers: [], following: [], devices: [], flagList: [], permissions: 'regular', points: 3, rankedPoints: 0 };
 
         const finderMock = (query) => {
             if (
@@ -150,7 +150,7 @@ describe('test mongoose User model', () => {
 
     it("authenticateUser rejects banned users when permissions are banned", async () => {
 
-        const expectedUser = { _id: "69f13a139615c947306ab614", username: "ex-4", email: "ex-4@example.com", password: "hashed:secret", blockList: [], followers: [], following: [], devices: [], flagList: [], permissions: 'banned', points: 3 };
+        const expectedUser = { _id: "69f13a139615c947306ab614", username: "ex-4", email: "ex-4@example.com", password: "hashed:secret", blockList: [], followers: [], following: [], devices: [], flagList: [], permissions: 'banned', points: 3, rankedPoints: 0 };
 
         const finderMock = (query) => {
             if (

@@ -412,7 +412,7 @@ describe("user-services", () => {
     assert.deepEqual(calls, [
       {
         method: "select",
-        args: ["username points permissions badges followers following"]
+        args: ["username points rankedPoints permissions badges followers following"]
       },
       { method: "populate", args: ["followers", "username points"] },
       { method: "populate", args: ["following", "username points"] }
